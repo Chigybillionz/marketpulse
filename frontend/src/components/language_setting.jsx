@@ -74,7 +74,7 @@ export default function LanguageSetting({ onNavigate }) {
 
           {/* 3. Language Selection Card (Main List) */}
           <div className="bg-white rounded-2xl border border-[#e2e8f0] shadow-[0_2px_8px_rgba(0,0,0,0.02)] overflow-hidden mb-6">
-            {LANGUAGES.map((lang, index) => {
+            {LANGUAGES.map((lang) => {
               const isSelected = selectedId === lang.id;
               return (
                 <button

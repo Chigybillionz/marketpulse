@@ -55,7 +55,7 @@ function ArrowRightIcon() {
   )
 }
 
-export default function OtpVerification() {
+export default function OtpVerification({ onNavigate, businessName, setBalance, setMoneyIn, setTransactionsList }) {
   const [pin, setPin] = useState('')
 
   const addDigit = (digit) => {
@@ -66,6 +66,30 @@ export default function OtpVerification() {
     setPin((currentPin) => currentPin.slice(0, -1))
   }
 
+  const handleConfirm = () => {
+    // 1. Add balance by 15,000
+    setBalance(prev => prev + 15000);
+    // 2. Add Money In by 15,000
+    setMoneyIn(prev => prev + 15000);
+    // 3. Prep new transaction item
+    const newTx = {
+      id: Date.now(),
+      type: 'credit',
+      icon: 'bag',
+      title: 'Bulk Garri Sale',
+      meta: 'Today, 11:30 AM • Voice Input',
+      amount: '+₦15,000',
+      isPositive: true,
+      iconBg: 'bg-green-100',
+      iconColor: 'text-green-800'
+    };
+    setTransactionsList(prev => [newTx, ...prev]);
+
+    // 4. Show success and navigate home
+    alert("Transaction authenticated and saved to secure ledger!");
+    onNavigate('home');
+  }
+
   return (
     <main className="trade-pin-page" aria-label="Verify transaction PIN screen">
       <section className="trade-pin-phone">
@@ -74,10 +98,15 @@ export default function OtpVerification() {
             <span className="trade-pin-store">
               <StoreIcon />
             </span>
-            <span>Mama Ngozi Provisions</span>
+            <span>{businessName || 'Mama Ngozi Provisions'}</span>
           </div>
 
-          <button className="trade-pin-close" type="button" aria-label="Close PIN verification">
+          <button 
+            className="trade-pin-close cursor-pointer" 
+            type="button" 
+            aria-label="Close PIN verification"
+            onClick={() => onNavigate('ai_confirmation')}
+          >
             <CloseIcon />
           </button>
         </header>
@@ -115,8 +144,12 @@ export default function OtpVerification() {
         </section>
 
         <footer className="trade-pin-footer">
-          <a href="#forgot-pin">Forgot PIN?</a>
-          <button className="trade-pin-confirm" type="button">
+          <a href="#forgot-pin" onClick={(e) => { e.preventDefault(); alert("Verification link sent to your registered phone number."); }}>Forgot PIN?</a>
+          <button 
+            className="trade-pin-confirm cursor-pointer" 
+            type="button"
+            onClick={handleConfirm}
+          >
             <span>Confirm</span>
             <ArrowRightIcon />
           </button>

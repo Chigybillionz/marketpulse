@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const otpDigits = ['active', 'filled', 'filled', 'filled']
 
 function StoreIcon() {
@@ -51,7 +53,8 @@ function CloseIcon() {
   )
 }
 
-export default function Otp({ onNavigate }) {
+export default function Otp({ onNavigate, phoneNumber, isNewUser }) {
+  const [legalView, setLegalView] = useState(null); // 'terms' or 'privacy'
   return (
     <main className="otp-page" aria-label="OTP verification screen">
       <section className="otp-phone">
@@ -81,7 +84,7 @@ export default function Otp({ onNavigate }) {
           <h1 id="otp-title">Verification Code</h1>
 
           <p className="otp-instructions">
-            Enter the 4-digit code sent to <strong>+234 803<br />000 0000</strong>
+            Enter the 4-digit code sent to <strong>+234 {phoneNumber || '803 000 0000'}</strong>
             <button 
               className="otp-edit cursor-pointer" 
               type="button" 
@@ -121,17 +124,75 @@ export default function Otp({ onNavigate }) {
             <button 
               className="otp-cta cursor-pointer" 
               type="button"
-              onClick={() => onNavigate('home')}
+              onClick={() => {
+                if (isNewUser) {
+                  onNavigate('ledger');
+                } else {
+                  onNavigate('home');
+                }
+              }}
             >
               <span>Verify &amp; Continue</span>
               <ArrowRightIcon />
             </button>
 
             <p className="otp-legal">
-              By continuing, you agree to our <strong>Terms<br className="mobile-break" /> of Service</strong> and <strong>Privacy Policy.</strong>
+              By continuing, you agree to our{' '}
+              <button 
+                onClick={() => setLegalView('terms')}
+                className="font-bold underline cursor-pointer bg-transparent border-0 inline p-0 text-inherit hover:text-[#052e16]"
+              >
+                Terms of Service
+              </button>{' '}
+              and{' '}
+              <button 
+                onClick={() => setLegalView('privacy')}
+                className="font-bold underline cursor-pointer bg-transparent border-0 inline p-0 text-inherit hover:text-[#052e16]"
+              >
+                Privacy Policy
+              </button>.
             </p>
           </div>
         </section>
+
+        {legalView && (
+          <div className="absolute inset-0 bg-[#f8f9ff] z-50 flex flex-col p-6 animate-in fade-in slide-in-from-bottom duration-250">
+            <header className="flex items-center gap-4 mb-6">
+              <button 
+                onClick={() => setLegalView(null)}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-900 cursor-pointer"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <h1 className="text-xl font-extrabold text-gray-900" style={{ fontFamily: 'Lexend' }}>
+                {legalView === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+              </h1>
+            </header>
+            <div className="flex-1 overflow-y-auto pr-1 text-sm text-gray-600 leading-relaxed space-y-4 text-left" style={{ fontFamily: 'Lexend' }}>
+              {legalView === 'terms' ? (
+                <>
+                  <p className="font-bold text-gray-800">1. Acceptance of Terms</p>
+                  <p>Welcome to MarketPulse AI. By accessing or using our application, you agree to comply with and be bound by these Terms of Service. Please review them carefully.</p>
+                  <p className="font-bold text-gray-800">2. Description of Service</p>
+                  <p>MarketPulse AI provides local merchants with tools to track sales, manage inventory alerts, log credits, and analyze trading voice notes using advanced AI parsing.</p>
+                  <p className="font-bold text-gray-800">3. Security and Trade PIN</p>
+                  <p>You are responsible for safeguarding your 4-digit Trade PIN used to authenticate financial records. MarketPulse AI is not liable for unauthorized access resulting from shared PINs.</p>
+                  <p className="font-bold text-gray-800">4. Limitation of Liability</p>
+                  <p>We provide the services "as is" and make no warranties regarding accuracy, reliability, or uninterrupted service during busy local market trading environments.</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-bold text-gray-800">1. Information We Collect</p>
+                  <p>We collect your business name, verified phone number, inventory thresholds, and voice transcripts parsed by Gemini 1.5 Flash to automatically populate your trading logs.</p>
+                  <p className="font-bold text-gray-800">2. How We Use Data</p>
+                  <p>Your details are stored securely using Firestore database configurations and are only utilized to present customized Weekly Pulse summaries and alert logs to your store profile.</p>
+                  <p className="font-bold text-gray-800">3. Encryption & Protection</p>
+                  <p>All sensitive information, including phone numbers and sales ledgers, are encrypted in transit and at rest. We never share your data with third parties or external advertising networks.</p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </section>
     </main>
   )

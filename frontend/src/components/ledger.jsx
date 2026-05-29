@@ -37,7 +37,7 @@ function GoldenLock() {
   )
 }
 
-export default function Ledger() {
+export default function Ledger({ onNavigate }) {
   const [pin, setPin] = useState('')
   const isComplete = pin.length === 4
 
@@ -53,7 +53,12 @@ export default function Ledger() {
     <main className="ledger-page" aria-label="Secure ledger PIN setup">
       <section className="ledger-phone">
         <header className="ledger-nav">
-          <button type="button" className="ledger-back" aria-label="Go back">
+          <button 
+            type="button" 
+            className="ledger-back cursor-pointer" 
+            aria-label="Go back"
+            onClick={() => onNavigate && onNavigate('otp')}
+          >
             <BackArrowIcon />
           </button>
           <h1>MarketPulse AI</h1>
@@ -90,7 +95,12 @@ export default function Ledger() {
           </button>
         </section>
 
-        <button type="button" className={`ledger-cta ${isComplete ? 'active' : ''}`} disabled={!isComplete}>
+        <button 
+          type="button" 
+          className={`ledger-cta cursor-pointer ${isComplete ? 'active' : ''}`} 
+          disabled={!isComplete}
+          onClick={() => onNavigate && onNavigate('home')}
+        >
           Set Secure PIN
         </button>
       </section>

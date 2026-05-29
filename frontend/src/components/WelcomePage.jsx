@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-export default function WelcomePage({ onNavigate }) {
-  const [businessName, setBusinessName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+export default function WelcomePage({ onNavigate, businessName, setBusinessName, phoneNumber, setPhoneNumber, setIsNewUser }) {
   const [language, setLanguage] = useState('English');
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [legalView, setLegalView] = useState(null); // 'terms' or 'privacy'
 
   return (
     <div className="min-h-screen bg-[#fcfcfa] flex justify-center items-center p-0 sm:p-4 font-sans text-gray-800 antialiased selection:bg-[#052e16] selection:text-white">
@@ -187,7 +186,14 @@ export default function WelcomePage({ onNavigate }) {
 
             {/* Primary CTA Button */}
             <button 
-              onClick={() => onNavigate('otp')}
+              onClick={() => {
+                if (businessName.trim() === "Mama Ngozi Provisions") {
+                  setIsNewUser(false);
+                } else {
+                  setIsNewUser(true);
+                }
+                onNavigate('otp');
+              }}
               className="w-full bg-[#052e16] hover:bg-[#073d1e] active:scale-[0.98] text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-200 text-[14.5px] tracking-wide mt-1"
             >
               <span>Send OTP code</span>
@@ -265,15 +271,60 @@ export default function WelcomePage({ onNavigate }) {
             Need help accessing your account?
           </a>
           <div className="flex items-center gap-4 text-[13px] font-medium text-gray-400 select-none">
-            <a href="#privacy" className="hover:text-gray-600 hover:underline transition-all">
+            <button 
+              onClick={() => setLegalView('privacy')}
+              className="hover:text-gray-600 hover:underline transition-all cursor-pointer bg-transparent border-0 font-medium"
+            >
               Privacy Policy
-            </a>
+            </button>
             <span>•</span>
-            <a href="#terms" className="hover:text-gray-600 hover:underline transition-all">
+            <button 
+              onClick={() => setLegalView('terms')}
+              className="hover:text-gray-600 hover:underline transition-all cursor-pointer bg-transparent border-0 font-medium"
+            >
               Terms of Service
-            </a>
+            </button>
           </div>
         </footer>
+
+        {legalView && (
+          <div className="absolute inset-0 bg-[#f8f9ff] z-50 flex flex-col p-6 animate-in fade-in slide-in-from-bottom duration-250">
+            <header className="flex items-center gap-4 mb-6">
+              <button 
+                onClick={() => setLegalView(null)}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-900 cursor-pointer"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <h1 className="text-xl font-extrabold text-gray-900" style={{ fontFamily: 'Lexend' }}>
+                {legalView === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+              </h1>
+            </header>
+            <div className="flex-1 overflow-y-auto pr-1 text-sm text-gray-600 leading-relaxed space-y-4 text-left" style={{ fontFamily: 'Lexend' }}>
+              {legalView === 'terms' ? (
+                <>
+                  <p className="font-bold text-gray-800">1. Acceptance of Terms</p>
+                  <p>Welcome to MarketPulse AI. By accessing or using our application, you agree to comply with and be bound by these Terms of Service. Please review them carefully.</p>
+                  <p className="font-bold text-gray-800">2. Description of Service</p>
+                  <p>MarketPulse AI provides local merchants with tools to track sales, manage inventory alerts, log credits, and analyze trading voice notes using advanced AI parsing.</p>
+                  <p className="font-bold text-gray-800">3. Security and Trade PIN</p>
+                  <p>You are responsible for safeguarding your 4-digit Trade PIN used to authenticate financial records. MarketPulse AI is not liable for unauthorized access resulting from shared PINs.</p>
+                  <p className="font-bold text-gray-800">4. Limitation of Liability</p>
+                  <p>We provide the services "as is" and make no warranties regarding accuracy, reliability, or uninterrupted service during busy local market trading environments.</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-bold text-gray-800">1. Information We Collect</p>
+                  <p>We collect your business name, verified phone number, inventory thresholds, and voice transcripts parsed by Gemini 1.5 Flash to automatically populate your trading logs.</p>
+                  <p className="font-bold text-gray-800">2. How We Use Data</p>
+                  <p>Your details are stored securely using Firestore database configurations and are only utilized to present customized Weekly Pulse summaries and alert logs to your store profile.</p>
+                  <p className="font-bold text-gray-800">3. Encryption & Protection</p>
+                  <p>All sensitive information, including phone numbers and sales ledgers, are encrypted in transit and at rest. We never share your data with third parties or external advertising networks.</p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

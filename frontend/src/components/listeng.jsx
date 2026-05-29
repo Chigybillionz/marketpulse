@@ -65,7 +65,7 @@ function CreditIcon() {
   )
 }
 
-export default function Listeng() {
+export default function Listeng({ onNavigate, businessName }) {
   return (
     <main className="listening-page" aria-label="MarketPulse AI voice listening screen">
       <section className="listening-phone">
@@ -74,10 +74,15 @@ export default function Listeng() {
             <span className="listening-store-icon">
               <StoreIcon />
             </span>
-            <span>Mama Ngozi<br />Provisions</span>
+            <span>{businessName || 'Mama Ngozi Provisions'}</span>
           </div>
 
-          <button className="listening-user" type="button" aria-label="Open profile">
+          <button 
+            className="listening-user cursor-pointer" 
+            type="button" 
+            aria-label="Open profile"
+            onClick={() => onNavigate && onNavigate('profile')}
+          >
             <UserIcon />
           </button>
         </header>
@@ -91,35 +96,58 @@ export default function Listeng() {
           <p>Go ahead, tell me about your trade (e.g., "Sold 2 bags of garri for 15k")</p>
 
           <div className="listening-actions">
-            <button type="button" className="listening-stop">
+            <button 
+              type="button" 
+              className="listening-stop cursor-pointer"
+              onClick={() => onNavigate && onNavigate('analysing')}
+            >
               <StopIcon />
               <span>Stop &amp; Analyze</span>
             </button>
-            <button type="button" className="listening-cancel">
+            <button 
+              type="button" 
+              className="listening-cancel cursor-pointer"
+              onClick={() => onNavigate && onNavigate('home')}
+            >
               Cancel
             </button>
           </div>
         </section>
 
         <nav className="listening-bottom-nav" aria-label="Primary navigation">
-          <a href="#home" aria-label="Home">
+          <button 
+            onClick={() => onNavigate && onNavigate('home')} 
+            aria-label="Home"
+            className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
+          >
             <HomeIcon />
             <span>Home</span>
-          </a>
-          <a href="#pulse" className="active" aria-current="page" aria-label="Pulse">
+          </button>
+          <button 
+            onClick={() => onNavigate && onNavigate('listeng')} 
+            className="active cursor-pointer flex flex-col items-center bg-transparent border-0 font-sans"
+          >
             <span className="active-icon">
               <MicrophoneIcon />
             </span>
             <span>Pulse</span>
-          </a>
-          <a href="#history" aria-label="History">
+          </button>
+          <button 
+            onClick={() => onNavigate && onNavigate('history')} 
+            aria-label="History"
+            className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
+          >
             <HistoryIcon />
             <span>History</span>
-          </a>
-          <a href="#credit" aria-label="Credit">
+          </button>
+          <button 
+            onClick={() => onNavigate && onNavigate('credit')} 
+            aria-label="Credit"
+            className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
+          >
             <CreditIcon />
             <span>Credit</span>
-          </a>
+          </button>
         </nav>
       </section>
     </main>

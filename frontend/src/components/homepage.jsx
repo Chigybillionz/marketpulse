@@ -1,52 +1,37 @@
-export default function Homepage({ onNavigate }) {
-  const activities = [
-    {
-      id: 1,
-      title: 'Bulk Flour Restock',
-      time: 'Today, 10:45 AM',
-      amount: '-₦24,500',
-      isPositive: false,
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-800',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <path d="M16 10a4 4 0 01-8 0" />
-        </svg>
-      )
-    },
-    {
-      id: 2,
-      title: 'POS Settlement',
-      time: 'Today, 08:30 AM',
-      amount: '+₦12,200',
-      isPositive: true,
-      iconBg: 'bg-[#052e16]/10',
-      iconColor: 'text-[#052e16]',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-          <rect x="2" y="5" width="20" height="14" rx="2" />
-          <line x1="2" y1="10" x2="22" y2="10" />
-          <path d="M6 14h.01M10 14h.01" />
-        </svg>
-      )
-    },
-    {
-      id: 3,
-      title: 'Utility Payment',
-      time: 'Yesterday',
-      amount: '-₦5,000',
-      isPositive: false,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>
-      )
+export default function Homepage({ onNavigate, businessName, balance, moneyIn, moneyOut, transactionsList }) {
+  
+  const getTransactionIcon = (iconName) => {
+    switch (iconName) {
+      case 'bag':
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 01-8 0" />
+          </svg>
+        );
+      case 'receipt':
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+            <path d="M6 14h.01M10 14h.01" />
+          </svg>
+        );
+      case 'bolt':
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+        );
+      default:
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+        );
     }
-  ];
+  };
 
   return (
     <div className="min-h-screen bg-[#fcfcfa] flex justify-center items-center p-0 sm:p-4 font-sans text-gray-800 antialiased selection:bg-[#052e16] selection:text-white">
@@ -70,13 +55,13 @@ export default function Homepage({ onNavigate }) {
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
             <span className="font-extrabold text-gray-900 text-[15.5px] tracking-tight">
-              Mama Ngozi Provisions
+              {businessName || 'Mama Ngozi Provisions'}
             </span>
           </div>
 
           {/* User Profile / Avatar Icon */}
           <button 
-            onClick={() => onNavigate('welcome')}
+            onClick={() => onNavigate('profile')}
             className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:bg-gray-100/80 transition-colors cursor-pointer"
             aria-label="Profile"
           >
@@ -97,7 +82,7 @@ export default function Homepage({ onNavigate }) {
 
         {/* Dashboard Title Section */}
         <section className="px-5 pt-2 pb-4 text-left">
-          <h1 className="text-[28px] font-extrabold text-gray-950 tracking-tight leading-none font-serif">
+          <h1 className="text-[28px] font-extrabold text-gray-950 tracking-tight leading-none font-sans">
             MarketPulse AI
           </h1>
           <p className="text-[13.5px] font-medium text-gray-400 mt-1">
@@ -113,8 +98,8 @@ export default function Homepage({ onNavigate }) {
               <span className="text-[8.5px] font-bold text-gray-400 tracking-wider uppercase">
                 Money In
               </span>
-              <h2 className="text-[17px] font-extrabold text-gray-900 mt-1 tracking-tight">
-                ₦142k
+              <h2 className="text-[15px] font-extrabold text-gray-900 mt-1 tracking-tight leading-none">
+                ₦{moneyIn.toLocaleString()}
               </h2>
             </div>
             <div className="flex items-center gap-0.5 text-[9.5px] font-bold text-emerald-600 mt-2">
@@ -129,8 +114,8 @@ export default function Homepage({ onNavigate }) {
               <span className="text-[8.5px] font-bold text-gray-400 tracking-wider uppercase">
                 Money Out
               </span>
-              <h2 className="text-[17px] font-extrabold text-red-600 mt-1 tracking-tight">
-                ₦89k
+              <h2 className="text-[15px] font-extrabold text-red-600 mt-1 tracking-tight leading-none">
+                ₦{moneyOut.toLocaleString()}
               </h2>
             </div>
             <div className="flex items-center gap-0.5 text-[9.5px] font-bold text-red-500 mt-2">
@@ -142,11 +127,11 @@ export default function Homepage({ onNavigate }) {
           {/* Card 3: Net Profit */}
           <div className="bg-[#eff5ff] rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.02)] border-l-[3.5px] border-[#0c2a5c] p-3 text-left flex flex-col justify-between min-h-[92px]">
             <div>
-              <span className="text-[8.5px] font-bold text-gray-400 tracking-wider uppercase">
+              <span className="text-[8.5px] font-bold text-gray-400 tracking-wider uppercase font-sans">
                 Net Profit
               </span>
-              <h2 className="text-[17px] font-extrabold text-gray-900 mt-1 tracking-tight">
-                ₦53k
+              <h2 className="text-[15px] font-extrabold text-gray-900 mt-1 tracking-tight leading-none">
+                ₦{balance.toLocaleString()}
               </h2>
             </div>
             <div className="flex items-center gap-1 text-[9.5px] font-bold text-gray-500 mt-2">
@@ -201,22 +186,25 @@ export default function Homepage({ onNavigate }) {
             <h3 className="text-[17px] font-bold text-gray-900 tracking-tight">
               Recent Activity
             </h3>
-            <button className="text-[13px] font-bold text-[#052e16] hover:underline cursor-pointer transition-all">
+            <button 
+              onClick={() => onNavigate('history')}
+              className="text-[13px] font-bold text-[#052e16] hover:underline cursor-pointer transition-all bg-transparent border-0"
+            >
               View All
             </button>
           </div>
 
           {/* Activity List */}
           <div className="flex flex-col gap-3">
-            {activities.map((item) => (
+            {transactionsList.map((item) => (
               <div 
                 key={item.id} 
                 className="bg-white rounded-2xl p-4 flex items-center justify-between border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:shadow-md transition-shadow duration-150"
               >
                 <div className="flex items-center gap-3.5">
                   {/* Icon Circle */}
-                  <div className={`w-11 h-11 rounded-full ${item.iconBg} ${item.iconColor} flex items-center justify-center flex-shrink-0`}>
-                    {item.icon}
+                  <div className={`w-11 h-11 rounded-full ${item.iconBg || 'bg-gray-100'} ${item.iconColor || 'text-gray-800'} flex items-center justify-center flex-shrink-0`}>
+                    {getTransactionIcon(item.icon)}
                   </div>
                   {/* Title & Time */}
                   <div className="text-left">
@@ -224,13 +212,13 @@ export default function Homepage({ onNavigate }) {
                       {item.title}
                     </h4>
                     <p className="text-[11px] font-medium text-gray-400 mt-0.5">
-                      {item.time}
+                      {item.meta}
                     </p>
                   </div>
                 </div>
 
                 {/* Amount */}
-                <div className={`text-[14.5px] font-black ${item.isPositive ? 'text-gray-900' : 'text-red-600'} tracking-tight`}>
+                <div className={`text-[14.5px] font-black ${item.isPositive ? 'text-emerald-700' : 'text-red-600'} tracking-tight`}>
                   {item.amount}
                 </div>
               </div>
@@ -241,7 +229,7 @@ export default function Homepage({ onNavigate }) {
         {/* Floating Voice Microphone Action Button */}
         <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-40">
           <button 
-            onClick={() => onNavigate('analysing')}
+            onClick={() => onNavigate('listeng')}
             className="w-16 h-16 rounded-full bg-[#052e16] hover:bg-[#073d1e] active:scale-95 text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer border-[4px] border-[#f8f9ff]"
             aria-label="Start Voice Recording"
           >
@@ -282,8 +270,9 @@ export default function Homepage({ onNavigate }) {
 
           {/* Nav Item: Pulse */}
           <button 
-            onClick={() => onNavigate('analysing')}
+            onClick={() => onNavigate('weekly_pulse')}
             className="flex flex-col items-center gap-1.5 flex-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            aria-label="Pulse"
           >
             {/* Sound Wave / Pulse Icon */}
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -299,8 +288,9 @@ export default function Homepage({ onNavigate }) {
 
           {/* Nav Item: History */}
           <button 
-            onClick={() => onNavigate('home')}
+            onClick={() => onNavigate('history')}
             className="flex flex-col items-center gap-1.5 flex-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            aria-label="History"
           >
             {/* History Icon */}
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -316,8 +306,9 @@ export default function Homepage({ onNavigate }) {
 
           {/* Nav Item: Credit */}
           <button 
-            onClick={() => onNavigate('home')}
+            onClick={() => onNavigate('credit')}
             className="flex flex-col items-center gap-1.5 flex-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            aria-label="Credit"
           >
             {/* Cash / Credit Icon */}
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">

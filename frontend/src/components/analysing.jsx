@@ -4,8 +4,8 @@ export default function Analysing({ onNavigate }) {
   // Simulate parsing complete after 4 seconds and auto-redirect to Weekly Pulse insights
   useEffect(() => {
     const timer = setTimeout(() => {
-      onNavigate('weekly_pulse');
-    }, 4500);
+      onNavigate('ai_confirmation');
+    }, 3000); // 3 seconds simulation
 
     return () => clearTimeout(timer);
   }, [onNavigate]);
