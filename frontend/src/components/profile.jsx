@@ -10,8 +10,8 @@ const sections = [
   {
     title: 'Account Settings',
     items: [
-      { icon: 'phone', label: 'Phone Number', sub: '+234 803 123 4567' },
-      { icon: 'language', label: 'Language', sub: 'English / Pidgin' },
+      { icon: 'phone', label: 'Phone Number', sub: '+234 803 123 4567', target: 'phoneNumber' },
+      { icon: 'language', label: 'Language', sub: 'English / Pidgin', target: 'language_setting' },
     ],
   },
   {

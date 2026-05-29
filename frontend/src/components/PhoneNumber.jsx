@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
-import { ChevronLeft, Edit3, CheckCircle, Shield, Bell, Package, Store, Truck } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  ChevronLeft,
+  Edit3,
+  CheckCircle,
+  Shield,
+  Bell,
+  Package,
+  Store,
+  Truck,
+} from "lucide-react";
 
 export default function PhoneNumber() {
   const [isChanging, setIsChanging] = useState(false);
@@ -7,7 +16,7 @@ export default function PhoneNumber() {
   const handleChangeNumber = () => {
     setIsChanging(true);
     setTimeout(() => {
-      alert('Redirecting to phone number change flow...');
+      alert("Redirecting to phone number change flow...");
       setIsChanging(false);
     }, 1000);
   };
@@ -23,7 +32,10 @@ export default function PhoneNumber() {
           </button>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold text-[#052e16]" style={{ fontFamily: 'Lexend' }}>
+          <h1
+            className="text-2xl font-bold text-[#052e16]"
+            style={{ fontFamily: "Lexend" }}
+          >
             Phone Number
           </h1>
 
@@ -44,9 +56,10 @@ export default function PhoneNumber() {
         <div className="mb-8">
           <p
             className="text-lg text-gray-700 leading-relaxed"
-            style={{ fontFamily: 'Lexend', lineHeight: '1.8' }}
+            style={{ fontFamily: "Lexend", lineHeight: "1.8" }}
           >
-            Your phone number is used for account security, trade notifications, and identity verification.
+            Your phone number is used for account security, trade notifications,
+            and identity verification.
           </p>
         </div>
 
@@ -55,21 +68,30 @@ export default function PhoneNumber() {
           {/* Verified Badge */}
           <div className="absolute top-6 right-6 bg-[#dcfce7] rounded-full px-4 py-2 flex items-center gap-2">
             <CheckCircle size={18} className="text-[#166534]" />
-            <span className="text-sm font-bold text-[#166534]" style={{ fontFamily: 'Lexend' }}>
+            <span
+              className="text-sm font-bold text-[#166534]"
+              style={{ fontFamily: "Lexend" }}
+            >
               Verified
             </span>
           </div>
 
           {/* Card Header */}
           <div className="mb-4">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest" style={{ fontFamily: 'Lexend' }}>
+            <h2
+              className="text-xs font-bold text-gray-500 uppercase tracking-widest"
+              style={{ fontFamily: "Lexend" }}
+            >
               Current Verified Number
             </h2>
           </div>
 
           {/* Phone Number */}
           <div className="mt-8">
-            <p className="text-3xl font-bold text-[#052e16]" style={{ fontFamily: 'Lexend' }}>
+            <p
+              className="text-3xl font-bold text-[#052e16]"
+              style={{ fontFamily: "Lexend" }}
+            >
               +234 803 123 4567
             </p>
           </div>
@@ -80,11 +102,11 @@ export default function PhoneNumber() {
           onClick={handleChangeNumber}
           disabled={isChanging}
           className="w-full border-2 border-[#052e16] rounded-2xl py-4 px-6 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 transition mb-8 disabled:opacity-75"
-          style={{ fontFamily: 'Lexend' }}
+          style={{ fontFamily: "Lexend" }}
         >
           <Edit3 size={24} className="text-[#052e16]" />
           <span className="text-lg font-bold text-[#052e16]">
-            {isChanging ? 'Processing...' : 'Change Phone Number'}
+            {isChanging ? "Processing..." : "Change Phone Number"}
           </span>
         </button>
 
@@ -98,10 +120,16 @@ export default function PhoneNumber() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#052e16] mb-2" style={{ fontFamily: 'Lexend' }}>
+              <h3
+                className="text-lg font-bold text-[#052e16] mb-2"
+                style={{ fontFamily: "Lexend" }}
+              >
                 Secure Trading
               </h3>
-              <p className="text-gray-700 text-sm" style={{ fontFamily: 'Lexend' }}>
+              <p
+                className="text-gray-700 text-sm"
+                style={{ fontFamily: "Lexend" }}
+              >
                 Phone numbers are encrypted and never shared with third parties.
               </p>
             </div>
@@ -115,11 +143,18 @@ export default function PhoneNumber() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#052e16] mb-2" style={{ fontFamily: 'Lexend' }}>
+              <h3
+                className="text-lg font-bold text-[#052e16] mb-2"
+                style={{ fontFamily: "Lexend" }}
+              >
                 Instant Alerts
               </h3>
-              <p className="text-gray-700 text-sm" style={{ fontFamily: 'Lexend' }}>
-                Get SMS alerts for successful provision deliveries and credit updates.
+              <p
+                className="text-gray-700 text-sm"
+                style={{ fontFamily: "Lexend" }}
+              >
+                Get SMS alerts for successful provision deliveries and credit
+                updates.
               </p>
             </div>
           </div>

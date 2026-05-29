@@ -13,10 +13,11 @@ import StoreProfile from "./components/StoreProfile";
 import InventoryAlert from "./components/InventoryAlert";
 import PhoneNumber from "./components/PhoneNumber";
 import MarketCategory from "./components/market_category";
+import LanguageSetting from "./components/language_setting";
 import "./App.css";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState("market_category");
+  const [currentPage, setCurrentPage] = useState("language_setting");
 
   const handleNavigate = (page) => {
     setCurrentPage(page);
@@ -49,6 +50,9 @@ function App() {
       )}
       {currentPage === "market_category" && (
         <MarketCategory onNavigate={handleNavigate} />
+      )}
+      {currentPage === "language_setting" && (
+        <LanguageSetting onNavigate={handleNavigate} />
       )}
     </>
   );
