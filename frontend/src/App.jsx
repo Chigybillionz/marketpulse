@@ -11,6 +11,7 @@ import WeeklyPulse from "./components/weekly_pulse";
 import Profile from "./components/profile";
 import StoreProfile from "./components/StoreProfile";
 import InventoryAlert from "./components/InventoryAlert";
+import PhoneNumber from "./components/PhoneNumber";
 import MarketCategory from "./components/market_category";
 import "./App.css";
 
@@ -43,11 +44,11 @@ function App() {
       {currentPage === "inventoryAlert" && (
         <InventoryAlert onNavigate={handleNavigate} />
       )}
+      {currentPage === "phoneNumber" && (
+        <PhoneNumber onNavigate={handleNavigate} />
+      )}
       {currentPage === "market_category" && (
         <MarketCategory onNavigate={handleNavigate} />
-      )}
-      {currentPage === "inventoryAlert" && (
-        <InventoryAlert onNavigate={handleNavigate} />
       )}
     </>
   );
