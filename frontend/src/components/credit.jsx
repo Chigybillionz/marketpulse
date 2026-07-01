@@ -1,3 +1,5 @@
+import AppShell from './layout/AppShell'
+
 const debtors = [
   { name: 'Ibrahim Musa', phone: '0803 456 7890', amount: '₦24,500', date: 'Oct 12, 2023', overdue: true },
   { name: 'Mama Chidi', phone: '0812 334 5566', amount: '₦12,000', date: 'Oct 28, 2023' },
@@ -48,13 +50,30 @@ function DebtorCard({ debtor }) {
   )
 }
 
-export default function Credit() {
+export default function Credit({ onNavigate, businessName }) {
   return (
+    <AppShell
+      active="credit"
+      onNavigate={onNavigate}
+      businessName={businessName}
+      title="Credit & Debtors"
+      subtitle="Track money owed to your store"
+    >
     <main className="credit-page">
       <section className="credit-phone">
         <header className="credit-header">
-          <div className="credit-brand"><span><StoreIcon /></span><strong>Mama Ngozi<br />Provisions</strong></div>
-          <button className="credit-user" type="button" aria-label="Profile"><UserIcon /></button>
+          <div className="credit-brand">
+            <span><StoreIcon /></span>
+            <strong>{businessName || 'My Store'}</strong>
+          </div>
+          <button 
+            className="credit-user cursor-pointer" 
+            type="button" 
+            aria-label="Profile"
+            onClick={() => onNavigate && onNavigate('profile')}
+          >
+            <UserIcon />
+          </button>
         </header>
         <section className="credit-overview">
           <span>CREDIT OVERVIEW</span>
@@ -64,9 +83,20 @@ export default function Credit() {
         <div className="credit-section-title"><h2>Active Debtors</h2><span>14 People</span></div>
         <section className="credit-list">{debtors.map((debtor) => <DebtorCard debtor={debtor} key={debtor.name} />)}</section>
         <nav className="mp-bottom-nav credit-active">
-          {['home', 'pulse', 'history', 'credit'].map((item) => <a className={item === 'credit' ? 'active' : ''} href={`#${item}`} key={item}><span className="nav-icon"><NavIcon name={item} /></span><span>{item[0].toUpperCase() + item.slice(1)}</span></a>)}
+          {['home', 'pulse', 'history', 'credit'].map((item) => (
+            <button 
+              type="button" 
+              className={`cursor-pointer ${item === 'credit' ? 'active' : ''}`}
+              onClick={() => onNavigate && onNavigate(item === 'pulse' ? 'listeng' : item)}
+              key={item}
+            >
+              <span className="nav-icon"><NavIcon name={item} /></span>
+              <span>{item[0].toUpperCase() + item.slice(1)}</span>
+            </button>
+          ))}
         </nav>
       </section>
     </main>
+    </AppShell>
   )
 }

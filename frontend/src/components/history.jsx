@@ -1,3 +1,5 @@
+import AppShell from './layout/AppShell'
+
 const transactions = [
   { type: 'credit', icon: 'bag', title: 'Bulk Flour Sale', meta: '10:24 AM • Invoice #882', amount: '+ ₦45,000' },
   { type: 'debit', icon: 'truck', title: 'Logistics Fee', meta: '09:15 AM • GIG Motors', amount: '- ₦12,400' },
@@ -48,23 +50,68 @@ function TransactionCard({ item }) {
   )
 }
 
-export default function History() {
+export default function History({ onNavigate, balance, transactionsList, businessName }) {
+  const displayTodayTxs = transactionsList || transactions;
+
   return (
+    <AppShell
+      active="history"
+      onNavigate={onNavigate}
+      businessName={businessName}
+      title="Transaction History"
+      subtitle="Every sale and expense, logged"
+    >
     <main className="history-page">
       <section className="history-phone">
         <header className="history-header">
-          <div className="history-brand"><span><StoreIcon /></span><strong>Mama Ngozi<br />Provisions</strong></div>
-          <button className="history-user" type="button" aria-label="Profile"><UserIcon /></button>
+          <div className="history-brand">
+            <span><StoreIcon /></span>
+            <strong>{businessName || 'My Store'}</strong>
+          </div>
+          <button 
+            className="history-user cursor-pointer" 
+            type="button" 
+            aria-label="Profile"
+            onClick={() => onNavigate && onNavigate('profile')}
+          >
+            <UserIcon />
+          </button>
         </header>
-        <div className="history-tabs"><button className="active">Today</button><button>Yesterday</button><button>This Week</button></div>
-        <section className="history-balance"><span>NET BALANCE TODAY</span><strong>₦142,500.00</strong></section>
-        <section className="history-list">{transactions.map((item) => <TransactionCard item={item} key={item.title} />)}</section>
+        <div className="history-tabs">
+          <button className="active">Today</button>
+          <button>Yesterday</button>
+          <button>This Week</button>
+        </div>
+        <section className="history-balance">
+          <span>NET BALANCE TODAY</span>
+          <strong>₦{(balance || 142500).toLocaleString()}.00</strong>
+        </section>
+        <section className="history-list">
+          {displayTodayTxs.map((item) => (
+            <TransactionCard item={item} key={item.id || item.title} />
+          ))}
+        </section>
         <div className="history-divider"><span>YESTERDAY</span></div>
-        <section className="history-list yesterday">{yesterday.map((item) => <TransactionCard item={item} key={item.title} />)}</section>
+        <section className="history-list yesterday">
+          {yesterday.map((item) => (
+            <TransactionCard item={item} key={item.title} />
+          ))}
+        </section>
         <nav className="mp-bottom-nav history-active">
-          {['home', 'pulse', 'history', 'credit'].map((item) => <a className={item === 'history' ? 'active' : ''} href={`#${item}`} key={item}><span className="nav-icon"><NavIcon name={item} /></span><span>{item[0].toUpperCase() + item.slice(1)}</span></a>)}
+          {['home', 'pulse', 'history', 'credit'].map((item) => (
+            <button 
+              type="button" 
+              className={`cursor-pointer ${item === 'history' ? 'active' : ''}`}
+              onClick={() => onNavigate && onNavigate(item === 'pulse' ? 'listeng' : item)}
+              key={item}
+            >
+              <span className="nav-icon"><NavIcon name={item} /></span>
+              <span>{item[0].toUpperCase() + item.slice(1)}</span>
+            </button>
+          ))}
         </nav>
       </section>
     </main>
+    </AppShell>
   )
 }

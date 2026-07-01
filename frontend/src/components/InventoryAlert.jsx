@@ -7,7 +7,22 @@ import {
   Save,
 } from "lucide-react";
 
-export default function InventoryAlert() {
+const ToggleSwitch = ({ isActive, onToggle }) => (
+  <button
+    onClick={onToggle}
+    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
+      isActive ? "bg-[#052e16]" : "bg-gray-300"
+    }`}
+  >
+    <span
+      className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-md transition-transform ${
+        isActive ? "translate-x-8" : "translate-x-0.5"
+      }`}
+    />
+  </button>
+);
+
+export default function InventoryAlert({ onNavigate }) {
   const [settings, setSettings] = useState({
     lowStockNotifications: true,
     dailySummary: false,
@@ -36,23 +51,11 @@ export default function InventoryAlert() {
     setTimeout(() => {
       setIsSaving(false);
       alert("Settings saved successfully!");
+      if (onNavigate) {
+        onNavigate('profile');
+      }
     }, 1500);
   };
-
-  const ToggleSwitch = ({ isActive, onToggle }) => (
-    <button
-      onClick={onToggle}
-      className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
-        isActive ? "bg-[#052e16]" : "bg-gray-300"
-      }`}
-    >
-      <span
-        className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-md transition-transform ${
-          isActive ? "translate-x-8" : "translate-x-0.5"
-        }`}
-      />
-    </button>
-  );
 
   return (
     <div className="min-h-screen bg-[#f8f9ff]">
@@ -60,7 +63,10 @@ export default function InventoryAlert() {
       <div className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
         <div className="flex items-center justify-between px-6 py-4">
           {/* Back Button */}
-          <button className="text-gray-700 hover:text-gray-900 transition">
+          <button 
+            onClick={() => onNavigate && onNavigate('profile')} 
+            className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
+          >
             <ChevronLeft size={28} className="text-[#052e16]" />
           </button>
 
@@ -306,7 +312,7 @@ export default function InventoryAlert() {
               style={{ fontFamily: "Lexend" }}
             >
               Stay ahead of supply chain delays with automated stock
-              intelligence.
+intelligence.
             </p>
           </div>
         </div>

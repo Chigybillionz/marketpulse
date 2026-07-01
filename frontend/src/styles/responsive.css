@@ -1,0 +1,366 @@
+/* =====================================================================
+   MarketPulse — responsive foundation (Phase 1)
+   Shell (dashboard) + Flow (auth) layout primitives + desktop refinements.
+   Mobile stays untouched: every rule that changes layout is gated behind
+   a min-width media query, so phones render exactly as before.
+   ===================================================================== */
+
+:root {
+  --mp-green-900: #04210f;
+  --mp-green-800: #052e16;
+  --mp-green-700: #0d3d22;
+  --mp-green-600: #06451f;
+  --mp-green-500: #1a7a3f;
+  --mp-mint-200: #c8f7ce;
+
+  --mp-bg: #eef1f7;
+  --mp-surface: #ffffff;
+
+  --mp-sidebar-w: 250px;
+  --mp-content-max: 1080px;
+
+  --mp-radius-lg: 24px;
+  --mp-shadow-card: 0 10px 30px rgba(5, 46, 22, 0.10);
+
+  --mp-bp-desktop: 1024px;
+  --mp-bp-flow: 960px;
+}
+
+/* =====================================================================
+   APP SHELL — Home / History / Credit / Profile
+   ===================================================================== */
+.mp-shell { min-height: 100svh; }
+
+/* Hidden on mobile; the screens keep their own bottom nav there. */
+.mp-shell__sidebar,
+.mp-shell__topbar { display: none; }
+
+@media (min-width: 1024px) {
+  .mp-shell {
+    display: grid;
+    grid-template-columns: var(--mp-sidebar-w) 1fr;
+    background: var(--mp-bg);
+  }
+
+  .mp-shell__sidebar {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    padding: 26px 16px;
+    background: linear-gradient(180deg, #063017 0%, #04210f 100%);
+    color: #eaf3ec;
+  }
+
+  .mp-shell__main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mp-shell__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 40px 6px;
+  }
+
+  .mp-shell__content {
+    padding: 18px 40px 48px;
+  }
+}
+
+/* ---- Sidebar internals ---- */
+.mp-side-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 12px 20px;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+}
+.mp-side-brand svg { width: 24px; height: 24px; flex: 0 0 auto; }
+
+.mp-side-nav { display: flex; flex-direction: column; gap: 4px; }
+
+.mp-side-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #b7ccbd;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.mp-side-link:hover { background: rgba(255, 255, 255, 0.06); color: #eaf3ec; }
+.mp-side-link.active { background: #0e7a38; color: #ffffff; }
+.mp-side-link svg { width: 21px; height: 21px; flex: 0 0 auto; }
+
+.mp-side-spacer { flex: 1; }
+
+.mp-side-foot {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cde0d2;
+  font-size: 13px;
+  font-weight: 600;
+}
+.mp-side-foot .mp-side-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #0e7a38;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+/* ---- Topbar internals ---- */
+.mp-top-heading { display: flex; flex-direction: column; gap: 2px; }
+.mp-top-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; color: #08150e; }
+.mp-top-sub { font-size: 13px; font-weight: 500; color: #6b7b70; }
+.mp-top-user {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--mp-green-700);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+/* =====================================================================
+   Desktop refinements for the existing App.css screens
+   (History / Credit / Profile) — neutralise the phone frame, widen,
+   tame the 768px-canvas typography, add multi-column grids.
+   ===================================================================== */
+@media (min-width: 1024px) {
+  .mp-shell .history-page,
+  .mp-shell .credit-page,
+  .mp-shell .profile-page {
+    min-height: auto;
+    background: transparent;
+    display: block;
+    color: inherit;
+  }
+
+  .mp-shell .history-phone,
+  .mp-shell .credit-phone,
+  .mp-shell .profile-phone {
+    width: 100%;
+    max-width: var(--mp-content-max);
+    margin: 0 auto;
+    min-height: auto;
+    background: transparent;
+    padding: 0 0 24px;
+    overflow: visible;
+  }
+
+  /* Topbar + sidebar replace the in-screen chrome on desktop */
+  .mp-shell .history-header,
+  .mp-shell .credit-header,
+  .mp-shell .profile-nav { display: none; }
+
+  .mp-shell .mp-bottom-nav { display: none; }
+
+  /* ---- History ---- */
+  .mp-shell .history-tabs { max-width: 460px; margin: 0 0 24px; }
+  .mp-shell .history-tabs button { height: 46px; font-size: 15px; }
+  .mp-shell .history-balance {
+    min-height: auto;
+    padding: 26px 30px;
+    margin-bottom: 30px;
+    border-radius: 18px;
+    border-left-width: 5px;
+    box-shadow: var(--mp-shadow-card);
+  }
+  .mp-shell .history-balance span,
+  .mp-shell .credit-overview > span { font-size: 13px; }
+  .mp-shell .history-balance strong { font-size: 34px; line-height: 1.2; }
+  .mp-shell .history-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .mp-shell .history-card { min-height: auto; padding: 18px 20px; gap: 16px; border-radius: 16px; }
+  .mp-shell .history-icon { width: 52px; height: 52px; padding: 14px; }
+  .mp-shell .history-details strong { font-size: 18px; }
+  .mp-shell .history-details small { font-size: 13px; margin-top: 4px; }
+  .mp-shell .history-money strong { font-size: 18px; }
+  .mp-shell .history-money em { font-size: 11px; }
+  .mp-shell .history-divider { font-size: 13px; margin: 10px 2px 20px; }
+
+  /* ---- Credit ---- */
+  .mp-shell .credit-overview {
+    min-height: auto;
+    padding: 28px 34px;
+    margin: 0 0 30px;
+    border-radius: 18px;
+    border-left-width: 5px;
+    box-shadow: var(--mp-shadow-card);
+  }
+  .mp-shell .credit-overview h1 { font-size: 26px; }
+  .mp-shell .credit-overview p { font-size: 14px; }
+  .mp-shell .credit-section-title { margin-bottom: 18px; }
+  .mp-shell .credit-section-title h2 { font-size: 20px; }
+  .mp-shell .credit-section-title span { font-size: 14px; }
+  .mp-shell .credit-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .mp-shell .credit-debtor { min-height: auto; padding: 20px 22px; border-radius: 16px; box-shadow: var(--mp-shadow-card); }
+  .mp-shell .credit-debtor h3 { font-size: 18px; }
+  .mp-shell .credit-debtor p { font-size: 13px; }
+  .mp-shell .credit-debtor-main strong { font-size: 22px; }
+  .mp-shell .credit-debtor-main span { font-size: 12px; }
+  .mp-shell .credit-debtor button { height: 44px; min-width: 118px; font-size: 14px; }
+  .mp-shell .credit-debtor button svg { width: 18px; height: 18px; }
+  .mp-shell .credit-overdue { font-size: 10px; padding: 4px 8px; }
+
+  /* ---- Profile ---- */
+  .mp-shell .profile-hero { padding-top: 8px; }
+  .mp-shell .profile-avatar { width: 108px; height: 108px; }
+  .mp-shell .profile-avatar > span { font-size: 42px; }
+  .mp-shell .profile-avatar button { width: 40px; height: 40px; padding: 12px; }
+  .mp-shell .profile-hero h2 { font-size: 26px; }
+  .mp-shell .profile-hero p { font-size: 15px; }
+  .mp-shell .profile-location { font-size: 13px; }
+  .mp-shell .profile-insights {
+    max-width: var(--mp-content-max);
+    gap: 18px;
+    margin: 26px 0 30px;
+  }
+  .mp-shell .profile-insights article { min-height: auto; padding: 20px 22px; border-radius: 14px; box-shadow: var(--mp-shadow-card); }
+  .mp-shell .profile-insights span { font-size: 12px; }
+  .mp-shell .profile-insights strong { font-size: 22px; }
+  .mp-shell .profile-sections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 28px;
+    align-items: start;
+  }
+  .mp-shell .profile-section { margin-top: 22px; }
+  .mp-shell .profile-section h3 { font-size: 13px; }
+  .mp-shell .profile-setting-item { min-height: 72px; grid-template-columns: 30px 1fr 26px; gap: 18px; }
+  .mp-shell .profile-setting-copy strong { font-size: 16px; }
+  .mp-shell .profile-setting-copy small { font-size: 12px; }
+  .mp-shell .profile-logout { max-width: 320px; height: 56px; font-size: 17px; margin: 34px auto 0; }
+  .mp-shell .profile-version { font-size: 12px; }
+}
+
+/* =====================================================================
+   HOME (desktop layout — inline-styled screen, driven by JS + these
+   helper classes)
+   ===================================================================== */
+.mp-home { display: flex; flex-direction: column; gap: 20px; }
+.mp-home-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
+.mp-home-grid > * { min-width: 0; }
+
+/* Desktop floating mic sits bottom-right instead of centered */
+.mp-fab-desktop {
+  position: fixed !important;
+  left: auto !important;
+  right: 40px !important;
+  bottom: 32px !important;
+  transform: none !important;
+}
+
+/* =====================================================================
+   FLOW LAYOUT — Welcome / OTP (auth & single-focus screens)
+   ===================================================================== */
+.mp-flow { min-height: 100svh; background: var(--mp-bg); }
+.mp-flow__aside { display: none; }
+
+.mp-flow__stage { min-height: 100svh; display: flex; }
+
+.mp-flow__card {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100svh;
+  margin: 0 auto;
+}
+
+@media (min-width: 960px) {
+  .mp-flow {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    background: linear-gradient(140deg, #063017 0%, #04210f 55%, #021a0c 100%);
+  }
+
+  .mp-flow__aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 26px;
+    padding: 64px 56px;
+    color: #eaf3ec;
+  }
+  .mp-flow-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+  }
+  .mp-flow-brand__logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .mp-flow-headline { font-size: 40px; font-weight: 800; line-height: 1.1; letter-spacing: -0.8px; margin: 0; color: #ffffff; }
+  .mp-flow-sub { font-size: 16px; line-height: 1.6; color: #bcd3c2; margin: 0; max-width: 42ch; }
+  .mp-flow-features { display: flex; flex-direction: column; gap: 16px; margin-top: 6px; }
+  .mp-flow-feature { display: flex; align-items: center; gap: 14px; font-size: 15px; font-weight: 600; color: #dcebe0; }
+  .mp-flow-feature .mp-flow-ico {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    display: grid; place-items: center; flex: 0 0 auto;
+    color: var(--mp-mint-200);
+  }
+  .mp-flow-feature .mp-flow-ico svg { width: 21px; height: 21px; }
+
+  .mp-flow__stage {
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    background: transparent;
+  }
+  .mp-flow__stage > .mp-flow__card {
+    max-width: 440px;
+    min-height: auto;
+    max-height: calc(100svh - 96px);
+    overflow: hidden auto;
+    border-radius: var(--mp-radius-lg);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+    scrollbar-width: none;
+  }
+  .mp-flow__stage > .mp-flow__card::-webkit-scrollbar { display: none; }
+}

@@ -10,7 +10,7 @@ import {
   Truck,
 } from "lucide-react";
 
-export default function PhoneNumber() {
+export default function PhoneNumber({ onNavigate }) {
   const [isChanging, setIsChanging] = useState(false);
 
   const handleChangeNumber = () => {
@@ -18,6 +18,9 @@ export default function PhoneNumber() {
     setTimeout(() => {
       alert("Redirecting to phone number change flow...");
       setIsChanging(false);
+      if (onNavigate) {
+        onNavigate('profile');
+      }
     }, 1000);
   };
 
@@ -27,7 +30,10 @@ export default function PhoneNumber() {
       <div className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
         <div className="flex items-center justify-between px-6 py-4">
           {/* Back Button */}
-          <button className="text-gray-700 hover:text-gray-900 transition">
+          <button 
+            onClick={() => onNavigate && onNavigate('profile')} 
+            className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
+          >
             <ChevronLeft size={28} className="text-[#052e16]" />
           </button>
 

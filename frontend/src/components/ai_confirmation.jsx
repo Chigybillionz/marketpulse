@@ -2,7 +2,7 @@ export default function AIConfirmation({ onNavigate }) {
   return (
     <div className="min-h-screen bg-[#eef1f7] flex justify-center items-center p-0 sm:p-4 font-sans text-gray-800 antialiased selection:bg-[#052e16] selection:text-white">
       {/* Mobile Screen Container Mockup */}
-      <div className="w-full max-w-[430px] min-h-[850px] bg-[#f8f9ff] sm:rounded-[40px] sm:shadow-2xl overflow-hidden border border-gray-100 flex flex-col relative sm:my-4 pb-28">
+      <div className="w-full max-w-[430px] min-h-screen sm:min-h-[850px] bg-[#f8f9ff] sm:rounded-[40px] sm:shadow-2xl overflow-hidden sm:border sm:border-gray-100 flex flex-col relative sm:my-4 pb-28">
         
         {/* 1. Top Navigation Bar */}
         <header className="flex justify-between items-center px-5 py-4 bg-[#f8f9ff]/95 backdrop-blur-md sticky top-0 z-30">
@@ -131,7 +131,7 @@ export default function AIConfirmation({ onNavigate }) {
         {/* 5. Fixed Primary Action Button at Bottom */}
         <div className="absolute bottom-0 left-0 right-0 px-5 py-6 bg-gradient-to-t from-[#f8f9ff] via-[#f8f9ff] to-transparent sticky-bottom z-30">
           <button
-            onClick={() => onNavigate('otpVerification')}
+            onClick={() => onNavigate('pulse_trade_pin')}
             className="w-full bg-[#052e16] hover:bg-[#084221] active:scale-[0.98] text-white font-extrabold py-4 px-6 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-200 text-sm tracking-wide"
           >
             <span>Confirm &amp; Save</span>

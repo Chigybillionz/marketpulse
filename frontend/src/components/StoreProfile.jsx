@@ -8,9 +8,9 @@ import {
   Save,
 } from "lucide-react";
 
-export default function StoreProfile() {
+export default function StoreProfile({ onNavigate, businessName, setBusinessName }) {
   const [formData, setFormData] = useState({
-    businessName: "Mama Ngozi Provisions",
+    businessName: businessName || "My Store",
     location: "Onyingbo Market, Lagos",
     businessType: "Wholesale & Retail",
   });
@@ -21,7 +21,13 @@ export default function StoreProfile() {
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
+      if (setBusinessName) {
+        setBusinessName(formData.businessName);
+      }
       alert("Changes saved successfully!");
+      if (onNavigate) {
+        onNavigate('profile');
+      }
     }, 1500);
   };
 
@@ -31,7 +37,10 @@ export default function StoreProfile() {
       <div className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
         <div className="flex items-center justify-between px-6 py-4">
           {/* Back Button */}
-          <button className="text-gray-700 hover:text-gray-900 transition">
+          <button 
+            onClick={() => onNavigate && onNavigate('profile')} 
+            className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
+          >
             <ChevronLeft size={28} className="text-[#052e16]" />
           </button>
 

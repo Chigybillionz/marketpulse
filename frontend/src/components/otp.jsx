@@ -1,199 +1,652 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+// import { verifyOTP } from "../services/authService";
+import FlowLayout from "./layout/FlowLayout";
 
-const otpDigits = ['active', 'filled', 'filled', 'filled']
+export default function Otp({ onNavigate, phoneNumber, isNewUser, businessName }) {
+  const [legalView, setLegalView] = useState(null);
+  const [countdown, setCountdown] = useState(55);
+  const [otpDigits, setOtpDigits] = useState(["", "", "", ""]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-function StoreIcon() {
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const timer = setInterval(() => setCountdown((c) => c - 1), 1000);
+    return () => clearInterval(timer);
+  }, [countdown]);
+
+  const formatCountdown = (s) => `0:${s < 10 ? "0" : ""}${s}`;
+
+  const handleOtpChange = (index, value) => {
+    const newValue = value.replace(/[^0-9]/g, "").slice(-1);
+    const newDigits = [...otpDigits];
+    newDigits[index] = newValue;
+    setOtpDigits(newDigits);
+
+    // Auto-focus next input
+    if (newValue && index < 3) {
+      document.getElementById(`otp-${index + 1}`)?.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      document.getElementById(`otp-${index - 1}`)?.focus();
+    }
+  };
+
+  const handleVerify = async () => {
+    const otp = otpDigits.join("");
+    // OTP validation is temporarily bypassed on the frontend so the app flow can
+    // be tested without a real SMS code. Restore this block when OTP is needed again.
+    // if (otp.length < 4) {
+    //   setError("Please enter the full 4-digit code");
+    //   return;
+    // }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // await verifyOTP(phoneNumber, otp);
+      console.log("OTP verification bypassed for frontend flow testing.", {
+        phoneNumber,
+        otp,
+      });
+      if (onNavigate) {
+        onNavigate(isNewUser ? "ledger" : "pulse_trade_pin");
+      }
+    } catch (err) {
+      setError(err.message || "Invalid or expired OTP. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <svg viewBox="0 0 32 32" aria-hidden="true">
-      <path d="M6 13h20l-2.2-6.5H8.2L6 13Z" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinejoin="round" />
-      <path d="M8 13v12h16V13" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinejoin="round" />
-      <path d="M11 25v-7h10v7" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinejoin="round" />
-      <path d="M5 13h22" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function ShieldLockIcon() {
-  return (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path
-        d="M20 18.5 32 13l12 5.5v9.3c0 9.1-5.1 16.9-12 20.2-6.9-3.3-12-11.1-12-20.2v-9.3Z"
-        fill="#8fb194"
-      />
-      <rect x="37" y="28" width="14" height="13" rx="2.4" fill="#8fb194" />
-      <path d="M40 28v-3.1c0-2.4 1.7-4.4 4-4.4s4 2 4 4.4V28" fill="none" stroke="#8fb194" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="44" cy="34.6" r="1.6" fill="#052e16" />
-    </svg>
-  )
-}
-
-function PencilIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="m5 18.8 3.6-.8L19 7.7 16.3 5 6 15.4l-1 3.4Z" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="m14.8 6.6 2.7 2.7" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function ArrowRightIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 12h13" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
-      <path d="m13 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-export default function Otp({ onNavigate, phoneNumber, isNewUser }) {
-  const [legalView, setLegalView] = useState(null); // 'terms' or 'privacy'
-  return (
-    <main className="otp-page" aria-label="OTP verification screen">
-      <section className="otp-phone">
-        <header className="otp-header">
-          <div className="otp-brand" aria-label="Mama Ngozi Provisions">
-            <span className="otp-store-icon">
-              <StoreIcon />
-            </span>
-            <span>Mama Ngozi<br />Provisions</span>
-          </div>
-
-          <button 
-            className="otp-close cursor-pointer" 
-            type="button" 
-            aria-label="Close verification"
-            onClick={() => onNavigate('welcome')}
+    <FlowLayout
+      headline="Verify it's really you"
+      sub="Enter the 4-digit code we sent by SMS to keep your store records secure."
+    >
+    <div
+      className="mp-flow__card"
+      style={{
+        backgroundColor: "#EEF1F5",
+        display: "flex",
+        flexDirection: "column",
+        fontFamily: "'DM Sans', 'Helvetica Neue', Arial, sans-serif",
+      }}
+    >
+      {/* ── HEADER ── */}
+      <header
+        style={{
+          backgroundColor: "#EEF1F5",
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          padding: "18px 20px 14px",
+        }}
+      >
+        {/* Brand */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          {/* Store icon */}
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#111827"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ marginTop: 3, flexShrink: 0 }}
           >
-            <CloseIcon />
-          </button>
-        </header>
-
-        <section className="otp-content" aria-labelledby="otp-title">
-          <div className="otp-security-badge">
-            <ShieldLockIcon />
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          <div
+            style={{
+              fontSize: 18,
+              fontWeight: 800,
+              color: "#111827",
+              lineHeight: 1.2,
+              letterSpacing: "-0.3px",
+            }}
+          >
+            {businessName || 'My Store'}
           </div>
+        </div>
+        {/* Close X */}
+        <button
+          onClick={() => onNavigate && onNavigate("welcome")}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 4,
+            marginTop: 2,
+          }}
+          aria-label="Close"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#111827"
+            strokeWidth="2.3"
+            strokeLinecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </header>
 
-          <h1 id="otp-title">Verification Code</h1>
+      {/* ── MAIN CONTENT ── */}
+      <div
+        style={{
+          flex: 1,
+          backgroundColor: "#F5F5E8",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "36px 24px 32px",
+        }}
+      >
+        {/* Security badge — dark green circle with shield + lock */}
+        <div
+          style={{
+            width: 90,
+            height: 90,
+            borderRadius: "50%",
+            backgroundColor: "#1B3D2F",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            marginBottom: 28,
+            flexShrink: 0,
+          }}
+        >
+          {/* Shield */}
+          <svg width="22" height="24" viewBox="0 0 22 24" fill="none">
+            <path
+              d="M11 1L2 5v6c0 5.25 3.85 10.15 9 11.35C16.15 21.15 20 16.25 20 11V5L11 1Z"
+              fill="#5A8A6A"
+            />
+          </svg>
+          {/* Lock */}
+          <svg width="18" height="22" viewBox="0 0 18 22" fill="none">
+            <rect x="2" y="9" width="14" height="12" rx="2" fill="#5A8A6A" />
+            <path
+              d="M5 9V6a4 4 0 0 1 8 0v3"
+              stroke="#5A8A6A"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <circle cx="9" cy="15" r="1.5" fill="#1B3D2F" />
+          </svg>
+        </div>
 
-          <p className="otp-instructions">
-            Enter the 4-digit code sent to <strong>+234 {phoneNumber || '803 000 0000'}</strong>
-            <button 
-              className="otp-edit cursor-pointer" 
-              type="button" 
-              aria-label="Edit phone number"
-              onClick={() => onNavigate('welcome')}
-            >
-              <PencilIcon />
-            </button>
+        {/* Title */}
+        <h1
+          style={{
+            fontSize: 32,
+            fontWeight: 900,
+            color: "#111827",
+            letterSpacing: "-0.8px",
+            marginBottom: 14,
+            textAlign: "center",
+            lineHeight: 1.1,
+          }}
+        >
+          Verification Code
+        </h1>
+
+        {/* Subtitle with phone + edit icon */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            marginBottom: 32,
+            textAlign: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <p
+            style={{
+              fontSize: 15,
+              color: "#374151",
+              lineHeight: 1.5,
+              margin: 0,
+              textAlign: "center",
+            }}
+          >
+            Enter the 4-digit code sent to{" "}
+            <strong style={{ color: "#111827", fontWeight: 800 }}>
+              {phoneNumber || "+234 803 000 0000"}
+            </strong>
           </p>
+          <button
+            onClick={() => onNavigate && onNavigate("welcome")}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 2,
+              flexShrink: 0,
+            }}
+            aria-label="Edit phone number"
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#6B7280"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m11 4-7 7 .7 3.3 3.3.7 7-7-4-4Z" />
+              <path d="m15 3 4 4" />
+            </svg>
+          </button>
+        </div>
 
-          <div className="otp-inputs" role="group" aria-label="Four digit verification code">
-            {otpDigits.map((state, index) => (
-              <button className={`otp-digit ${state}`} type="button" aria-label={`Digit ${index + 1}`} key={`${state}-${index}`}>
-                {state === 'active' ? <span className="otp-cursor" /> : <span className="otp-dot" />}
-              </button>
-            ))}
-          </div>
+        {/* 4 OTP Input Boxes */}
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            marginBottom: 20,
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
+          {[0, 1, 2, 3].map((i) => (
+            <input
+              key={i}
+              id={`otp-${i}`}
+              type="text"
+              inputMode="numeric"
+              maxLength="1"
+              value={otpDigits[i]}
+              onChange={(e) => handleOtpChange(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              style={{
+                width: 72,
+                height: 72,
+                backgroundColor: "#F0EFE6",
+                border: "1.5px solid #D6D5C9",
+                borderRadius: 12,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 32,
+                fontWeight: 700,
+                color: "#111827",
+                textAlign: "center",
+                flexShrink: 0,
+                outline: "none",
+                transition: "border-color 0.2s",
+                boxSizing: "border-box",
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#1B3D2F";
+                e.target.style.backgroundColor = "white";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#D6D5C9";
+                e.target.style.backgroundColor = "#F0EFE6";
+              }}
+            />
+          ))}
+        </div>
 
-          <p className="otp-timer">Resend code in <strong>0:55</strong></p>
+        {/* Resend timer or Error message */}
+        {error ? (
+          <p style={{ fontSize: 14, color: "#EF4444", marginBottom: 28, fontWeight: 500 }}>
+            {error}
+          </p>
+        ) : (
+          <p style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 28 }}>
+            Resend code in{" "}
+            <strong style={{ color: "#374151", fontWeight: 700 }}>
+              {formatCountdown(countdown)}
+            </strong>
+          </p>
+        )}
 
-          <div className="otp-image" role="img" aria-label="Phone security screen inside a market store">
-            <div className="otp-image-blur" />
-            <div className="otp-phone-render">
-              <div className="otp-phone-speaker" />
-              <div className="otp-lock-symbol">⌐</div>
-              <div className="otp-form-line" />
-              <div className="otp-form-line short" />
-              <div className="otp-phone-nav">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
-          </div>
-
-          <div className="otp-bottom">
-            <button 
-              className="otp-cta cursor-pointer" 
-              type="button"
-              onClick={() => {
-                if (isNewUser) {
-                  onNavigate('ledger');
-                } else {
-                  onNavigate('home');
-                }
+        {/* Teal phone overlay — decorative */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: 220,
+            borderRadius: 16,
+            marginBottom: 28,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              right: 30,
+              bottom: 0,
+              top: 20,
+              width: 120,
+              backgroundColor: "#1A7B8A",
+              borderRadius: "16px 16px 0 0",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "14px 10px",
+              boxShadow: "-6px 0 24px rgba(0,0,0,0.3)",
+              gap: 10,
+            }}
+          >
+            {/* Lock icon on phone */}
+            <svg width="36" height="40" viewBox="0 0 36 40" fill="none">
+              <rect
+                x="4"
+                y="18"
+                width="28"
+                height="20"
+                rx="3.5"
+                fill="white"
+                fillOpacity="0.9"
+              />
+              <path
+                d="M10 18v-6a8 8 0 0 1 16 0v6"
+                stroke="white"
+                strokeWidth="3"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <circle cx="18" cy="28" r="3" fill="#1A7B8A" />
+            </svg>
+            {/* Form lines */}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: 5,
               }}
             >
-              <span>Verify &amp; Continue</span>
-              <ArrowRightIcon />
-            </button>
-
-            <p className="otp-legal">
-              By continuing, you agree to our{' '}
-              <button 
-                onClick={() => setLegalView('terms')}
-                className="font-bold underline cursor-pointer bg-transparent border-0 inline p-0 text-inherit hover:text-[#052e16]"
+              {[1, 2].map((j) => (
+                <div
+                  key={j}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: "rgba(255,255,255,0.18)",
+                    borderRadius: 5,
+                    padding: "5px 8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 50,
+                      height: 5,
+                      borderRadius: 3,
+                      background: "rgba(255,255,255,0.7)",
+                    }}
+                  />
+                  <div
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: "50%",
+                      border: "2px solid rgba(255,255,255,0.7)",
+                    }}
+                  />
+                </div>
+              ))}
+              <div
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.9)",
+                  borderRadius: 6,
+                  padding: "6px 0",
+                  textAlign: "center",
+                }}
               >
-                Terms of Service
-              </button>{' '}
-              and{' '}
-              <button 
-                onClick={() => setLegalView('privacy')}
-                className="font-bold underline cursor-pointer bg-transparent border-0 inline p-0 text-inherit hover:text-[#052e16]"
-              >
-                Privacy Policy
-              </button>.
-            </p>
-          </div>
-        </section>
-
-        {legalView && (
-          <div className="absolute inset-0 bg-[#f8f9ff] z-50 flex flex-col p-6 animate-in fade-in slide-in-from-bottom duration-250">
-            <header className="flex items-center gap-4 mb-6">
-              <button 
-                onClick={() => setLegalView(null)}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-900 cursor-pointer"
-              >
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-              </button>
-              <h1 className="text-xl font-extrabold text-gray-900" style={{ fontFamily: 'Lexend' }}>
-                {legalView === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
-              </h1>
-            </header>
-            <div className="flex-1 overflow-y-auto pr-1 text-sm text-gray-600 leading-relaxed space-y-4 text-left" style={{ fontFamily: 'Lexend' }}>
-              {legalView === 'terms' ? (
-                <>
-                  <p className="font-bold text-gray-800">1. Acceptance of Terms</p>
-                  <p>Welcome to MarketPulse AI. By accessing or using our application, you agree to comply with and be bound by these Terms of Service. Please review them carefully.</p>
-                  <p className="font-bold text-gray-800">2. Description of Service</p>
-                  <p>MarketPulse AI provides local merchants with tools to track sales, manage inventory alerts, log credits, and analyze trading voice notes using advanced AI parsing.</p>
-                  <p className="font-bold text-gray-800">3. Security and Trade PIN</p>
-                  <p>You are responsible for safeguarding your 4-digit Trade PIN used to authenticate financial records. MarketPulse AI is not liable for unauthorized access resulting from shared PINs.</p>
-                  <p className="font-bold text-gray-800">4. Limitation of Liability</p>
-                  <p>We provide the services "as is" and make no warranties regarding accuracy, reliability, or uninterrupted service during busy local market trading environments.</p>
-                </>
-              ) : (
-                <>
-                  <p className="font-bold text-gray-800">1. Information We Collect</p>
-                  <p>We collect your business name, verified phone number, inventory thresholds, and voice transcripts parsed by Gemini 1.5 Flash to automatically populate your trading logs.</p>
-                  <p className="font-bold text-gray-800">2. How We Use Data</p>
-                  <p>Your details are stored securely using Firestore database configurations and are only utilized to present customized Weekly Pulse summaries and alert logs to your store profile.</p>
-                  <p className="font-bold text-gray-800">3. Encryption & Protection</p>
-                  <p>All sensitive information, including phone numbers and sales ledgers, are encrypted in transit and at rest. We never share your data with third parties or external advertising networks.</p>
-                </>
-              )}
+                <span
+                  style={{ fontSize: 9, fontWeight: 700, color: "#1A7B8A" }}
+                >
+                  Verify
+                </span>
+              </div>
+            </div>
+            {/* Bottom nav dots */}
+            <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+              {[0, 1, 2].map((k) => (
+                <div
+                  key={k}
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    border: "1.5px solid rgba(255,255,255,0.6)",
+                    background: k === 1 ? "white" : "transparent",
+                  }}
+                />
+              ))}
             </div>
           </div>
-        )}
-      </section>
-    </main>
-  )
+        </div>
+        <button
+          onClick={handleVerify}
+          disabled={isLoading}
+          style={{
+            width: "100%",
+            backgroundColor: isLoading ? "#4B5563" : "#1B3D2F",
+            color: "white",
+            border: "none",
+            borderRadius: 14,
+            padding: "17px 24px",
+            fontSize: 17,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            cursor: isLoading ? "not-allowed" : "pointer",
+            marginBottom: 18,
+            letterSpacing: "-0.2px",
+          }}
+        >
+          {isLoading ? "Verifying..." : "Verify & Continue"}
+          {!isLoading && (
+            <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
+              <path
+                d="M1 8h18M12 2l6 6-6 6"
+                stroke="white"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </button>
+
+        {/* Legal text */}
+        <p
+          style={{
+            fontSize: 13.5,
+            color: "#6B7280",
+            textAlign: "center",
+            lineHeight: 1.6,
+            margin: 0,
+          }}
+        >
+          By continuing, you agree to our{" "}
+          <button
+            onClick={() => setLegalView("terms")}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              fontSize: 13.5,
+              fontWeight: 800,
+              color: "#111827",
+              cursor: "pointer",
+              textDecoration: "none",
+            }}
+          >
+            Terms of Service
+          </button>{" "}
+          and{" "}
+          <button
+            onClick={() => setLegalView("privacy")}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              fontSize: 13.5,
+              fontWeight: 800,
+              color: "#111827",
+              cursor: "pointer",
+            }}
+          >
+            Privacy Policy
+          </button>
+          .
+        </p>
+      </div>
+
+      {/* ── LEGAL OVERLAY ── */}
+      {legalView && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "#F5F5E8",
+            zIndex: 50,
+            display: "flex",
+            flexDirection: "column",
+            padding: "24px",
+            maxWidth: 430,
+            margin: "0 auto",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              marginBottom: 20,
+            }}
+          >
+            <button
+              onClick={() => setLegalView(null)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 4,
+              }}
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#111827"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+            </button>
+            <h1
+              style={{
+                fontSize: 20,
+                fontWeight: 800,
+                color: "#111827",
+                margin: 0,
+              }}
+            >
+              {legalView === "terms" ? "Terms of Service" : "Privacy Policy"}
+            </h1>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              fontSize: 14,
+              color: "#4B5563",
+              lineHeight: 1.7,
+            }}
+          >
+            {legalView === "terms" ? (
+              <>
+                <p style={{ fontWeight: 700, color: "#111827" }}>
+                  1. Acceptance of Terms
+                </p>
+                <p>
+                  Welcome to MarketPulse AI. By accessing or using our
+                  application, you agree to comply with and be bound by these
+                  Terms of Service.
+                </p>
+                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
+                  2. Description of Service
+                </p>
+                <p>
+                  MarketPulse AI provides local merchants with tools to track
+                  sales, manage inventory alerts, log credits, and analyze
+                  trading voice notes using advanced AI parsing.
+                </p>
+                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
+                  3. Security and Trade PIN
+                </p>
+                <p>
+                  You are responsible for safeguarding your 4-digit Trade PIN
+                  used to authenticate financial records.
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={{ fontWeight: 700, color: "#111827" }}>
+                  1. Information We Collect
+                </p>
+                <p>
+                  We collect your business name, verified phone number,
+                  inventory thresholds, and voice transcripts parsed by Gemini
+                  1.5 Flash.
+                </p>
+                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
+                  2. How We Use Data
+                </p>
+                <p>
+                  Your details are stored securely and used only to present
+                  customized Weekly Pulse summaries and alert logs to your store
+                  profile.
+                </p>
+                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
+                  3. Encryption & Protection
+                </p>
+                <p>
+                  All sensitive information is encrypted in transit and at rest.
+                  We never share your data with third parties.
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+    </FlowLayout>
+  );
 }

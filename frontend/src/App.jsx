@@ -1,13 +1,13 @@
 import { useState } from "react";
 import WelcomePage from "./components/WelcomePage";
 import Otp from "./components/otp";
-import Homepage from "./components/homepage";
-import Listeng from "./components/listeng";
-import OtpVerification from "./components/otpVerification";
-import Analysing from "./components/analysing";
+import Homepage from "./components/home/homepage";
+import Listeng from "./components/pulse/listeng";
+import PulseTradePin from "./components/pulse/trade_pin";
+import Analysing from "./components/pulse/analysing";
 import History from "./components/history";
 import Credit from "./components/credit";
-import WeeklyPulse from "./components/weekly_pulse";
+import WeeklyPulse from "./components/pulse/weekly_pulse";
 import Profile from "./components/profile";
 import StoreProfile from "./components/StoreProfile";
 import InventoryAlert from "./components/InventoryAlert";
@@ -20,7 +20,7 @@ import "./App.css";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("welcome");
-  
+
   // User Onboarding Details
   const [businessName, setBusinessName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -33,37 +33,37 @@ function App() {
   const [transactionsList, setTransactionsList] = useState([
     {
       id: 1,
-      type: 'debit',
-      icon: 'bag',
-      title: 'Bulk Flour Restock',
-      meta: 'Today, 10:45 AM',
-      amount: '-₦24,500',
+      type: "debit",
+      icon: "bag",
+      title: "Bulk Flour Restock",
+      meta: "Today, 10:45 AM",
+      amount: "-₦24,500",
       isPositive: false,
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-800'
+      iconBg: "bg-green-100",
+      iconColor: "text-green-800",
     },
     {
       id: 2,
-      type: 'credit',
-      icon: 'receipt',
-      title: 'POS Settlement',
-      meta: 'Today, 08:30 AM',
-      amount: '+₦12,200',
+      type: "credit",
+      icon: "receipt",
+      title: "POS Settlement",
+      meta: "Today, 08:30 AM",
+      amount: "+₦12,200",
       isPositive: true,
-      iconBg: 'bg-[#052e16]/10',
-      iconColor: 'text-[#052e16]'
+      iconBg: "bg-[#052e16]/10",
+      iconColor: "text-[#052e16]",
     },
     {
       id: 3,
-      type: 'debit',
-      icon: 'bolt',
-      title: 'Utility Payment',
-      meta: 'Yesterday',
-      amount: '-₦5,000',
+      type: "debit",
+      icon: "bolt",
+      title: "Utility Payment",
+      meta: "Yesterday",
+      amount: "-₦5,000",
       isPositive: false,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600'
-    }
+      iconBg: "bg-red-100",
+      iconColor: "text-red-600",
+    },
   ]);
 
   const handleNavigate = (page) => {
@@ -73,57 +73,47 @@ function App() {
   return (
     <>
       {currentPage === "welcome" && (
-        <WelcomePage 
-          onNavigate={handleNavigate} 
-          businessName={businessName} 
-          setBusinessName={setBusinessName} 
-          phoneNumber={phoneNumber} 
-          setPhoneNumber={setPhoneNumber} 
+        <WelcomePage
+          onNavigate={handleNavigate}
+          businessName={businessName}
+          setBusinessName={setBusinessName}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
           setIsNewUser={setIsNewUser}
         />
       )}
       {currentPage === "otp" && (
-        <Otp 
-          onNavigate={handleNavigate} 
-          phoneNumber={phoneNumber} 
+        <Otp
+          onNavigate={handleNavigate}
+          phoneNumber={phoneNumber}
           isNewUser={isNewUser}
+          businessName={businessName}
         />
       )}
       {currentPage === "ledger" && (
-        <Ledger 
-          onNavigate={handleNavigate} 
-        />
+        <Ledger onNavigate={handleNavigate} phoneNumber={phoneNumber} />
       )}
       {currentPage === "home" && (
-        <Homepage 
-          onNavigate={handleNavigate} 
-          businessName={businessName} 
-          balance={balance} 
+        <Homepage
+          onNavigate={handleNavigate}
+          businessName={businessName}
           moneyIn={moneyIn}
           moneyOut={moneyOut}
           transactionsList={transactionsList}
         />
       )}
       {currentPage === "listeng" && (
-        <Listeng 
-          onNavigate={handleNavigate} 
-          businessName={businessName}
-        />
+        <Listeng onNavigate={handleNavigate} businessName={businessName} />
       )}
       {currentPage === "analysing" && (
-        <Analysing 
-          onNavigate={handleNavigate} 
-          businessName={businessName}
-        />
+        <Analysing onNavigate={handleNavigate} businessName={businessName} />
       )}
       {currentPage === "ai_confirmation" && (
-        <AIConfirmation 
-          onNavigate={handleNavigate} 
-        />
+        <AIConfirmation onNavigate={handleNavigate} />
       )}
-      {currentPage === "otpVerification" && (
-        <OtpVerification 
-          onNavigate={handleNavigate} 
+      {currentPage === "pulse_trade_pin" && (
+        <PulseTradePin
+          onNavigate={handleNavigate}
           businessName={businessName}
           setBalance={setBalance}
           setMoneyIn={setMoneyIn}
@@ -131,61 +121,50 @@ function App() {
         />
       )}
       {currentPage === "history" && (
-        <History 
-          onNavigate={handleNavigate} 
+        <History
+          onNavigate={handleNavigate}
           balance={balance}
           transactionsList={transactionsList}
-        />
-      )}
-      {currentPage === "credit" && (
-        <Credit 
-          onNavigate={handleNavigate} 
-        />
-      )}
-      {currentPage === "weekly_pulse" && (
-        <WeeklyPulse 
-          onNavigate={handleNavigate} 
           businessName={businessName}
         />
       )}
+      {currentPage === "credit" && <Credit onNavigate={handleNavigate} businessName={businessName} />}
+      {currentPage === "weekly_pulse" && (
+        <WeeklyPulse onNavigate={handleNavigate} businessName={businessName} />
+      )}
       {currentPage === "profile" && (
-        <Profile 
-          onNavigate={handleNavigate} 
-          businessName={businessName} 
+        <Profile
+          onNavigate={handleNavigate}
+          businessName={businessName}
           phoneNumber={phoneNumber}
         />
       )}
       {currentPage === "storeProfile" && (
-        <StoreProfile 
-          onNavigate={handleNavigate} 
+        <StoreProfile
+          onNavigate={handleNavigate}
           businessName={businessName}
           setBusinessName={setBusinessName}
         />
       )}
       {currentPage === "inventoryAlert" && (
-        <InventoryAlert 
-          onNavigate={handleNavigate} 
-        />
+        <InventoryAlert onNavigate={handleNavigate} />
       )}
       {currentPage === "phoneNumber" && (
-        <PhoneNumber 
-          onNavigate={handleNavigate} 
+        <PhoneNumber
+          onNavigate={handleNavigate}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
         />
       )}
       {currentPage === "market_category" && (
-        <MarketCategory 
-          onNavigate={handleNavigate} 
-        />
+        <MarketCategory onNavigate={handleNavigate} />
       )}
       {currentPage === "language_setting" && (
-        <LanguageSetting 
-          onNavigate={handleNavigate} 
-        />
+        <LanguageSetting onNavigate={handleNavigate} businessName={businessName} />
       )}
     </>
   );
 }
+
 
 export default App;
