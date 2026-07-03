@@ -13,171 +13,155 @@ import {
 export default function PhoneNumber({ onNavigate }) {
   const [isChanging, setIsChanging] = useState(false);
 
+  const verificationItems = [
+    {
+      icon: Shield,
+      title: "Secure Trading",
+      copy: "Phone numbers are encrypted and never shared with third parties.",
+      tone: "secure",
+    },
+    {
+      icon: Bell,
+      title: "Instant Alerts",
+      copy: "Get SMS alerts for successful provision deliveries and credit updates.",
+      tone: "alerts",
+    },
+  ];
+
   const handleChangeNumber = () => {
     setIsChanging(true);
     setTimeout(() => {
       alert("Redirecting to phone number change flow...");
       setIsChanging(false);
       if (onNavigate) {
-        onNavigate('profile');
+        onNavigate("profile");
       }
     }, 1000);
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff]">
-      {/* Top Navigation Bar */}
-      <div className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
-        <div className="flex items-center justify-between px-6 py-4">
-          {/* Back Button */}
-          <button 
-            onClick={() => onNavigate && onNavigate('profile')} 
-            className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
+    <div className="phone-number-page">
+      <div className="phone-number-shell">
+        <header className="phone-number-topbar">
+          <button
+            type="button"
+            className="phone-number-back"
+            onClick={() => onNavigate && onNavigate("profile")}
+            aria-label="Go back"
           >
-            <ChevronLeft size={28} className="text-[#052e16]" />
+            <ChevronLeft size={28} />
           </button>
 
-          {/* Title */}
-          <h1
-            className="text-2xl font-bold text-[#052e16]"
-            style={{ fontFamily: "Lexend" }}
-          >
-            Phone Number
-          </h1>
+          <div className="phone-number-titleblock">
+            <p>Account security</p>
+            <h1>Phone Number</h1>
+          </div>
 
-          {/* User Profile Photo */}
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 shadow-md flex items-center justify-center">
+          <button
+            type="button"
+            className="phone-number-avatar"
+            aria-label="Profile"
+          >
             <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop"
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop"
               alt="Profile"
-              className="w-full h-full rounded-full object-cover"
             />
-          </div>
-        </div>
-      </div>
+          </button>
+        </header>
 
-      {/* Main Content */}
-      <div className="pt-24 pb-32 px-6">
-        {/* Introduction Text */}
-        <div className="mb-8">
-          <p
-            className="text-lg text-gray-700 leading-relaxed"
-            style={{ fontFamily: "Lexend", lineHeight: "1.8" }}
-          >
-            Your phone number is used for account security, trade notifications,
-            and identity verification.
-          </p>
-        </div>
+        <main className="phone-number-content">
+          <aside className="phone-number-preview">
+            <div className="phone-number-hero">
+              <span className="phone-number-kicker">Verified line</span>
+              <h2>Keep your store connected with a secure phone number.</h2>
+              <p>
+                Your verified line is used for alerts, account recovery, and
+                identity checks.
+              </p>
 
-        {/* Current Number Card */}
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden border-l-4 border-[#052e16] p-8 mb-8 relative">
-          {/* Verified Badge */}
-          <div className="absolute top-6 right-6 bg-[#dcfce7] rounded-full px-4 py-2 flex items-center gap-2">
-            <CheckCircle size={18} className="text-[#166534]" />
-            <span
-              className="text-sm font-bold text-[#166534]"
-              style={{ fontFamily: "Lexend" }}
-            >
-              Verified
-            </span>
-          </div>
+              <div className="phone-number-hero-card">
+                <div>
+                  <span>Current verified number</span>
+                  <strong>+234 803 123 4567</strong>
+                </div>
+                <div className="phone-number-badge">
+                  <CheckCircle size={16} />
+                  <span>Verified</span>
+                </div>
+              </div>
+            </div>
 
-          {/* Card Header */}
-          <div className="mb-4">
-            <h2
-              className="text-xs font-bold text-gray-500 uppercase tracking-widest"
-              style={{ fontFamily: "Lexend" }}
-            >
-              Current Verified Number
-            </h2>
-          </div>
+            <div className="phone-number-note">
+              <Package size={18} />
+              <p>
+                One verified number keeps delivery updates and support messages
+                in one place.
+              </p>
+            </div>
+          </aside>
 
-          {/* Phone Number */}
-          <div className="mt-8">
-            <p
-              className="text-3xl font-bold text-[#052e16]"
-              style={{ fontFamily: "Lexend" }}
-            >
-              +234 803 123 4567
+          <section className="phone-number-panel">
+            <p className="phone-number-intro">
+              Your phone number is used for account security, trade
+              notifications, and identity verification.
             </p>
-          </div>
-        </div>
 
-        {/* Change Phone Number Button */}
-        <button
-          onClick={handleChangeNumber}
-          disabled={isChanging}
-          className="w-full border-2 border-[#052e16] rounded-2xl py-4 px-6 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 transition mb-8 disabled:opacity-75"
-          style={{ fontFamily: "Lexend" }}
-        >
-          <Edit3 size={24} className="text-[#052e16]" />
-          <span className="text-lg font-bold text-[#052e16]">
-            {isChanging ? "Processing..." : "Change Phone Number"}
-          </span>
-        </button>
-
-        {/* Security & Info Cards */}
-        <div className="space-y-6">
-          {/* Secure Trading Card */}
-          <div className="bg-[#eff6ff] rounded-2xl p-6 flex gap-6">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center">
-                <Shield size={28} className="text-[#052e16]" />
+            <div className="phone-number-card">
+              <div className="phone-number-card-top">
+                <h2>Current Verified Number</h2>
+                <div className="phone-number-verified-pill">
+                  <CheckCircle size={16} />
+                  <span>Verified</span>
+                </div>
               </div>
-            </div>
-            <div>
-              <h3
-                className="text-lg font-bold text-[#052e16] mb-2"
-                style={{ fontFamily: "Lexend" }}
-              >
-                Secure Trading
-              </h3>
-              <p
-                className="text-gray-700 text-sm"
-                style={{ fontFamily: "Lexend" }}
-              >
-                Phone numbers are encrypted and never shared with third parties.
-              </p>
-            </div>
-          </div>
 
-          {/* Instant Alerts Card */}
-          <div className="bg-[#eff6ff] rounded-2xl p-6 flex gap-6">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center">
-                <Bell size={28} className="text-[#052e16]" />
-              </div>
+              <p className="phone-number-value">+234 803 123 4567</p>
             </div>
-            <div>
-              <h3
-                className="text-lg font-bold text-[#052e16] mb-2"
-                style={{ fontFamily: "Lexend" }}
-              >
-                Instant Alerts
-              </h3>
-              <p
-                className="text-gray-700 text-sm"
-                style={{ fontFamily: "Lexend" }}
-              >
-                Get SMS alerts for successful provision deliveries and credit
-                updates.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Footer Icons */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 py-6 px-6 flex justify-center gap-12">
-        <div className="text-gray-300">
-          <Package size={40} strokeWidth={1.5} />
-        </div>
-        <div className="text-gray-300">
-          <Store size={40} strokeWidth={1.5} />
-        </div>
-        <div className="text-gray-300">
-          <Truck size={40} strokeWidth={1.5} />
-        </div>
+            <button
+              type="button"
+              onClick={handleChangeNumber}
+              disabled={isChanging}
+              className="phone-number-change"
+            >
+              <Edit3 size={22} />
+              <span>
+                {isChanging ? "Processing..." : "Change Phone Number"}
+              </span>
+            </button>
+
+            <div className="phone-number-features">
+              {verificationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <article
+                    key={item.title}
+                    className={`phone-number-feature ${item.tone}`}
+                  >
+                    <div className="phone-number-feature-icon">
+                      <Icon size={24} />
+                    </div>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>{item.copy}</p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        </main>
+
+        <footer className="phone-number-footer">
+          <button
+            type="button"
+            onClick={handleChangeNumber}
+            disabled={isChanging}
+          >
+            <Edit3 size={20} />
+            <span>{isChanging ? "Processing..." : "Change Phone Number"}</span>
+          </button>
+        </footer>
       </div>
     </div>
   );

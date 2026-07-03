@@ -14,6 +14,7 @@ import InventoryAlert from "./components/InventoryAlert";
 import PhoneNumber from "./components/PhoneNumber";
 import MarketCategory from "./components/market_category";
 import LanguageSetting from "./components/language_setting";
+import ContactSupport from "./components/ContactSupport";
 import Ledger from "./components/ledger";
 import AIConfirmation from "./components/ai_confirmation";
 import AppShell from "./components/layout/AppShell";
@@ -145,7 +146,9 @@ function App() {
           businessName={businessName}
         />
       )}
-      {currentPage === "credit" && <Credit onNavigate={handleNavigate} businessName={businessName} />}
+      {currentPage === "credit" && (
+        <Credit onNavigate={handleNavigate} businessName={businessName} />
+      )}
       {currentPage === "weekly_pulse" && (
         <WeeklyPulse onNavigate={handleNavigate} businessName={businessName} />
       )}
@@ -177,11 +180,19 @@ function App() {
         <MarketCategory onNavigate={handleNavigate} />
       )}
       {currentPage === "language_setting" && (
-        <LanguageSetting onNavigate={handleNavigate} businessName={businessName} />
+        <LanguageSetting
+          onNavigate={handleNavigate}
+          businessName={businessName}
+        />
+      )}
+      {currentPage === "contact_support" && (
+        <ContactSupport
+          onNavigate={handleNavigate}
+          businessName={businessName}
+        />
       )}
     </>
   );
 }
-
 
 export default App;

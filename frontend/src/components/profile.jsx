@@ -45,15 +45,24 @@ function getSections(businessName) {
     {
       title: "Security",
       items: [
-        { icon: "lock", label: "Change Trade PIN" },
+        {
+          icon: "lock",
+          label: "Change Trade PIN",
+          sub: "Update your 4-digit approval code",
+          target: "pulse_trade_pin",
+        },
         { icon: "fingerprint", label: "Biometric Login", toggle: true },
       ],
     },
     {
       title: "Help & Support",
       items: [
-        { icon: "support", label: "Contact Support" },
-        { icon: "faq", label: "FAQs" },
+        {
+          icon: "support",
+          label: "Contact Support",
+          target: "contact_support",
+        },
+        { icon: "faq", label: "FAQs", target: "contact_support" },
       ],
     },
   ];
@@ -171,8 +180,13 @@ function SettingItem({ item, onClick }) {
 export default function Profile({ onNavigate, businessName, phoneNumber }) {
   const sections = getSections(businessName);
   const initials = businessName
-    ? businessName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-    : 'MS';
+    ? businessName
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "MS";
   return (
     <AppShell
       active="profile"
@@ -181,81 +195,81 @@ export default function Profile({ onNavigate, businessName, phoneNumber }) {
       title="Profile & Settings"
       subtitle="Manage your store and account"
     >
-    <main className="profile-page">
-      <section className="profile-phone">
-        <header className="profile-nav">
-          <button
-            type="button"
-            aria-label="Go back"
-            onClick={() => onNavigate && onNavigate("home")}
-          >
-            <Icon name="back" />
-          </button>
-          <h1>Profile &amp; Settings</h1>
-          <button type="button" aria-label="Settings">
-            <Icon name="gear" />
-          </button>
-        </header>
-
-        <section className="profile-hero">
-          <div className="profile-avatar">
-            <span>{initials}</span>
-            <button type="button" aria-label="Edit profile photo">
-              <Icon name="pencil" />
+      <main className="profile-page">
+        <section className="profile-phone">
+          <header className="profile-nav">
+            <button
+              type="button"
+              aria-label="Go back"
+              onClick={() => onNavigate && onNavigate("home")}
+            >
+              <Icon name="back" />
             </button>
+            <h1>Profile &amp; Settings</h1>
+            <button type="button" aria-label="Settings">
+              <Icon name="gear" />
+            </button>
+          </header>
+
+          <section className="profile-hero">
+            <div className="profile-avatar">
+              <span>{initials}</span>
+              <button type="button" aria-label="Edit profile photo">
+                <Icon name="pencil" />
+              </button>
+            </div>
+            <h2>{businessName || "My Store"}</h2>
+            <p>{businessName || "My Store"}</p>
+            <div className="profile-location">
+              <Icon name="location" />
+              Onyingbo Market, Lagos
+            </div>
+          </section>
+
+          <section className="profile-insights" aria-label="Quick insights">
+            <article>
+              <Icon name="trend" />
+              <span>MONTH GROWTH</span>
+              <strong className="success">+12.4%</strong>
+            </article>
+            <article>
+              <Icon name="box" />
+              <span>ALERTS</span>
+              <strong className="alert">3 Items Low</strong>
+            </article>
+          </section>
+
+          <div className="profile-sections-grid">
+            {sections.map((section) => (
+              <section className="profile-section" key={section.title}>
+                <h3>{section.title}</h3>
+                <div className="profile-settings-card">
+                  {section.items.map((item) => (
+                    <SettingItem
+                      item={item}
+                      key={item.label}
+                      onClick={() => {
+                        if (item.target && onNavigate) {
+                          onNavigate(item.target);
+                        }
+                      }}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
-          <h2>{businessName || 'My Store'}</h2>
-          <p>{businessName || "My Store"}</p>
-          <div className="profile-location">
-            <Icon name="location" />
-            Onyingbo Market, Lagos
-          </div>
+
+          <button className="profile-logout" type="button">
+            <Icon name="logout" />
+            Logout
+          </button>
+
+          <p className="profile-version">
+            Version 2.4.0 • Built for Nigerian Markets
+          </p>
         </section>
-
-        <section className="profile-insights" aria-label="Quick insights">
-          <article>
-            <Icon name="trend" />
-            <span>MONTH GROWTH</span>
-            <strong className="success">+12.4%</strong>
-          </article>
-          <article>
-            <Icon name="box" />
-            <span>ALERTS</span>
-            <strong className="alert">3 Items Low</strong>
-          </article>
-        </section>
-
-        <div className="profile-sections-grid">
-          {sections.map((section) => (
-            <section className="profile-section" key={section.title}>
-              <h3>{section.title}</h3>
-              <div className="profile-settings-card">
-                {section.items.map((item) => (
-                  <SettingItem
-                    item={item}
-                    key={item.label}
-                    onClick={() => {
-                      if (item.target && onNavigate) {
-                        onNavigate(item.target);
-                      }
-                    }}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        <button className="profile-logout" type="button">
-          <Icon name="logout" />
-          Logout
-        </button>
-
-        <p className="profile-version">
-          Version 2.4.0 • Built for Nigerian Markets
-        </p>
-      </section>
-    </main>
+      </main>
     </AppShell>
   );
 }

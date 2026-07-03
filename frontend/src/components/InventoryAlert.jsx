@@ -52,285 +52,168 @@ export default function InventoryAlert({ onNavigate }) {
       setIsSaving(false);
       alert("Settings saved successfully!");
       if (onNavigate) {
-        onNavigate('profile');
+        onNavigate("profile");
       }
     }, 1500);
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff]">
-      {/* Top Navigation Bar */}
-      <div className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
-        <div className="flex items-center justify-between px-6 py-4">
-          {/* Back Button */}
-          <button 
-            onClick={() => onNavigate && onNavigate('profile')} 
-            className="text-gray-700 hover:text-gray-900 transition cursor-pointer"
+    <div className="inventory-alert-page">
+      <div className="inventory-alert-shell">
+        <header className="inventory-alert-topbar">
+          <button
+            type="button"
+            className="inventory-alert-back"
+            onClick={() => onNavigate && onNavigate("profile")}
+            aria-label="Go back"
           >
-            <ChevronLeft size={28} className="text-[#052e16]" />
+            <ChevronLeft size={28} />
           </button>
 
-          {/* Title */}
-          <h1
-            className="text-2xl font-bold text-[#052e16]"
-            style={{ fontFamily: "Lexend" }}
-          >
-            Inventory Alerts
-          </h1>
+          <div className="inventory-alert-titleblock">
+            <p>Stock and pricing rules</p>
+            <h1>Inventory Alerts</h1>
+          </div>
 
-          {/* User Profile Photo */}
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-md flex items-center justify-center">
+          <button
+            type="button"
+            className="inventory-alert-avatar"
+            aria-label="Profile"
+          >
             <img
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop"
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop"
               alt="Profile"
-              className="w-full h-full rounded-full object-cover"
             />
-          </div>
-        </div>
-      </div>
+          </button>
+        </header>
 
-      {/* Main Content */}
-      <div className="pt-20 pb-32 px-6">
-        {/* Section Header */}
-        <div className="mb-8">
-          <h2
-            className="text-4xl font-bold text-[#052e16] mb-3"
-            style={{ fontFamily: "Lexend" }}
-          >
-            Notification Rules
-          </h2>
-          <p className="text-gray-600 text-lg" style={{ fontFamily: "Lexend" }}>
-            Manage how you receive updates about your stock levels and price
-            movements.
-          </p>
-        </div>
+        <main className="inventory-alert-content">
+          <aside className="inventory-alert-preview">
+            <div className="inventory-alert-hero">
+              <span className="inventory-alert-kicker">
+                Proactive monitoring
+              </span>
+              <h2>Stay ahead of stockouts before they affect sales.</h2>
+              <p>
+                Automated notifications keep you informed about low stock, daily
+                reports, and market price changes.
+              </p>
 
-        {/* Alert Controls Card */}
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden mb-8">
-          {/* Low Stock Notifications */}
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between hover:bg-gray-50 transition">
-            <div className="flex items-center gap-4 flex-1">
-              <div className="w-14 h-14 rounded-lg bg-[#e8f0fe] flex items-center justify-center flex-shrink-0">
-                <AlertTriangle size={28} className="text-[#052e16]" />
-              </div>
-              <div>
-                <h3
-                  className="text-lg font-bold text-[#052e16]"
-                  style={{ fontFamily: "Lexend" }}
-                >
-                  Low Stock Notifications
-                </h3>
-                <p
-                  className="text-gray-600 text-sm"
-                  style={{ fontFamily: "Lexend" }}
-                >
-                  Alert when stock falls below threshold
-                </p>
+              <div className="inventory-alert-metrics">
+                <article>
+                  <span>Rules active</span>
+                  <strong>2 of 3</strong>
+                </article>
+                <article>
+                  <span>Threshold</span>
+                  <strong>{settings.threshold}%</strong>
+                </article>
               </div>
             </div>
-            <ToggleSwitch
-              isActive={settings.lowStockNotifications}
-              onToggle={() => toggleSwitch("lowStockNotifications")}
-            />
-          </div>
 
-          {/* Daily Summary */}
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between hover:bg-gray-50 transition">
-            <div className="flex items-center gap-4 flex-1">
-              <div className="w-14 h-14 rounded-lg bg-[#e8f0fe] flex items-center justify-center flex-shrink-0">
-                <Calendar size={28} className="text-[#052e16]" />
+            <div className="inventory-alert-note">
+              <AlertTriangle size={18} />
+              <p>
+                Low stock alerts are the fastest way to prevent missed sales.
+              </p>
+            </div>
+          </aside>
+
+          <section className="inventory-alert-panel">
+            <div className="inventory-alert-section-head">
+              <h2>Notification Rules</h2>
+              <p>Manage how you receive updates about your stock and prices.</p>
+            </div>
+
+            <div className="inventory-alert-card inventory-alert-list">
+              <div className="inventory-alert-row">
+                <div className="inventory-alert-icon low-stock">
+                  <AlertTriangle size={24} />
+                </div>
+                <div className="inventory-alert-copy">
+                  <h3>Low Stock Notifications</h3>
+                  <p>Alert when stock falls below threshold</p>
+                </div>
+                <ToggleSwitch
+                  isActive={settings.lowStockNotifications}
+                  onToggle={() => toggleSwitch("lowStockNotifications")}
+                />
               </div>
-              <div>
-                <h3
-                  className="text-lg font-bold text-[#052e16]"
-                  style={{ fontFamily: "Lexend" }}
-                >
-                  Daily Summary
-                </h3>
-                <p
-                  className="text-gray-600 text-sm"
-                  style={{ fontFamily: "Lexend" }}
-                >
-                  End-of-day stock report at 6:00 PM
-                </p>
+
+              <div className="inventory-alert-row">
+                <div className="inventory-alert-icon summary">
+                  <Calendar size={24} />
+                </div>
+                <div className="inventory-alert-copy">
+                  <h3>Daily Summary</h3>
+                  <p>End-of-day stock report at 6:00 PM</p>
+                </div>
+                <ToggleSwitch
+                  isActive={settings.dailySummary}
+                  onToggle={() => toggleSwitch("dailySummary")}
+                />
+              </div>
+
+              <div className="inventory-alert-row">
+                <div className="inventory-alert-icon trend">
+                  <TrendingUp size={24} />
+                </div>
+                <div className="inventory-alert-copy">
+                  <h3>Price Change Alerts</h3>
+                  <p>Notify on market price fluctuations</p>
+                </div>
+                <ToggleSwitch
+                  isActive={settings.priceChangeAlerts}
+                  onToggle={() => toggleSwitch("priceChangeAlerts")}
+                />
               </div>
             </div>
-            <ToggleSwitch
-              isActive={settings.dailySummary}
-              onToggle={() => toggleSwitch("dailySummary")}
-            />
-          </div>
 
-          {/* Price Change Alerts */}
-          <div className="p-6 flex items-center justify-between hover:bg-gray-50 transition">
-            <div className="flex items-center gap-4 flex-1">
-              <div className="w-14 h-14 rounded-lg bg-[#e8f0fe] flex items-center justify-center flex-shrink-0">
-                <TrendingUp size={28} className="text-[#052e16]" />
+            <div className="inventory-alert-card inventory-alert-threshold">
+              <div className="inventory-alert-threshold-head">
+                <div>
+                  <h3>Low Stock Threshold</h3>
+                  <p>Set the percentage for alerts</p>
+                </div>
+                <strong>{settings.threshold}%</strong>
               </div>
-              <div>
-                <h3
-                  className="text-lg font-bold text-[#052e16]"
-                  style={{ fontFamily: "Lexend" }}
-                >
-                  Price Change Alerts
-                </h3>
-                <p
-                  className="text-gray-600 text-sm"
-                  style={{ fontFamily: "Lexend" }}
-                >
-                  Notify on market price fluctuations
-                </p>
+
+              <div className="inventory-alert-slider-wrap">
+                <input
+                  type="range"
+                  min="1"
+                  max="50"
+                  value={settings.threshold}
+                  onChange={handleThresholdChange}
+                  className="inventory-alert-slider"
+                  style={{
+                    background: `linear-gradient(to right, #e8f0fe 0%, #e8f0fe ${
+                      (settings.threshold / 50) * 100
+                    }%, #e4e8ef ${
+                      (settings.threshold / 50) * 100
+                    }%, #e4e8ef 100%)`,
+                  }}
+                />
+                <div className="inventory-alert-scale">
+                  <span>1%</span>
+                  <span>25%</span>
+                  <span>50%</span>
+                </div>
               </div>
             </div>
-            <ToggleSwitch
-              isActive={settings.priceChangeAlerts}
-              onToggle={() => toggleSwitch("priceChangeAlerts")}
-            />
-          </div>
-        </div>
+          </section>
+        </main>
 
-        {/* Threshold Control Card */}
-        <div className="bg-white rounded-2xl shadow-md p-8 mb-8">
-          <div className="flex items-end justify-between mb-6">
-            <h3
-              className="text-2xl font-bold text-[#052e16]"
-              style={{ fontFamily: "Lexend" }}
-            >
-              Low Stock Threshold
-            </h3>
-            <p
-              className="text-4xl font-bold text-[#052e16]"
-              style={{ fontFamily: "Lexend" }}
-            >
-              {settings.threshold}%
-            </p>
-          </div>
-
-          <p
-            className="text-gray-600 text-sm mb-6"
-            style={{ fontFamily: "Lexend" }}
+        <footer className="inventory-alert-footer">
+          <button
+            type="button"
+            onClick={handleSaveSettings}
+            disabled={isSaving}
           >
-            Set the percentage for alerts
-          </p>
-
-          {/* Slider */}
-          <div className="mb-6">
-            <input
-              type="range"
-              min="1"
-              max="50"
-              value={settings.threshold}
-              onChange={handleThresholdChange}
-              className="w-full h-3 bg-[#e8f0fe] rounded-lg appearance-none cursor-pointer slider"
-              style={{
-                background: `linear-gradient(to right, #e8f0fe 0%, #e8f0fe ${
-                  (settings.threshold / 50) * 100
-                }%, #e8f0fe ${(settings.threshold / 50) * 100}%, #e8f0fe 100%)`,
-              }}
-            />
-            <style>{`
-              .slider::-webkit-slider-thumb {
-                appearance: none;
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                background: #052e16;
-                cursor: pointer;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-              .slider::-moz-range-thumb {
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                background: #052e16;
-                cursor: pointer;
-                border: none;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-              .slider::-webkit-slider-runnable-track {
-                background: transparent;
-                height: 12px;
-                border-radius: 5px;
-              }
-              .slider::-moz-range-track {
-                background: transparent;
-                border: none;
-              }
-            `}</style>
-          </div>
-
-          {/* Value Labels */}
-          <div
-            className="flex justify-between text-xs text-gray-500"
-            style={{ fontFamily: "Lexend" }}
-          >
-            <span>1%</span>
-            <span>25%</span>
-            <span>50%</span>
-          </div>
-        </div>
-
-        {/* Proactive Monitoring Card */}
-        <div className="bg-[#052e16] rounded-2xl p-8 mb-8 relative overflow-hidden">
-          <div className="absolute right-0 top-0 bottom-0 w-40 opacity-20 flex items-center justify-center">
-            <svg
-              width="200"
-              height="200"
-              viewBox="0 0 200 200"
-              className="text-gray-400"
-            >
-              <rect
-                x="40"
-                y="40"
-                width="120"
-                height="120"
-                fill="currentColor"
-                rx="8"
-              />
-              <rect
-                x="60"
-                y="80"
-                width="80"
-                height="60"
-                fill="#052e16"
-                rx="4"
-              />
-            </svg>
-          </div>
-
-          <div className="relative z-10">
-            <h3
-              className="text-3xl font-bold text-white mb-3"
-              style={{ fontFamily: "Lexend" }}
-            >
-              Proactive
-              <br />
-              Monitoring
-            </h3>
-            <p
-              className="text-green-200 text-lg"
-              style={{ fontFamily: "Lexend" }}
-            >
-              Stay ahead of supply chain delays with automated stock
-intelligence.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Fixed Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl">
-        <button
-          onClick={handleSaveSettings}
-          disabled={isSaving}
-          className="w-full bg-[#052e16] text-white font-bold py-4 px-6 flex items-center justify-center gap-3 hover:bg-[#041f0f] transition disabled:opacity-75"
-          style={{ fontFamily: "Lexend" }}
-        >
-          <Save size={24} />
-          <span className="text-lg">
-            {isSaving ? "Saving..." : "Save Settings"}
-          </span>
-        </button>
+            <Save size={22} />
+            <span>{isSaving ? "Saving..." : "Save Settings"}</span>
+          </button>
+        </footer>
       </div>
     </div>
   );
