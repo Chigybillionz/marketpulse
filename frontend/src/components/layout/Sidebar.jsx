@@ -1,4 +1,4 @@
-import { Home, Mic2, History, CreditCard, User, LayoutGrid } from "lucide-react";
+import { Home, Mic2, History, CreditCard, User } from "lucide-react";
 
 const NAV_ITEMS = [
   { key: "home", label: "Home", target: "home", Icon: Home },
@@ -25,7 +25,11 @@ export default function Sidebar({ active, onNavigate, businessName }) {
   return (
     <aside className="mp-shell__sidebar">
       <div className="mp-side-brand">
-        <LayoutGrid size={24} strokeWidth={2.2} />
+        <img
+          className="mp-side-brand__logo"
+          src="/mylogo.png"
+          alt="MarketPulse logo"
+        />
         MarketPulse
       </div>
 

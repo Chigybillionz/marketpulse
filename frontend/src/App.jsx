@@ -16,6 +16,7 @@ import MarketCategory from "./components/market_category";
 import LanguageSetting from "./components/language_setting";
 import Ledger from "./components/ledger";
 import AIConfirmation from "./components/ai_confirmation";
+import AppShell from "./components/layout/AppShell";
 import "./App.css";
 
 function App() {
@@ -103,10 +104,26 @@ function App() {
         />
       )}
       {currentPage === "listeng" && (
-        <Listeng onNavigate={handleNavigate} businessName={businessName} />
+        <AppShell
+          active="pulse"
+          onNavigate={handleNavigate}
+          businessName={businessName}
+          title="MarketPulse AI"
+          subtitle="Record a trade update for analysis"
+        >
+          <Listeng onNavigate={handleNavigate} businessName={businessName} />
+        </AppShell>
       )}
       {currentPage === "analysing" && (
-        <Analysing onNavigate={handleNavigate} businessName={businessName} />
+        <AppShell
+          active="pulse"
+          onNavigate={handleNavigate}
+          businessName={businessName}
+          title="MarketPulse AI"
+          subtitle="Sorting your voice note into ledger details"
+        >
+          <Analysing onNavigate={handleNavigate} businessName={businessName} />
+        </AppShell>
       )}
       {currentPage === "ai_confirmation" && (
         <AIConfirmation onNavigate={handleNavigate} />

@@ -17,8 +17,10 @@ export default function WelcomePage({
   const [error, setError] = useState(null);
 
   const handleSendOtp = async () => {
-    if (!phoneNumber) {
-      setError("Phone number is required");
+    const phoneDigits = phoneNumber.replace(/\D/g, "");
+
+    if (phoneDigits.length !== 10) {
+      setError("enter a valid contact");
       return;
     }
 
@@ -392,7 +394,10 @@ export default function WelcomePage({
               <input
                 type="tel"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value.replace(/\D/g, ""));
+                  setError(null);
+                }}
                 placeholder="803 000 0000"
                 style={{
                   flex: 1,

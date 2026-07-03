@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { setupPin } from "../services/authService";
+// import { setupPin } from "../services/authService";
 
 function BackArrowIcon() {
   return (
@@ -93,7 +93,9 @@ export default function Ledger({ onNavigate, phoneNumber }) {
     setError(null);
 
     try {
-      await setupPin(phoneNumber, pin);
+      // PIN setup is temporarily bypassed while the UI flow is being built.
+      // Restore this call when the backend is ready.
+      // await setupPin(phoneNumber, pin);
       onNavigate?.("home");
     } catch (err) {
       setError(err.message || "Failed to set PIN. Please try again.");

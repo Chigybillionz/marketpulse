@@ -37,8 +37,8 @@ export default function Otp({ onNavigate, phoneNumber, isNewUser, businessName }
 
   const handleVerify = async () => {
     const otp = otpDigits.join("");
-    // OTP validation is temporarily bypassed on the frontend so the app flow can
-    // be tested without a real SMS code. Restore this block when OTP is needed again.
+    // OTP validation is temporarily bypassed while the UI flow is being built.
+    // Restore this block and the verifyOTP call when the backend is ready.
     // if (otp.length < 4) {
     //   setError("Please enter the full 4-digit code");
     //   return;
@@ -49,10 +49,6 @@ export default function Otp({ onNavigate, phoneNumber, isNewUser, businessName }
 
     try {
       // await verifyOTP(phoneNumber, otp);
-      console.log("OTP verification bypassed for frontend flow testing.", {
-        phoneNumber,
-        otp,
-      });
       if (onNavigate) {
         onNavigate(isNewUser ? "ledger" : "pulse_trade_pin");
       }
