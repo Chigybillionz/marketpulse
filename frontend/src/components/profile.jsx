@@ -181,6 +181,8 @@ function SettingItem({ item, onClick }) {
 export default function Profile({ onNavigate, businessName }) {
   const sections = getSections(businessName);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [businessAvatarUrl, setBusinessAvatarUrl] = useState(null);
 
   const initials = businessName
     ? businessName
@@ -216,11 +218,170 @@ export default function Profile({ onNavigate, businessName }) {
 
           <section className="profile-hero">
             <div className="profile-avatar">
-              <span>{initials}</span>
-              <button type="button" aria-label="Edit profile photo">
+              {businessAvatarUrl ? (
+                <img
+                  src={businessAvatarUrl}
+                  alt="Business profile"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
+                />
+              ) : (
+                <span>{initials}</span>
+              )}
+              <button
+                type="button"
+                aria-label="Edit profile photo"
+                onClick={() => setShowAvatarPicker(true)}
+              >
                 <Icon name="pencil" />
               </button>
             </div>
+
+            {showAvatarPicker && (
+              <div
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  backgroundColor: "rgba(0,0,0,0.35)",
+                  zIndex: 99999,
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  padding: 18,
+                }}
+                role="dialog"
+                aria-modal="true"
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: 420,
+                    borderRadius: 18,
+                    background: "#ffffff",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: 18,
+                      borderBottom: "1px solid #F3F4F6",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      gap: 12,
+                    }}
+                  >
+                    <div>
+                      <h2
+                        style={{
+                          margin: 0,
+                          fontSize: 16,
+                          fontWeight: 900,
+                          color: "#111827",
+                        }}
+                      >
+                        Add business photo
+                      </h2>
+                      <p
+                        style={{
+                          margin: "6px 0 0",
+                          fontSize: 13.5,
+                          fontWeight: 600,
+                          color: "#6B7280",
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        Choose an image from your device.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAvatarPicker(false)}
+                      style={{
+                        background: "none",
+                        border: 0,
+                        cursor: "pointer",
+                        padding: 4,
+                        color: "#6B7280",
+                      }}
+                      aria-label="Close"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div
+                    style={{
+                      padding: 18,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 14,
+                    }}
+                  >
+                    <label
+                      style={{
+                        borderRadius: 14,
+                        border: "1px dashed #D1D5DB",
+                        padding: "16px 14px",
+                        textAlign: "center",
+                        cursor: "pointer",
+                        color: "#111827",
+                        fontWeight: 900,
+                      }}
+                    >
+                      Upload photo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          const file = e.target.files && e.target.files[0];
+                          if (!file) return;
+                          const url = URL.createObjectURL(file);
+                          setBusinessAvatarUrl(url);
+                        }}
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowAvatarPicker(false)}
+                      style={{
+                        width: "100%",
+                        borderRadius: 14,
+                        padding: "14px 16px",
+                        border: 0,
+                        background: "#052e16",
+                        color: "#ffffff",
+                        fontWeight: 900,
+                        cursor: "pointer",
+                        boxShadow: "0 14px 24px rgba(5,46,22,0.18)",
+                      }}
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <h2>{businessName || "My Store"}</h2>
             <p>{businessName || "My Store"}</p>
             <div className="profile-location">
