@@ -19,6 +19,7 @@ import ContactSupport from "./components/ContactSupport";
 import Faqs from "./components/Faqs";
 import Logout from "./components/Logout";
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import TermsOfService from "./components/TermsOfService";
 import Ledger from "./components/ledger";
 import AIConfirmation from "./components/ai_confirmation";
 import AppShell from "./components/layout/AppShell";
@@ -46,6 +47,7 @@ const PATHS = {
   contact_support: "/contact-support",
   faqs: "/faqs",
   privacy_policy: "/privacy-policy",
+  terms_of_service: "/terms",
   logout: "/logout",
 };
 
@@ -286,7 +288,21 @@ function App() {
       />
       <Route
         path={PATHS.privacy_policy}
-        element={<PrivacyPolicy onNavigate={handleNavigate} />}
+        element={
+          <PrivacyPolicy
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("welcome")}
+          />
+        }
+      />
+      <Route
+        path={PATHS.terms_of_service}
+        element={
+          <TermsOfService
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("welcome")}
+          />
+        }
       />
       <Route path={PATHS.logout} element={<Logout onNavigate={handleNavigate} />} />
       <Route path="*" element={<Navigate to={PATHS.welcome} replace />} />

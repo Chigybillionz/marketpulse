@@ -117,7 +117,14 @@ function Icon({ name }) {
   );
 }
 
-export default function PrivacyPolicy({ onNavigate }) {
+export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
+  // Works as a routed page (back -> real history) and as a modal (back -> onClose).
+  const dismiss = () => {
+    if (onClose) onClose();
+    else if (onBack) onBack();
+    else if (onNavigate) onNavigate("profile");
+  };
+
   return (
     <main className="privacy-page" aria-label="Privacy policy">
       <section className="privacy-shell">
@@ -126,7 +133,7 @@ export default function PrivacyPolicy({ onNavigate }) {
             className="privacy-back"
             type="button"
             aria-label="Go back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={dismiss}
           >
             <Icon name="back" />
           </button>
@@ -237,11 +244,7 @@ export default function PrivacyPolicy({ onNavigate }) {
         </div>
 
         <footer className="privacy-footer">
-          <button
-            className="privacy-accept"
-            type="button"
-            onClick={() => onNavigate && onNavigate("profile")}
-          >
+          <button className="privacy-accept" type="button" onClick={dismiss}>
             <span>I Understand</span>
             <Icon name="checkmark" />
           </button>
