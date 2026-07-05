@@ -1,8 +1,6 @@
 ﻿import { useState } from "react";
 // import { requestOTP } from "../services/authService";
 import FlowLayout from "./layout/FlowLayout";
-import PrivacyPolicy from "./PrivacyPolicy";
-import TermsOfService from "./TermsOfService";
 
 export default function WelcomePage({
   onNavigate,
@@ -14,7 +12,6 @@ export default function WelcomePage({
 }) {
   const [language, setLanguage] = useState("English");
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
-  const [legalView, setLegalView] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -656,7 +653,7 @@ export default function WelcomePage({
           <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
             <button
               type="button"
-              onClick={() => setLegalView("privacy")}
+              onClick={() => onNavigate && onNavigate("privacy_policy")}
               style={{
                 fontSize: 12,
                 color: "#9CA3AF",
@@ -669,7 +666,7 @@ export default function WelcomePage({
             </button>
             <button
               type="button"
-              onClick={() => setLegalView("terms")}
+              onClick={() => onNavigate && onNavigate("terms_of_service")}
               style={{
                 fontSize: 12,
                 color: "#9CA3AF",
@@ -683,17 +680,6 @@ export default function WelcomePage({
           </div>
         </div>
 
-        {/* ── LEGAL OVERLAY (Privacy Policy / Terms of Service) ── */}
-        {legalView === "privacy" && (
-          <div className="legal-overlay">
-            <PrivacyPolicy onClose={() => setLegalView(null)} />
-          </div>
-        )}
-        {legalView === "terms" && (
-          <div className="legal-overlay">
-            <TermsOfService onClose={() => setLegalView(null)} />
-          </div>
-        )}
       </div>
     </FlowLayout>
   );
