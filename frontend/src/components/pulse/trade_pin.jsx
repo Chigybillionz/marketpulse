@@ -108,6 +108,7 @@ function ArrowRightIcon() {
 
 export default function PulseTradePin({
   onNavigate,
+  onBack,
   businessName,
   setBalance,
   setMoneyIn,
@@ -170,7 +171,7 @@ export default function PulseTradePin({
             className="trade-pin-close"
             type="button"
             aria-label="Back"
-            onClick={() => onNavigate("ai_confirmation")}
+            onClick={() => (onBack ? onBack() : onNavigate("ai_confirmation"))}
             style={{ cursor: "pointer" }}
           >
             <svg

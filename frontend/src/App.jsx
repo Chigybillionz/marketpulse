@@ -71,8 +71,22 @@ function App() {
     },
   ]);
 
+  // Remembers where the user came from so "back" arrows can return there.
+  const [pageHistory, setPageHistory] = useState([]);
+
   const handleNavigate = (page) => {
+    setPageHistory((prev) => [...prev, currentPage]);
     setCurrentPage(page);
+  };
+
+  const handleBack = (fallback = "home") => {
+    if (pageHistory.length === 0) {
+      setCurrentPage(fallback);
+      return;
+    }
+    const previous = pageHistory[pageHistory.length - 1];
+    setPageHistory((prev) => prev.slice(0, -1));
+    setCurrentPage(previous);
   };
 
   return (
@@ -135,6 +149,7 @@ function App() {
       {currentPage === "pulse_trade_pin" && (
         <PulseTradePin
           onNavigate={handleNavigate}
+          onBack={() => handleBack("ai_confirmation")}
           businessName={businessName}
           setBalance={setBalance}
           setMoneyIn={setMoneyIn}
