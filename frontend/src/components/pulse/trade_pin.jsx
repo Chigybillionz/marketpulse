@@ -117,12 +117,6 @@ export default function PulseTradePin({
   const [pin, setPin] = useState("");
   const canConfirm = pin.length === 4;
 
-  const pinSections = [
-    { label: "Current PIN", value: pin, tone: "current" },
-    { label: "New Trade PIN", value: "", tone: "pending" },
-    { label: "Confirm New PIN", value: "", tone: "pending" },
-  ];
-
   const addDigit = (digit) => {
     setPin((currentPin) =>
       currentPin.length < 4 ? `${currentPin}${digit}` : currentPin,
@@ -240,32 +234,22 @@ export default function PulseTradePin({
             </div>
 
             <div className="trade-pin-sections">
-              {pinSections.map((section) => (
-                <article
-                  className={`trade-pin-section ${section.tone}`}
-                  key={section.label}
+              <article className="trade-pin-section current">
+                <div className="trade-pin-section-head">
+                  <h2>Enter your Trade PIN</h2>
+                </div>
+                <div
+                  className="trade-pin-dots"
+                  aria-label="Trade PIN digits entered"
                 >
-                  <div className="trade-pin-section-head">
-                    <h2>{section.label}</h2>
-                  </div>
-                  <div
-                    className="trade-pin-dots"
-                    aria-label={`${section.label} digits entered`}
-                  >
-                    {[0, 1, 2, 3].map((index) => (
-                      <span
-                        className={
-                          index <
-                          (section.label === "Current PIN" ? pin.length : 0)
-                            ? "filled"
-                            : ""
-                        }
-                        key={index}
-                      />
-                    ))}
-                  </div>
-                </article>
-              ))}
+                  {[0, 1, 2, 3].map((index) => (
+                    <span
+                      className={index < pin.length ? "filled" : ""}
+                      key={index}
+                    />
+                  ))}
+                </div>
+              </article>
             </div>
 
             <section className="trade-pin-keypad" aria-label="PIN keypad">

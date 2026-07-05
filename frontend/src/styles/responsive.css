@@ -2802,8 +2802,8 @@
   }
 
   .trade-pin-dots {
-    justify-content: flex-start;
-    gap: 14px;
+    justify-content: center;
+    gap: 16px;
   }
 
   .trade-pin-dots span {
