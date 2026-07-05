@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import WelcomePage from "./components/WelcomePage";
 import Otp from "./components/otp";
 import Homepage from "./components/home/homepage";
@@ -23,8 +24,33 @@ import AIConfirmation from "./components/ai_confirmation";
 import AppShell from "./components/layout/AppShell";
 import "./App.css";
 
+// Single source of truth: page id (used everywhere as onNavigate("id")) -> URL path.
+const PATHS = {
+  welcome: "/",
+  otp: "/otp",
+  ledger: "/ledger",
+  home: "/home",
+  listeng: "/record",
+  analysing: "/analysing",
+  ai_confirmation: "/ai-confirmation",
+  pulse_trade_pin: "/trade-pin",
+  history: "/history",
+  credit: "/credit",
+  weekly_pulse: "/weekly-pulse",
+  profile: "/profile",
+  storeProfile: "/store-profile",
+  inventoryAlert: "/inventory-alerts",
+  phoneNumber: "/phone-number",
+  market_category: "/market-category",
+  language_setting: "/language",
+  contact_support: "/contact-support",
+  faqs: "/faqs",
+  privacy_policy: "/privacy-policy",
+  logout: "/logout",
+};
+
 function App() {
-  const [currentPage, setCurrentPage] = useState("welcome");
+  const navigate = useNavigate();
 
   // User Onboarding Details
   const [businessName, setBusinessName] = useState("");
@@ -71,152 +97,200 @@ function App() {
     },
   ]);
 
-  // Remembers where the user came from so "back" arrows can return there.
-  const [pageHistory, setPageHistory] = useState([]);
-
+  // Navigate by page id (keeps the existing onNavigate("id") API across the app).
   const handleNavigate = (page) => {
-    setPageHistory((prev) => [...prev, currentPage]);
-    setCurrentPage(page);
+    navigate(PATHS[page] ?? "/home");
   };
 
+  // "Back" uses the real browser history, so arrows return to the actual
+  // previous page. Falls back to a default if there is nothing to go back to.
   const handleBack = (fallback = "home") => {
-    if (pageHistory.length === 0) {
-      setCurrentPage(fallback);
-      return;
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate(PATHS[fallback] ?? "/home");
     }
-    const previous = pageHistory[pageHistory.length - 1];
-    setPageHistory((prev) => prev.slice(0, -1));
-    setCurrentPage(previous);
   };
 
   return (
-    <>
-      {currentPage === "welcome" && (
-        <WelcomePage
-          onNavigate={handleNavigate}
-          businessName={businessName}
-          setBusinessName={setBusinessName}
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-          setIsNewUser={setIsNewUser}
-        />
-      )}
-      {currentPage === "otp" && (
-        <Otp
-          onNavigate={handleNavigate}
-          phoneNumber={phoneNumber}
-          isNewUser={isNewUser}
-          businessName={businessName}
-        />
-      )}
-      {currentPage === "ledger" && (
-        <Ledger onNavigate={handleNavigate} phoneNumber={phoneNumber} />
-      )}
-      {currentPage === "home" && (
-        <Homepage
-          onNavigate={handleNavigate}
-          businessName={businessName}
-          moneyIn={moneyIn}
-          moneyOut={moneyOut}
-          transactionsList={transactionsList}
-        />
-      )}
-      {currentPage === "listeng" && (
-        <AppShell
-          active="pulse"
-          onNavigate={handleNavigate}
-          businessName={businessName}
-          title="MarketPulse AI"
-          subtitle="Record a trade update for analysis"
-        >
-          <Listeng onNavigate={handleNavigate} businessName={businessName} />
-        </AppShell>
-      )}
-      {currentPage === "analysing" && (
-        <AppShell
-          active="pulse"
-          onNavigate={handleNavigate}
-          businessName={businessName}
-          title="MarketPulse AI"
-          subtitle="Sorting your voice note into ledger details"
-        >
-          <Analysing onNavigate={handleNavigate} businessName={businessName} />
-        </AppShell>
-      )}
-      {currentPage === "ai_confirmation" && (
-        <AIConfirmation onNavigate={handleNavigate} />
-      )}
-      {currentPage === "pulse_trade_pin" && (
-        <PulseTradePin
-          onNavigate={handleNavigate}
-          onBack={() => handleBack("ai_confirmation")}
-          businessName={businessName}
-          setBalance={setBalance}
-          setMoneyIn={setMoneyIn}
-          setTransactionsList={setTransactionsList}
-        />
-      )}
-      {currentPage === "history" && (
-        <History
-          onNavigate={handleNavigate}
-          balance={balance}
-          transactionsList={transactionsList}
-          businessName={businessName}
-        />
-      )}
-      {currentPage === "credit" && (
-        <Credit onNavigate={handleNavigate} businessName={businessName} />
-      )}
-      {currentPage === "weekly_pulse" && (
-        <WeeklyPulse onNavigate={handleNavigate} businessName={businessName} />
-      )}
-      {currentPage === "profile" && (
-        <Profile
-          onNavigate={handleNavigate}
-          businessName={businessName}
-          phoneNumber={phoneNumber}
-        />
-      )}
-      {currentPage === "storeProfile" && (
-        <StoreProfile
-          onNavigate={handleNavigate}
-          businessName={businessName}
-          setBusinessName={setBusinessName}
-        />
-      )}
-      {currentPage === "inventoryAlert" && (
-        <InventoryAlert onNavigate={handleNavigate} />
-      )}
-      {currentPage === "phoneNumber" && (
-        <PhoneNumber
-          onNavigate={handleNavigate}
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-        />
-      )}
-      {currentPage === "market_category" && (
-        <MarketCategory onNavigate={handleNavigate} />
-      )}
-      {currentPage === "language_setting" && (
-        <LanguageSetting
-          onNavigate={handleNavigate}
-          businessName={businessName}
-        />
-      )}
-      {currentPage === "contact_support" && (
-        <ContactSupport
-          onNavigate={handleNavigate}
-          businessName={businessName}
-        />
-      )}
-      {currentPage === "faqs" && (
-        <Faqs onNavigate={handleNavigate} businessName={businessName} />
-      )}
-      {currentPage === "privacy_policy" && (
-        <PrivacyPolicy onNavigate={handleNavigate} />
-      )}
-      {currentPage === "logout" && <Logout onNavigate={handleNavigate} />}
-    </>
+    <Routes>
+      <Route
+        path={PATHS.welcome}
+        element={
+          <WelcomePage
+            onNavigate={handleNavigate}
+            businessName={businessName}
+            setBusinessName={setBusinessName}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            setIsNewUser={setIsNewUser}
+          />
+        }
+      />
+      <Route
+        path={PATHS.otp}
+        element={
+          <Otp
+            onNavigate={handleNavigate}
+            phoneNumber={phoneNumber}
+            isNewUser={isNewUser}
+            businessName={businessName}
+          />
+        }
+      />
+      <Route
+        path={PATHS.ledger}
+        element={
+          <Ledger onNavigate={handleNavigate} phoneNumber={phoneNumber} />
+        }
+      />
+      <Route
+        path={PATHS.home}
+        element={
+          <Homepage
+            onNavigate={handleNavigate}
+            businessName={businessName}
+            moneyIn={moneyIn}
+            moneyOut={moneyOut}
+            transactionsList={transactionsList}
+          />
+        }
+      />
+      <Route
+        path={PATHS.listeng}
+        element={
+          <AppShell
+            active="pulse"
+            onNavigate={handleNavigate}
+            businessName={businessName}
+            title="MarketPulse AI"
+            subtitle="Record a trade update for analysis"
+          >
+            <Listeng onNavigate={handleNavigate} businessName={businessName} />
+          </AppShell>
+        }
+      />
+      <Route
+        path={PATHS.analysing}
+        element={
+          <AppShell
+            active="pulse"
+            onNavigate={handleNavigate}
+            businessName={businessName}
+            title="MarketPulse AI"
+            subtitle="Sorting your voice note into ledger details"
+          >
+            <Analysing onNavigate={handleNavigate} businessName={businessName} />
+          </AppShell>
+        }
+      />
+      <Route
+        path={PATHS.ai_confirmation}
+        element={<AIConfirmation onNavigate={handleNavigate} />}
+      />
+      <Route
+        path={PATHS.pulse_trade_pin}
+        element={
+          <PulseTradePin
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("ai_confirmation")}
+            businessName={businessName}
+            setBalance={setBalance}
+            setMoneyIn={setMoneyIn}
+            setTransactionsList={setTransactionsList}
+          />
+        }
+      />
+      <Route
+        path={PATHS.history}
+        element={
+          <History
+            onNavigate={handleNavigate}
+            balance={balance}
+            transactionsList={transactionsList}
+            businessName={businessName}
+          />
+        }
+      />
+      <Route
+        path={PATHS.credit}
+        element={
+          <Credit onNavigate={handleNavigate} businessName={businessName} />
+        }
+      />
+      <Route
+        path={PATHS.weekly_pulse}
+        element={
+          <WeeklyPulse onNavigate={handleNavigate} businessName={businessName} />
+        }
+      />
+      <Route
+        path={PATHS.profile}
+        element={
+          <Profile
+            onNavigate={handleNavigate}
+            businessName={businessName}
+            phoneNumber={phoneNumber}
+          />
+        }
+      />
+      <Route
+        path={PATHS.storeProfile}
+        element={
+          <StoreProfile
+            onNavigate={handleNavigate}
+            businessName={businessName}
+            setBusinessName={setBusinessName}
+          />
+        }
+      />
+      <Route
+        path={PATHS.inventoryAlert}
+        element={<InventoryAlert onNavigate={handleNavigate} />}
+      />
+      <Route
+        path={PATHS.phoneNumber}
+        element={
+          <PhoneNumber
+            onNavigate={handleNavigate}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+          />
+        }
+      />
+      <Route
+        path={PATHS.market_category}
+        element={<MarketCategory onNavigate={handleNavigate} />}
+      />
+      <Route
+        path={PATHS.language_setting}
+        element={
+          <LanguageSetting
+            onNavigate={handleNavigate}
+            businessName={businessName}
+          />
+        }
+      />
+      <Route
+        path={PATHS.contact_support}
+        element={
+          <ContactSupport
+            onNavigate={handleNavigate}
+            businessName={businessName}
+          />
+        }
+      />
+      <Route
+        path={PATHS.faqs}
+        element={<Faqs onNavigate={handleNavigate} businessName={businessName} />}
+      />
+      <Route
+        path={PATHS.privacy_policy}
+        element={<PrivacyPolicy onNavigate={handleNavigate} />}
+      />
+      <Route path={PATHS.logout} element={<Logout onNavigate={handleNavigate} />} />
+      <Route path="*" element={<Navigate to={PATHS.welcome} replace />} />
+    </Routes>
   );
 }
 
