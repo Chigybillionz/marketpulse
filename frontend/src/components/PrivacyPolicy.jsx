@@ -51,6 +51,7 @@ const RIGHTS = [
     body: "Request permanent deletion of your account and all associated voice data.",
     icon: "trash",
     tone: "danger",
+    target: "delete_data",
   },
 ];
 
@@ -215,6 +216,9 @@ export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
                   className={`privacy-right ${right.tone}`}
                   type="button"
                   key={right.id}
+                  onClick={() =>
+                    right.target && onNavigate && onNavigate(right.target)
+                  }
                 >
                   <span className="privacy-right-icon">
                     <Icon name={right.icon} />

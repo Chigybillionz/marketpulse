@@ -5,6 +5,7 @@ import Otp from "./components/otp";
 import Homepage from "./components/home/homepage";
 import Listeng from "./components/pulse/listeng";
 import PulseTradePin from "./components/pulse/trade_pin";
+import ForgotPin from "./components/pulse/forgot_pin";
 import Analysing from "./components/pulse/analysing";
 import History from "./components/history";
 import Credit from "./components/credit";
@@ -20,6 +21,7 @@ import Faqs from "./components/Faqs";
 import Logout from "./components/Logout";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsOfService from "./components/TermsOfService";
+import DeleteData from "./components/DeleteData";
 import Ledger from "./components/ledger";
 import AIConfirmation from "./components/ai_confirmation";
 import AppShell from "./components/layout/AppShell";
@@ -35,6 +37,7 @@ const PATHS = {
   analysing: "/analysing",
   ai_confirmation: "/ai-confirmation",
   pulse_trade_pin: "/trade-pin",
+  forgot_pin: "/forgot-pin",
   history: "/history",
   credit: "/credit",
   weekly_pulse: "/weekly-pulse",
@@ -48,6 +51,7 @@ const PATHS = {
   faqs: "/faqs",
   privacy_policy: "/privacy-policy",
   terms_of_service: "/terms",
+  delete_data: "/delete-data",
   logout: "/logout",
 };
 
@@ -204,6 +208,16 @@ function App() {
         }
       />
       <Route
+        path={PATHS.forgot_pin}
+        element={
+          <ForgotPin
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("pulse_trade_pin")}
+            phoneNumber={phoneNumber}
+          />
+        }
+      />
+      <Route
         path={PATHS.history}
         element={
           <History
@@ -278,6 +292,7 @@ function App() {
         element={
           <ContactSupport
             onNavigate={handleNavigate}
+            onBack={() => handleBack("profile")}
             businessName={businessName}
           />
         }
@@ -301,6 +316,15 @@ function App() {
           <TermsOfService
             onNavigate={handleNavigate}
             onBack={() => handleBack("welcome")}
+          />
+        }
+      />
+      <Route
+        path={PATHS.delete_data}
+        element={
+          <DeleteData
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("privacy_policy")}
           />
         }
       />

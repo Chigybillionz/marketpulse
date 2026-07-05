@@ -52,7 +52,6 @@ function getSections(businessName) {
           sub: "Update your 4-digit approval code",
           target: "pulse_trade_pin",
         },
-        { icon: "fingerprint", label: "Biometric Login", toggle: true },
       ],
     },
     {

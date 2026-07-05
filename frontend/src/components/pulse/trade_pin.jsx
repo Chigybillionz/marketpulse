@@ -282,7 +282,13 @@ export default function PulseTradePin({
             </section>
 
             <footer className="trade-pin-footer">
-              <a href="#forgot-pin" onClick={(event) => event.preventDefault()}>
+              <a
+                href="#forgot-pin"
+                onClick={(event) => {
+                  event.preventDefault();
+                  onNavigate("forgot_pin");
+                }}
+              >
                 Forgot PIN?
               </a>
               <button

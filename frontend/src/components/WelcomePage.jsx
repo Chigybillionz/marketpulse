@@ -468,161 +468,6 @@ export default function WelcomePage({
             </svg>
           </button>
 
-          {/* OR CONTINUE WITH */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              margin: "24px 0",
-            }}
-          >
-            <div style={{ flex: 1, height: 1, backgroundColor: "#E5E7EB" }} />
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "#9CA3AF",
-                letterSpacing: "0.08em",
-              }}
-            >
-              OR CONTINUE WITH
-            </span>
-            <div style={{ flex: 1, height: 1, backgroundColor: "#E5E7EB" }} />
-          </div>
-
-          {/* Passkey + Scan QR */}
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
-          >
-            <button
-              type="button"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                padding: "14px 10px",
-                backgroundColor: "white",
-                border: "1.5px solid #D1D5DB",
-                borderRadius: 12,
-                fontSize: 14,
-                fontWeight: 600,
-                color: "#111827",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#F9FAFB")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "white")
-              }
-            >
-              <svg width="19" height="19" viewBox="0 0 19 19" fill="none">
-                <circle
-                  cx="7.5"
-                  cy="5.5"
-                  r="3"
-                  stroke="#111827"
-                  strokeWidth="1.6"
-                />
-                <path
-                  d="M2 17c0-3.314 2.462-6 5.5-6"
-                  stroke="#111827"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                />
-                <circle
-                  cx="14"
-                  cy="13.5"
-                  r="3.5"
-                  stroke="#111827"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M14 11v-2M11.5 13.5H10"
-                  stroke="#111827"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M16 11.8l1-1"
-                  stroke="#111827"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              Passkey
-            </button>
-
-            <button
-              type="button"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                padding: "14px 10px",
-                backgroundColor: "white",
-                border: "1.5px solid #D1D5DB",
-                borderRadius: 12,
-                fontSize: 14,
-                fontWeight: 600,
-                color: "#111827",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#F9FAFB")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "white")
-              }
-            >
-              <svg width="19" height="19" viewBox="0 0 19 19" fill="none">
-                <rect
-                  x="1.5"
-                  y="1.5"
-                  width="6.5"
-                  height="6.5"
-                  rx="1"
-                  stroke="#111827"
-                  strokeWidth="1.5"
-                />
-                <rect x="3.5" y="3.5" width="2.5" height="2.5" fill="#111827" />
-                <rect
-                  x="11"
-                  y="1.5"
-                  width="6.5"
-                  height="6.5"
-                  rx="1"
-                  stroke="#111827"
-                  strokeWidth="1.5"
-                />
-                <rect x="13" y="3.5" width="2.5" height="2.5" fill="#111827" />
-                <rect
-                  x="1.5"
-                  y="11"
-                  width="6.5"
-                  height="6.5"
-                  rx="1"
-                  stroke="#111827"
-                  strokeWidth="1.5"
-                />
-                <rect x="3.5" y="13" width="2.5" height="2.5" fill="#111827" />
-                <rect x="11" y="11" width="2.5" height="2.5" fill="#111827" />
-                <rect x="15.5" y="11" width="2.5" height="2.5" fill="#111827" />
-                <rect x="11" y="15.5" width="2.5" height="2.5" fill="#111827" />
-                <rect
-                  x="15.5"
-                  y="15.5"
-                  width="2.5"
-                  height="2.5"
-                  fill="#111827"
-                />
-              </svg>
-              Scan QR
-            </button>
-          </div>
         </div>
 
         {/* ── FOOTER ── */}
@@ -639,6 +484,10 @@ export default function WelcomePage({
           />
           <a
             href="#help"
+            onClick={(event) => {
+              event.preventDefault();
+              onNavigate && onNavigate("contact_support");
+            }}
             style={{
               display: "block",
               fontSize: 13,
@@ -646,6 +495,7 @@ export default function WelcomePage({
               color: "#16A34A",
               marginBottom: 10,
               textDecoration: "none",
+              cursor: "pointer",
             }}
           >
             Need help accessing your account?

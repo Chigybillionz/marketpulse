@@ -88,7 +88,7 @@ function ArrowIcon() {
   );
 }
 
-export default function ContactSupport({ onNavigate, businessName }) {
+export default function ContactSupport({ onNavigate, onBack, businessName }) {
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState(null);
 
@@ -110,7 +110,9 @@ export default function ContactSupport({ onNavigate, businessName }) {
             className="contact-support-back"
             type="button"
             aria-label="Go back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={() =>
+              onBack ? onBack() : onNavigate && onNavigate("profile")
+            }
           >
             <BackIcon />
           </button>
