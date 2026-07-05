@@ -5505,3 +5505,405 @@
     font-size: 24px;
   }
 }
+
+/* =====================================================================
+   DATA PORTABILITY (Export Records) — responsive page
+   ===================================================================== */
+.portability-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at top left, rgba(5, 46, 22, 0.04), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(226, 232, 240, 0.7), transparent 28%),
+    linear-gradient(180deg, #f7f8ff 0%, #eef2f8 100%);
+  color: #08150e;
+}
+
+.portability-shell {
+  width: min(100%, 1120px);
+  min-height: 100svh;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 18px 18px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.portability-topbar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 12px;
+}
+
+.portability-icon-btn {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 22px rgba(8, 21, 14, 0.08);
+  color: #08150e;
+  cursor: pointer;
+}
+
+.portability-icon-btn.ghost {
+  background: transparent;
+  box-shadow: none;
+  color: #4f5853;
+}
+
+.portability-icon-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.portability-topbar h1 {
+  margin: 0;
+  text-align: center;
+  color: #08150e;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.portability-content {
+  display: grid;
+  gap: 20px;
+}
+
+.portability-primary,
+.portability-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---- Intro card ---- */
+.portability-intro {
+  padding: 24px 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(8, 21, 14, 0.06);
+  box-shadow: 0 16px 32px rgba(8, 21, 14, 0.05);
+}
+
+.portability-intro-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.portability-intro-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: #c9f0d5;
+  color: #05451f;
+}
+
+.portability-intro-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.portability-intro-head h2 {
+  margin: 0;
+  color: #08150e;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.portability-intro p {
+  margin: 0;
+  color: #46504a;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.portability-intro strong {
+  color: #08150e;
+  font-weight: 800;
+}
+
+/* ---- Format selection ---- */
+.portability-label {
+  margin: 0 0 14px;
+  color: #74807a;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.portability-format-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.portability-format {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 16px;
+  border-radius: 20px;
+  border: 2px solid rgba(8, 21, 14, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 22px rgba(8, 21, 14, 0.04);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.portability-format.active {
+  border-color: #052e16;
+  background: #eaf6ee;
+  box-shadow: 0 14px 28px rgba(5, 46, 22, 0.12);
+}
+
+.portability-format-glyph {
+  display: grid;
+  place-items: center;
+  min-width: 46px;
+  height: 34px;
+  padding: 0 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #08150e;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.portability-format strong {
+  color: #08150e;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.portability-format small {
+  color: #55605a;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+/* ---- Security check ---- */
+.portability-security {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 18px;
+  border-radius: 18px;
+  background: #fbf4e6;
+  border: 1px solid rgba(180, 130, 20, 0.18);
+}
+
+.portability-security-icon {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  color: #b9871a;
+  margin-top: 1px;
+}
+
+.portability-security-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.portability-security strong {
+  color: #9a6f12;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.portability-security p {
+  margin: 6px 0 0;
+  color: #7a5e26;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.portability-security p strong {
+  color: #6b4f16;
+  font-size: inherit;
+}
+
+/* ---- Secure archives hero ---- */
+.portability-archive {
+  position: relative;
+  overflow: hidden;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 22px;
+  border-radius: 24px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 78% 30%, rgba(180, 220, 195, 0.18), transparent 42%),
+    linear-gradient(145deg, #0b3a20 0%, #06180d 62%, #020a05 100%);
+  box-shadow: 0 22px 44px rgba(5, 24, 13, 0.32);
+}
+
+.portability-archive-lock {
+  position: absolute;
+  top: 24px;
+  right: 26px;
+  width: 74px;
+  height: 74px;
+  color: rgba(255, 255, 255, 0.16);
+}
+
+.portability-archive-lock svg {
+  width: 100%;
+  height: 100%;
+}
+
+.portability-archive-copy h3 {
+  margin: 0 0 6px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.portability-archive-copy p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ---- Recent exports ---- */
+.portability-recent-list {
+  display: grid;
+  gap: 12px;
+}
+
+.portability-file {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(8, 21, 14, 0.06);
+  box-shadow: 0 10px 20px rgba(8, 21, 14, 0.04);
+}
+
+.portability-file-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e7ecfb;
+  color: #3a4a8a;
+}
+
+.portability-file-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.portability-file-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.portability-file-copy strong {
+  display: block;
+  color: #08150e;
+  font-size: 15px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portability-file-copy small {
+  display: block;
+  margin-top: 4px;
+  color: #6b7570;
+  font-size: 13px;
+}
+
+.portability-file-status {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #cdefda;
+  color: #106a37;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* ---- Submit ---- */
+.portability-submit {
+  width: 100%;
+  min-height: 62px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 0;
+  border-radius: 16px;
+  background: #052e16;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(5, 46, 22, 0.24);
+  transition: transform 0.14s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.portability-submit svg {
+  width: 22px;
+  height: 22px;
+}
+
+.portability-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 40px rgba(5, 46, 22, 0.3);
+  filter: brightness(1.06);
+}
+
+@media (min-width: 521px) {
+  .portability-shell {
+    padding: 26px 26px 44px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .portability-icon-btn {
+    width: 54px;
+    height: 54px;
+  }
+
+  .portability-content {
+    grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .portability-aside {
+    position: sticky;
+    top: 26px;
+  }
+
+  .portability-intro-head h2 {
+    font-size: 26px;
+  }
+}

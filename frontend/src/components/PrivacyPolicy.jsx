@@ -44,6 +44,7 @@ const RIGHTS = [
     body: "Request a copy of all your trade history and profile data at any time.",
     icon: "download",
     tone: "neutral",
+    target: "data_portability",
   },
   {
     id: "erasure",

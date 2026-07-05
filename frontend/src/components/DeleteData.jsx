@@ -131,7 +131,11 @@ export default function DeleteData({ onNavigate, onBack }) {
           </div>
 
           <div className="delete-data-action">
-            <button className="delete-data-download" type="button">
+            <button
+              className="delete-data-download"
+              type="button"
+              onClick={() => onNavigate && onNavigate("data_portability")}
+            >
               <span className="delete-data-download-copy">
                 <strong>Download first?</strong>
                 <small>Keep a copy of your records for tax purposes.</small>

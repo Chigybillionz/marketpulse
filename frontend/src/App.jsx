@@ -22,6 +22,7 @@ import Logout from "./components/Logout";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsOfService from "./components/TermsOfService";
 import DeleteData from "./components/DeleteData";
+import DataPortability from "./components/DataPortability";
 import Ledger from "./components/ledger";
 import AIConfirmation from "./components/ai_confirmation";
 import AppShell from "./components/layout/AppShell";
@@ -52,6 +53,7 @@ const PATHS = {
   privacy_policy: "/privacy-policy",
   terms_of_service: "/terms",
   delete_data: "/delete-data",
+  data_portability: "/data-portability",
   logout: "/logout",
 };
 
@@ -323,6 +325,15 @@ function App() {
         path={PATHS.delete_data}
         element={
           <DeleteData
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("privacy_policy")}
+          />
+        }
+      />
+      <Route
+        path={PATHS.data_portability}
+        element={
+          <DataPortability
             onNavigate={handleNavigate}
             onBack={() => handleBack("privacy_policy")}
           />
