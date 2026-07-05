@@ -3293,3 +3293,1141 @@
     font-size: 40px;
   }
 }
+/* =====================================================================
+   FAQS — responsive page
+   ===================================================================== */
+.faqs-page {
+  position: relative;
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at top left, rgba(5, 46, 22, 0.04), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(226, 232, 240, 0.7), transparent 28%),
+    linear-gradient(180deg, #f7f8ff 0%, #eef2f8 100%);
+  color: #08150e;
+}
+
+.faqs-shell {
+  width: min(100%, 1240px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 20px 20px 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.faqs-topbar {
+  display: grid;
+  grid-template-columns: 54px 1fr 54px;
+  align-items: center;
+  gap: 14px;
+}
+
+.faqs-back,
+.faqs-avatar {
+  width: 54px;
+  height: 54px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 22px rgba(8, 21, 14, 0.08);
+  cursor: pointer;
+}
+
+.faqs-back {
+  display: grid;
+  place-items: center;
+  color: #08150e;
+}
+
+.faqs-back svg,
+.faqs-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.faqs-avatar img {
+  object-fit: cover;
+}
+
+.faqs-titleblock {
+  text-align: center;
+}
+
+.faqs-titleblock p {
+  margin: 0 0 5px;
+  color: #74807a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.faqs-titleblock h1 {
+  margin: 0;
+  color: #08150e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.faqs-content {
+  display: grid;
+  gap: 18px;
+}
+
+.faqs-preview {
+  display: none;
+}
+
+.faqs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faqs-lead {
+  position: relative;
+  margin: 4px 0 6px;
+  padding-bottom: 14px;
+  text-align: center;
+  color: #3a433d;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.faqs-lead::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 64px;
+  height: 4px;
+  border-radius: 999px;
+  background: #08150e;
+  transform: translateX(-50%);
+}
+
+.faqs-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 0 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(5, 46, 22, 0.08);
+  box-shadow: 0 10px 22px rgba(8, 21, 14, 0.05);
+}
+
+.faqs-search span {
+  width: 20px;
+  height: 20px;
+  color: #7c857f;
+  flex: 0 0 auto;
+}
+
+.faqs-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #08150e;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.faqs-search input::placeholder {
+  color: #909893;
+}
+
+.faqs-list {
+  display: grid;
+  gap: 14px;
+}
+
+.faqs-item {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(5, 46, 22, 0.07);
+  box-shadow: 0 12px 24px rgba(8, 21, 14, 0.05);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.faqs-item.open {
+  border-color: rgba(5, 46, 22, 0.16);
+  box-shadow: 0 16px 30px rgba(8, 21, 14, 0.08);
+}
+
+.faqs-item-trigger {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  text-align: left;
+  padding: 20px 20px;
+  cursor: pointer;
+}
+
+.faqs-item-trigger strong {
+  color: #08150e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.faqs-item-trigger svg {
+  width: 22px;
+  height: 22px;
+  color: #4f5853;
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.faqs-item-trigger svg.open {
+  transform: rotate(180deg);
+}
+
+.faqs-item p {
+  margin: 0;
+  padding: 0 20px 20px;
+  color: #5b655f;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.faqs-empty {
+  margin: 0;
+  padding: 22px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #66706a;
+  text-align: center;
+}
+
+.faqs-cta {
+  margin-top: 6px;
+  padding: 26px 22px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, #e4ecfb 0%, #dbe6fa 100%);
+  border: 1px solid rgba(5, 46, 22, 0.06);
+  text-align: center;
+}
+
+.faqs-cta h3 {
+  margin: 0 0 8px;
+  color: #08150e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.faqs-cta p {
+  margin: 0 auto 18px;
+  max-width: 42ch;
+  color: #46504a;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.faqs-cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 30px;
+  border: 0;
+  border-radius: 999px;
+  background: #052e16;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 16px 28px rgba(5, 46, 22, 0.22);
+  transition: transform 0.14s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.faqs-cta-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.faqs-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 34px rgba(5, 46, 22, 0.28);
+  filter: brightness(1.06);
+}
+
+.faqs-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 22px;
+  width: 60px;
+  height: 60px;
+  border: 0;
+  border-radius: 50%;
+  background: #c5141b;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(197, 20, 27, 0.34);
+  transition: transform 0.14s ease, box-shadow 0.18s ease;
+  z-index: 40;
+}
+
+.faqs-fab svg {
+  width: 26px;
+  height: 26px;
+}
+
+.faqs-fab:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 22px 38px rgba(197, 20, 27, 0.4);
+}
+
+@media (min-width: 521px) {
+  .faqs-shell {
+    padding: 26px 26px 44px;
+  }
+
+  .faqs-titleblock h1 {
+    font-size: 34px;
+  }
+
+  .faqs-lead {
+    font-size: 30px;
+  }
+
+  .faqs-fab {
+    right: 32px;
+    bottom: 32px;
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .faqs-shell {
+    padding: 28px 32px 40px;
+  }
+
+  .faqs-topbar {
+    grid-template-columns: 64px 1fr 64px;
+    gap: 18px;
+  }
+
+  .faqs-back,
+  .faqs-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .faqs-titleblock p {
+    font-size: 13px;
+  }
+
+  .faqs-titleblock h1 {
+    font-size: 40px;
+  }
+
+  .faqs-content {
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+    gap: 26px;
+    align-items: start;
+  }
+
+  .faqs-preview {
+    display: block;
+    position: sticky;
+    top: 26px;
+  }
+
+  .faqs-hero {
+    min-height: 440px;
+    border-radius: 30px;
+    padding: 34px 30px;
+    color: #ffffff;
+    background:
+      radial-gradient(circle at 120% 0%, rgba(255, 255, 255, 0.12), transparent 45%),
+      linear-gradient(160deg, #052e16 0%, #071d0f 100%);
+    box-shadow: 0 22px 44px rgba(5, 46, 22, 0.22);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .faqs-kicker {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .faqs-hero h2 {
+    margin: 20px 0 14px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .faqs-hero p {
+    margin: 0;
+    max-width: 34ch;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .faqs-lead {
+    display: none;
+  }
+
+  .faqs-item-trigger strong {
+    font-size: 19px;
+  }
+}
+
+/* =====================================================================
+   LOGOUT — responsive confirmation page
+   ===================================================================== */
+.logout-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at top left, rgba(5, 46, 22, 0.05), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(245, 242, 219, 0.6), transparent 30%),
+    linear-gradient(180deg, #fbfbf3 0%, #f2f4ec 100%);
+  color: #08150e;
+}
+
+.logout-shell {
+  width: min(100%, 1240px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 20px 20px 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.logout-topbar {
+  display: grid;
+  grid-template-columns: 54px 1fr 54px;
+  align-items: center;
+  gap: 14px;
+}
+
+.logout-back,
+.logout-avatar {
+  width: 54px;
+  height: 54px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 22px rgba(8, 21, 14, 0.08);
+  cursor: pointer;
+}
+
+.logout-back {
+  display: grid;
+  place-items: center;
+  color: #08150e;
+}
+
+.logout-back svg,
+.logout-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.logout-avatar img {
+  object-fit: cover;
+}
+
+.logout-titleblock {
+  text-align: center;
+}
+
+.logout-titleblock p {
+  margin: 0 0 5px;
+  color: #74807a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.logout-titleblock h1 {
+  margin: 0;
+  color: #08150e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.logout-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.logout-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 40px 26px 32px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(8, 21, 14, 0.05);
+  box-shadow: 0 26px 60px rgba(8, 21, 14, 0.12);
+  text-align: center;
+}
+
+.logout-badge {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #08150e;
+  background: #e7ecfb;
+}
+
+.logout-badge svg {
+  width: 46px;
+  height: 46px;
+}
+
+.logout-card h2 {
+  margin: 0 auto 14px;
+  max-width: 18ch;
+  color: #052e16;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.logout-card p {
+  margin: 0 auto 28px;
+  max-width: 40ch;
+  color: #55605a;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.logout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.logout-confirm,
+.logout-cancel {
+  width: 100%;
+  min-height: 60px;
+  border-radius: 16px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.14s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.logout-confirm {
+  border: 0;
+  background: #071d0f;
+  color: #ffffff;
+  box-shadow: 0 16px 30px rgba(7, 29, 15, 0.24);
+}
+
+.logout-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 38px rgba(7, 29, 15, 0.3);
+}
+
+.logout-cancel {
+  border: 2px solid #071d0f;
+  background: transparent;
+  color: #071d0f;
+}
+
+.logout-cancel:hover {
+  background: rgba(7, 29, 15, 0.05);
+}
+
+@media (min-width: 521px) {
+  .logout-shell {
+    padding: 26px 26px 44px;
+  }
+
+  .logout-titleblock h1 {
+    font-size: 34px;
+  }
+
+  .logout-card {
+    padding: 48px 40px 40px;
+  }
+
+  .logout-card h2 {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .logout-topbar {
+    grid-template-columns: 64px 1fr 64px;
+    gap: 18px;
+  }
+
+  .logout-back,
+  .logout-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .logout-titleblock h1 {
+    font-size: 40px;
+  }
+
+  .logout-card {
+    max-width: 600px;
+    padding: 56px 52px 44px;
+  }
+
+  .logout-badge {
+    width: 108px;
+    height: 108px;
+  }
+
+  .logout-badge svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .logout-card h2 {
+    font-size: 36px;
+  }
+
+  .logout-card p {
+    font-size: 17px;
+  }
+}
+
+/* =====================================================================
+   PRIVACY POLICY — responsive page
+   ===================================================================== */
+.privacy-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at top left, rgba(5, 46, 22, 0.04), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(226, 232, 240, 0.7), transparent 28%),
+    linear-gradient(180deg, #f7f8ff 0%, #eef2f8 100%);
+  color: #08150e;
+}
+
+.privacy-shell {
+  width: min(100%, 860px);
+  min-height: 100svh;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.privacy-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: rgba(247, 248, 255, 0.86);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(8, 21, 14, 0.06);
+}
+
+.privacy-back {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #08150e;
+  cursor: pointer;
+}
+
+.privacy-back svg {
+  width: 24px;
+  height: 24px;
+}
+
+.privacy-topbar h1 {
+  margin: 0;
+  text-align: center;
+  color: #08150e;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.privacy-topbar-spacer {
+  width: 44px;
+  height: 44px;
+}
+
+.privacy-scroll {
+  flex: 1;
+  padding: 24px 18px 40px;
+}
+
+.privacy-intro {
+  text-align: center;
+  padding: 8px 0 26px;
+}
+
+.privacy-shield {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 16px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(160deg, #08341c 0%, #061d10 100%);
+  box-shadow: 0 14px 28px rgba(5, 46, 22, 0.24);
+}
+
+.privacy-shield svg {
+  width: 30px;
+  height: 30px;
+}
+
+.privacy-intro h2 {
+  margin: 0 0 8px;
+  color: #08150e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.privacy-updated {
+  margin: 0;
+  color: #7c857f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.privacy-card {
+  padding: 22px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(8, 21, 14, 0.06);
+  box-shadow: 0 14px 28px rgba(8, 21, 14, 0.05);
+}
+
+.privacy-card-title,
+.privacy-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  color: #08150e;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.privacy-card-title svg,
+.privacy-heading svg {
+  width: 22px;
+  height: 22px;
+  color: #08341c;
+  flex: 0 0 auto;
+}
+
+.privacy-datalist {
+  display: grid;
+  gap: 12px;
+}
+
+.privacy-data {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #eef2fc;
+  border-left: 3px solid #08341c;
+}
+
+.privacy-data-icon {
+  width: 26px;
+  height: 26px;
+  color: #08341c;
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.privacy-data-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.privacy-data strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #08150e;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.privacy-data p {
+  margin: 0;
+  color: #55605a;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.privacy-block {
+  padding: 26px 4px 4px;
+}
+
+.privacy-lead {
+  margin: 0 0 18px;
+  color: #444d47;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.privacy-usage {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.privacy-usage li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.privacy-usage-icon {
+  width: 22px;
+  height: 22px;
+  color: #22a15b;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.privacy-usage-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.privacy-usage p {
+  margin: 0;
+  color: #4a534d;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.privacy-usage strong {
+  color: #08150e;
+  font-weight: 800;
+}
+
+.privacy-compliance {
+  margin: 4px 0;
+  padding: 24px 22px;
+  border-radius: 22px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 120% 0%, rgba(255, 255, 255, 0.1), transparent 45%),
+    linear-gradient(160deg, #08341c 0%, #04160c 100%);
+  box-shadow: 0 20px 40px rgba(5, 46, 22, 0.24);
+}
+
+.privacy-compliance h3 {
+  margin: 0 0 8px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.privacy-compliance p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.privacy-rights {
+  display: grid;
+  gap: 12px;
+}
+
+.privacy-right {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(8, 21, 14, 0.06);
+  background: #eef2fc;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.14s ease, box-shadow 0.18s ease;
+}
+
+.privacy-right:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(8, 21, 14, 0.08);
+}
+
+.privacy-right.danger {
+  background: #fdecec;
+  border-color: rgba(197, 20, 27, 0.16);
+}
+
+.privacy-right-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: #08341c;
+  flex: 0 0 auto;
+  box-shadow: 0 6px 14px rgba(8, 21, 14, 0.08);
+}
+
+.privacy-right.danger .privacy-right-icon {
+  color: #c5141b;
+}
+
+.privacy-right-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.privacy-right-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.privacy-right-copy strong {
+  display: block;
+  color: #08150e;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.privacy-right.danger .privacy-right-copy strong {
+  color: #c5141b;
+}
+
+.privacy-right-copy small {
+  display: block;
+  margin-top: 4px;
+  color: #55605a;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.privacy-right-chevron {
+  width: 20px;
+  height: 20px;
+  color: #98a09a;
+  flex: 0 0 auto;
+}
+
+.privacy-right-chevron svg {
+  width: 100%;
+  height: 100%;
+}
+
+.privacy-footnote {
+  margin-top: 26px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(8, 21, 14, 0.08);
+  text-align: center;
+}
+
+.privacy-footnote p {
+  margin: 0 auto 12px;
+  max-width: 44ch;
+  color: #66706a;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.privacy-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #08341c;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.privacy-mail svg {
+  width: 18px;
+  height: 18px;
+}
+
+.privacy-mail:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.privacy-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  padding: 14px 18px 18px;
+  background: rgba(247, 248, 255, 0.9);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(8, 21, 14, 0.06);
+  text-align: center;
+}
+
+.privacy-accept {
+  width: 100%;
+  min-height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #08341c 0%, #061d10 100%);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(5, 46, 22, 0.24);
+  transition: transform 0.14s ease, box-shadow 0.18s ease;
+}
+
+.privacy-accept svg {
+  width: 20px;
+  height: 20px;
+}
+
+.privacy-accept:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 38px rgba(5, 46, 22, 0.3);
+}
+
+.privacy-footer small {
+  display: block;
+  margin-top: 10px;
+  color: #8a938d;
+  font-size: 12.5px;
+}
+
+@media (min-width: 768px) {
+  .privacy-topbar {
+    padding: 20px 28px;
+  }
+
+  .privacy-topbar h1 {
+    font-size: 20px;
+  }
+
+  .privacy-scroll {
+    padding: 32px 28px 48px;
+  }
+
+  .privacy-intro h2 {
+    font-size: 32px;
+  }
+
+  .privacy-card {
+    padding: 28px 26px;
+  }
+
+  .privacy-datalist {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .privacy-card-title,
+  .privacy-heading {
+    font-size: 20px;
+  }
+
+  .privacy-compliance {
+    padding: 30px 28px;
+  }
+
+  .privacy-footer {
+    padding: 16px 28px 22px;
+  }
+
+  .privacy-accept {
+    max-width: 420px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .privacy-shell {
+    width: min(100%, 920px);
+  }
+
+  .privacy-intro h2 {
+    font-size: 36px;
+  }
+
+  .privacy-lead {
+    font-size: 16.5px;
+  }
+
+  .privacy-usage p {
+    font-size: 15.5px;
+  }
+}

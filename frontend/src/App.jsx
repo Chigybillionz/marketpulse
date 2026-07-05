@@ -15,6 +15,9 @@ import PhoneNumber from "./components/PhoneNumber";
 import MarketCategory from "./components/market_category";
 import LanguageSetting from "./components/language_setting";
 import ContactSupport from "./components/ContactSupport";
+import Faqs from "./components/Faqs";
+import Logout from "./components/Logout";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 import Ledger from "./components/ledger";
 import AIConfirmation from "./components/ai_confirmation";
 import AppShell from "./components/layout/AppShell";
@@ -191,6 +194,13 @@ function App() {
           businessName={businessName}
         />
       )}
+      {currentPage === "faqs" && (
+        <Faqs onNavigate={handleNavigate} businessName={businessName} />
+      )}
+      {currentPage === "privacy_policy" && (
+        <PrivacyPolicy onNavigate={handleNavigate} />
+      )}
+      {currentPage === "logout" && <Logout onNavigate={handleNavigate} />}
     </>
   );
 }

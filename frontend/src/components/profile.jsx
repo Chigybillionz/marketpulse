@@ -63,7 +63,13 @@ function getSections(businessName) {
           label: "Contact Support",
           target: "contact_support",
         },
-        { icon: "faq", label: "FAQs", target: "contact_support" },
+        { icon: "faq", label: "FAQs", target: "faqs" },
+        {
+          icon: "shield",
+          label: "Privacy Policy",
+          sub: "How we protect your data",
+          target: "privacy_policy",
+        },
       ],
     },
   ];
@@ -141,6 +147,12 @@ function Icon({ name }) {
       </>
     ),
     chevron: <path d="m9 5 7 7-7 7" />,
+    shield: (
+      <>
+        <path d="M12 3 5 6v5c0 4.2 2.9 7.7 7 9 4.1-1.3 7-4.8 7-9V6l-7-3Z" />
+        <path d="M9.5 12l1.8 1.8 3.5-3.8" />
+      </>
+    ),
     logout: (
       <>
         <path d="M10 6H6v12h4M13 9l3 3-3 3M16 12H8" />
@@ -180,7 +192,6 @@ function SettingItem({ item, onClick }) {
 
 export default function Profile({ onNavigate, businessName }) {
   const sections = getSections(businessName);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [businessAvatarUrl, setBusinessAvatarUrl] = useState(null);
 
@@ -427,178 +438,11 @@ export default function Profile({ onNavigate, businessName }) {
           <button
             className="profile-logout"
             type="button"
-            onClick={() => setShowLogoutConfirm(true)}
+            onClick={() => onNavigate && onNavigate("logout")}
           >
             <Icon name="logout" />
             Logout
           </button>
-
-          {showLogoutConfirm && (
-            <div
-              style={{
-                position: "fixed",
-                inset: 0,
-                backgroundColor: "rgba(0,0,0,0.35)",
-                zIndex: 9999,
-                display: "flex",
-
-                alignItems: "flex-end",
-                justifyContent: "center",
-                padding: 18,
-              }}
-              role="dialog"
-              aria-modal="true"
-            >
-              <div
-                style={{
-                  width: "100%",
-                  maxWidth: 420,
-                  borderRadius: 18,
-                  background: "#ffffff",
-                  boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    padding: 18,
-                    borderBottom: "1px solid #F3F4F6",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    gap: 12,
-                  }}
-                >
-                  <div
-                    style={{ display: "flex", gap: 12, alignItems: "center" }}
-                  >
-                    <div
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: 14,
-                        backgroundColor: "#FEE2E2",
-                        display: "grid",
-                        placeItems: "center",
-                        color: "#991B1B",
-                        flex: "0 0 auto",
-                      }}
-                    >
-                      <svg
-                        width="22"
-                        height="22"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
-                        <line x1="12" y1="9" x2="12" y2="13" />
-                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h2
-                        style={{
-                          margin: 0,
-                          fontSize: 16,
-                          fontWeight: 900,
-                          color: "#111827",
-                        }}
-                      >
-                        Logout?
-                      </h2>
-                      <p
-                        style={{
-                          margin: "6px 0 0",
-                          fontSize: 13.5,
-                          fontWeight: 600,
-                          color: "#6B7280",
-                          lineHeight: 1.45,
-                        }}
-                      >
-                        Are you sure you want to logout?
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowLogoutConfirm(false)}
-                    style={{
-                      background: "none",
-                      border: 0,
-                      cursor: "pointer",
-                      padding: 4,
-                      color: "#6B7280",
-                    }}
-                    aria-label="Close"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div
-                  style={{
-                    padding: 18,
-                    display: "flex",
-                    gap: 12,
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setShowLogoutConfirm(false)}
-                    style={{
-                      borderRadius: 14,
-                      padding: "14px 16px",
-                      minWidth: 120,
-                      border: "1px solid #E5E7EB",
-                      background: "#ffffff",
-                      color: "#111827",
-                      fontWeight: 800,
-                      cursor: "pointer",
-                    }}
-                  >
-                    No
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowLogoutConfirm(false);
-                      if (onNavigate) onNavigate("welcome");
-                    }}
-                    style={{
-                      borderRadius: 14,
-                      padding: "14px 16px",
-                      minWidth: 120,
-                      border: "0",
-                      background: "#052e16",
-                      color: "#ffffff",
-                      fontWeight: 900,
-                      cursor: "pointer",
-                      boxShadow: "0 14px 24px rgba(5,46,22,0.18)",
-                    }}
-                  >
-                    Yes
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           <p className="profile-version">
             Version 2.4.0 • Built for Nigerian Markets
