@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import { Menu, UserCircle } from 'lucide-react';
+import MobileMenu from '../layout/MobileMenu';
 
 export default function Header({ businessName, onNavigate }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
+    <>
     <header
       style={{
         display: 'flex',
@@ -11,10 +16,12 @@ export default function Header({ businessName, onNavigate }) {
         background: 'transparent',
       }}
     >
-      {/* Left icon — small table / menu icon */}
+      {/* Left icon — opens the slide-in navigation menu */}
       <button
-        onClick={() => onNavigate('storeProfile')}
+        onClick={() => setMenuOpen(true)}
         aria-label="Menu"
+        aria-haspopup="dialog"
+        aria-expanded={menuOpen}
         style={{
           width: 36,
           height: 36,
@@ -68,5 +75,13 @@ export default function Header({ businessName, onNavigate }) {
         <UserCircle size={28} strokeWidth={1.5} color="#1a1a1a" />
       </button>
     </header>
+
+      <MobileMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onNavigate={onNavigate}
+        businessName={businessName}
+      />
+    </>
   );
 }

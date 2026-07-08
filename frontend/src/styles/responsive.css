@@ -5907,3 +5907,235 @@
     font-size: 26px;
   }
 }
+
+/* =====================================================================
+   MOBILE MENU — slide-in navigation drawer
+   ===================================================================== */
+.mp-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.mp-menu.open {
+  pointer-events: auto;
+}
+
+.mp-menu__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 21, 14, 0.45);
+  opacity: 0;
+  transition: opacity 0.26s ease;
+}
+
+.mp-menu.open .mp-menu__overlay {
+  opacity: 1;
+}
+
+.mp-menu__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: min(86%, 340px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-shadow: 0 0 50px rgba(8, 21, 14, 0.3);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mp-menu.open .mp-menu__panel {
+  transform: translateX(0);
+}
+
+/* ---- Header ---- */
+.mp-menu__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 16px 18px;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.mp-menu__profile {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mp-menu__avatar {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #052e16;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.mp-menu__id {
+  min-width: 0;
+}
+
+.mp-menu__id strong {
+  display: block;
+  color: #08150e;
+  font-size: 16px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-menu__id small {
+  display: block;
+  margin-top: 2px;
+  color: #6b7570;
+  font-size: 12.5px;
+}
+
+.mp-menu__close {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #f3f4f6;
+  color: #08150e;
+  cursor: pointer;
+}
+
+.mp-menu__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Nav ---- */
+.mp-menu__nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+}
+
+.mp-menu__section + .mp-menu__section {
+  margin-top: 14px;
+}
+
+.mp-menu__section-title {
+  margin: 6px 8px 6px;
+  color: #98a09a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mp-menu__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: #08150e;
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+
+.mp-menu__item:hover,
+.mp-menu__item:active {
+  background: #f4f6fa;
+}
+
+.mp-menu__item-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #eef2fb;
+  color: #08341c;
+}
+
+.mp-menu__item-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.mp-menu__item-label {
+  flex: 1;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.mp-menu__item-chevron {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: #b4bbb5;
+}
+
+.mp-menu__item-chevron svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- Footer / logout ---- */
+.mp-menu__foot {
+  padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #eef0f4;
+}
+
+.mp-menu__logout {
+  width: 100%;
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #f3d0d2;
+  border-radius: 14px;
+  background: #fdecec;
+  color: #c5141b;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+
+.mp-menu__logout:hover {
+  background: #fbe0e0;
+}
+
+.mp-menu__logout svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* On large screens the drawer is not used (desktop has the sidebar),
+   but keep it tidy if ever shown. */
+@media (min-width: 1024px) {
+  .mp-menu__panel {
+    width: 360px;
+  }
+}
