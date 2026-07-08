@@ -392,9 +392,12 @@ export default function WelcomePage({
               </div>
               <input
                 type="tel"
+                inputMode="numeric"
+                maxLength={10}
                 value={phoneNumber}
                 onChange={(e) => {
-                  setPhoneNumber(e.target.value.replace(/\D/g, ""));
+                  // Keep digits only and never allow more than 10 (11th is dropped).
+                  setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10));
                   setError(null);
                 }}
                 placeholder="803 000 0000"
