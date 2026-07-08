@@ -3488,6 +3488,7 @@
 .market-category-content {
   display: grid;
   gap: 18px;
+  padding-bottom: 96px;
 }
 
 .market-category-preview,
@@ -3525,8 +3526,7 @@
   outline: none;
   background: transparent;
   color: #08150e;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -3551,10 +3551,9 @@
   margin: 10px 0 0;
   max-width: 54ch;
   color: #727b75;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.5;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.55;
 }
 
 .market-category-list {
@@ -3679,19 +3678,18 @@
 
 .market-category-footer button {
   width: 100%;
-  min-height: 72px;
+  min-height: 62px;
   border: 0;
-  border-radius: 22px;
-  background: #061f10;
+  border-radius: 18px;
+  background: #052e16;
   color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  box-shadow: 0 14px 24px rgba(6, 31, 16, 0.18);
+  gap: 12px;
+  box-shadow: 0 16px 28px rgba(5, 46, 22, 0.22);
   cursor: pointer;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 800;
 }
 
@@ -3723,8 +3721,8 @@
   }
 
   .market-category-footer button {
-    min-height: 80px;
-    font-size: 24px;
+    min-height: 68px;
+    font-size: 19px;
   }
 }
 
@@ -3832,10 +3830,9 @@
   .market-category-preview-copy p {
     margin: 0;
     color: #56615b;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 1.5;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.55;
   }
 
   .market-category-preview-watermark>svg {
