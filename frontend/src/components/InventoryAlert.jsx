@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-  ChevronLeft,
-  AlertTriangle,
-  Calendar,
-  TrendingUp,
-  Save,
-} from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, Calendar, TrendingUp, Save } from "lucide-react";
 
 const ToggleSwitch = ({ isActive, onToggle }) => (
   <button
@@ -67,7 +61,17 @@ export default function InventoryAlert({ onNavigate }) {
             onClick={() => onNavigate && onNavigate("profile")}
             aria-label="Go back"
           >
-            <ChevronLeft size={28} />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
           </button>
 
           <div className="inventory-alert-titleblock">
