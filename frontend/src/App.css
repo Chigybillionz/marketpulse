@@ -2777,7 +2777,11 @@
 
 .store-profile-hero {
   position: relative;
-  min-height: 265px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 18px;
   border-radius: 28px;
   overflow: hidden;
   box-shadow: 0 18px 42px rgba(10, 22, 15, 0.14);
@@ -2805,13 +2809,12 @@
 }
 
 .store-profile-hero-copy {
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  top: 18px;
+  position: relative;
+  flex: 1;
+  min-width: 0;
   color: #ffffff;
   z-index: 1;
-  max-width: 420px;
+  max-width: none;
 }
 
 .store-profile-kicker {
@@ -2870,23 +2873,22 @@
 }
 
 .store-profile-logo-card {
-  position: absolute;
-  left: 18px;
-  bottom: -1px;
-  width: 156px;
-  height: 112px;
+  position: relative;
+  flex: 0 0 auto;
+  width: 66px;
+  height: 66px;
   background: #ffffff;
-  border-radius: 22px 22px 12px 12px;
-  box-shadow: 0 16px 32px rgba(10, 22, 15, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 12px 24px rgba(10, 22, 15, 0.18);
   display: grid;
   place-items: center;
   z-index: 1;
 }
 
 .store-profile-logo-mark {
-  width: 100px;
-  height: 88px;
-  border-radius: 18px;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
   display: grid;
   place-items: center;
   background: #f3f6ff;
@@ -2895,14 +2897,14 @@
 }
 
 .store-profile-logo-mark svg {
-  width: 54px;
-  height: 54px;
+  width: 28px;
+  height: 28px;
   display: block;
 }
 
 .store-profile-quickfacts {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 
@@ -3154,7 +3156,22 @@
   }
 
   .store-profile-hero {
+    display: block;
+    padding: 0;
     min-height: 340px;
+  }
+
+  .store-profile-quickfacts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .store-profile-hero-copy {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 18px;
+    flex: none;
+    max-width: 420px;
   }
 
   .store-profile-hero-copy h2 {
@@ -3166,14 +3183,23 @@
   }
 
   .store-profile-logo-card {
+    position: absolute;
+    left: 24px;
+    bottom: -1px;
     width: 184px;
     height: 126px;
-    left: 24px;
+    border-radius: 22px 22px 12px 12px;
   }
 
   .store-profile-logo-mark {
     width: 116px;
     height: 98px;
+    border-radius: 18px;
+  }
+
+  .store-profile-logo-mark svg {
+    width: 54px;
+    height: 54px;
   }
 
   .store-profile-card {
