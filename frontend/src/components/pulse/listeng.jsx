@@ -33,6 +33,17 @@ function MicrophoneIcon() {
   )
 }
 
+function MutedMicrophoneIcon() {
+  return (
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="24" y="10" width="16" height="31" rx="8" fill="currentColor" />
+      <path d="M16 31c0 9 6.7 16 16 16s16-7 16-16" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <path d="M32 47v9" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <line x1="12" y1="12" x2="52" y2="52" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function StopIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -77,24 +88,23 @@ export default function Listeng({ onNavigate, businessName }) {
   useEffect(() => {
     recorderRef.current = new VoiceRecorder();
     
-    const startAudio = async () => {
-      try {
-        await recorderRef.current.startRecording();
-        setIsRecording(true);
-      } catch (err) {
-        console.error(err);
-        setError("Microphone access denied or not supported.");
-      }
-    };
-    
-    startAudio();
-
     return () => {
       if (recorderRef.current) {
         recorderRef.current.stopMediaStream();
       }
     };
   }, []);
+
+  const handleStartRecording = async () => {
+    try {
+      await recorderRef.current.startRecording();
+      setIsRecording(true);
+    } catch (err) {
+      console.error(err);
+      setError("Microphone access denied or not supported.");
+    }
+  };
+
 
   const handleStopAndAnalyze = async () => {
     if (!recorderRef.current || !isRecording) {
@@ -127,32 +137,57 @@ export default function Listeng({ onNavigate, businessName }) {
         <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "13px 36px 0", boxSizing: "border-box", width: "100%" }}>
 
         <section className="listening-main" aria-labelledby="listening-title">
-          <button className="listening-mic" type="button" aria-label="Recording active">
-            <span className="listening-signal listening-signal-left" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </span>
-            <MicrophoneIcon />
-            <span className="listening-signal listening-signal-right" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </span>
+          <button 
+            className="listening-mic" 
+            type="button" 
+            aria-label="Recording toggle"
+            style={!isRecording ? { boxShadow: 'none', background: '#d1d5db', color: '#4b5563', animation: 'none' } : {}}
+          >
+            {isRecording && (
+              <span className="listening-signal listening-signal-left" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            )}
+            
+            {isRecording ? <MicrophoneIcon /> : <MutedMicrophoneIcon />}
+            
+            {isRecording && (
+              <span className="listening-signal listening-signal-right" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            )}
           </button>
 
-          <h1 id="listening-title">Listening...</h1>
-          <p>Go ahead, tell me about your trade (e.g., "Sold 2 bags of garri for 15k")</p>
+          <h1 id="listening-title">{isRecording ? "Listening..." : "Pulse AI Ready"}</h1>
+          <p>{isRecording ? 'Go ahead, tell me about your trade (e.g., "Sold 2 bags of garri for 15k")' : 'Tap Start Recording to log your trade via voice.'}</p>
 
           <div className="listening-actions">
-            <button 
-              type="button" 
-              className="listening-stop cursor-pointer"
-              onClick={handleStopAndAnalyze}
-            >
-              <StopIcon />
-              <span>Stop &amp; Analyze</span>
-            </button>
+            {!isRecording ? (
+              <button 
+                type="button" 
+                className="listening-stop cursor-pointer"
+                onClick={handleStartRecording}
+                style={{ background: '#052e16' }}
+              >
+                <div style={{ width: 20, height: 20, flexShrink: 0, marginRight: 4 }}>
+                  <MicrophoneIcon />
+                </div>
+                <span>Start Recording</span>
+              </button>
+            ) : (
+              <button 
+                type="button" 
+                className="listening-stop cursor-pointer"
+                onClick={handleStopAndAnalyze}
+              >
+                <StopIcon />
+                <span>Stop &amp; Analyze</span>
+              </button>
+            )}
             <button 
               type="button" 
               className="listening-cancel cursor-pointer"
