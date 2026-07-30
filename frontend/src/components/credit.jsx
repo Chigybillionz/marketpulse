@@ -1,4 +1,5 @@
 import AppShell from './layout/AppShell'
+import Header from './home/Header'
 
 const debtors = [
   { name: 'Ibrahim Musa', phone: '0803 456 7890', amount: '₦24,500', date: 'Oct 12, 2023', overdue: true },
@@ -60,21 +61,12 @@ export default function Credit({ onNavigate, businessName }) {
       subtitle="Track money owed to your store"
     >
     <main className="credit-page">
-      <section className="credit-phone">
-        <header className="credit-header">
-          <div className="credit-brand">
-            <span><StoreIcon /></span>
-            <strong>{businessName || 'My Store'}</strong>
-          </div>
-          <button 
-            className="credit-user cursor-pointer" 
-            type="button" 
-            aria-label="Profile"
-            onClick={() => onNavigate && onNavigate('profile')}
-          >
-            <UserIcon />
-          </button>
-        </header>
+      <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
+      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+        <div style={{ flexShrink: 0 }}>
+          <Header businessName={businessName} onNavigate={onNavigate} />
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "12px 28px 40px", boxSizing: "border-box", width: "100%" }}>
         <section className="credit-overview">
           <span>CREDIT OVERVIEW</span>
           <h1>Total Money Outside:<br />₦150,000</h1>
@@ -94,8 +86,10 @@ export default function Credit({ onNavigate, businessName }) {
               <span>{item[0].toUpperCase() + item.slice(1)}</span>
             </button>
           ))}
-        </nav>
+          </nav>
+        </div>
       </section>
+      </div>
     </main>
     </AppShell>
   )

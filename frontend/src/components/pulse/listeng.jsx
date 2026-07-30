@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { VoiceRecorder } from '../../services/voiceRecorder';
+import Header from '../home/Header';
 
 function StoreIcon() {
   return (
@@ -118,24 +119,12 @@ export default function Listeng({ onNavigate, businessName }) {
 
   return (
     <main className="listening-page" aria-label="MarketPulse AI voice listening screen">
-      <section className="listening-phone">
-        <header className="listening-header">
-          <div className="listening-brand" aria-label={businessName || "My Store"}>
-            <span className="listening-store-icon">
-              <StoreIcon />
-            </span>
-            <span>{businessName || 'My Store'}</span>
-          </div>
-
-          <button 
-            className="listening-user cursor-pointer" 
-            type="button" 
-            aria-label="Open profile"
-            onClick={() => onNavigate && onNavigate('profile')}
-          >
-            <UserIcon />
-          </button>
-        </header>
+      <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
+      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+        <div style={{ flexShrink: 0 }}>
+          <Header businessName={businessName} onNavigate={onNavigate} />
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "13px 36px 0", boxSizing: "border-box", width: "100%" }}>
 
         <section className="listening-main" aria-labelledby="listening-title">
           <button className="listening-mic" type="button" aria-label="Recording active">
@@ -208,8 +197,10 @@ export default function Listeng({ onNavigate, businessName }) {
             <CreditIcon />
             <span>Credit</span>
           </button>
-        </nav>
+          </nav>
+        </div>
       </section>
+      </div>
     </main>
   )
 }

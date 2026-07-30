@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Header from '../home/Header';
 
 export default function WeeklyPulse({ onNavigate, businessName }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -29,53 +30,17 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fcfcfa] flex justify-center items-center p-0 sm:p-4 font-sans text-gray-800 antialiased selection:bg-[#052e16] selection:text-white">
+    <div className="min-h-[100dvh] bg-[#e8ede8] flex justify-center items-start p-0 font-sans text-gray-800 antialiased selection:bg-[#052e16] selection:text-white">
       {/* Mobile Screen Container Mockup */}
-      <div className="w-full max-w-[430px] min-h-screen sm:min-h-[850px] bg-[#f8f9ff] sm:rounded-[40px] sm:shadow-2xl overflow-hidden sm:border sm:border-gray-100 flex flex-col relative sm:my-4 pb-24">
+      <div className="w-full max-w-[480px] h-[100dvh] bg-[#f4f6f4] sm:rounded-[40px] sm:shadow-2xl overflow-hidden sm:border sm:border-gray-100 flex flex-col relative sm:my-4">
         
         {/* Header Nav */}
-        <header className="flex justify-between items-center px-5 py-4 bg-[#f8f9ff]/95 backdrop-blur-md sticky top-0 z-30">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('home')}>
-            {/* Storefront/Market Icon */}
-            <svg 
-              className="w-5 h-5 text-gray-900" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2.2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            <div className="text-left">
-              <span className="font-extrabold text-gray-900 text-[15.5px] leading-tight block">
-                {businessName || 'My Store'}
-              </span>
-            </div>
-          </div>
+        <div className="shrink-0">
+          <Header businessName={businessName} onNavigate={onNavigate} />
+        </div>
 
-          {/* User Profile Outline Icon */}
-          <button 
-            onClick={() => onNavigate('profile')}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-700 hover:bg-gray-100/50 transition-colors cursor-pointer"
-            aria-label="Profile"
-          >
-            <svg 
-              className="w-6 h-6" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </button>
-        </header>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto pb-24" style={{ scrollbarWidth: 'none' }}>
 
         {/* Screen Header */}
         <section className="px-5 pt-2 pb-4 text-left">
@@ -249,8 +214,9 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
           </button>
         </section>
 
-        {/* Bottom Tab Navigation Bar */}
-        <nav className="absolute bottom-0 inset-x-0 bg-white border-t border-gray-150 py-2.5 px-4 flex justify-between items-center z-30 rounded-t-3xl shadow-[0_-4px_16px_rgba(0,0,0,0.02)]">
+            {/* Bottom Tab Navigation Bar */}
+        </div>
+        <nav className="shrink-0 bg-white border-t border-gray-150 py-2.5 px-4 flex justify-between items-center z-30 rounded-t-3xl shadow-[0_-4px_16px_rgba(0,0,0,0.02)]">
           {/* Nav Item: Home */}
           <button 
             onClick={() => onNavigate('home')}

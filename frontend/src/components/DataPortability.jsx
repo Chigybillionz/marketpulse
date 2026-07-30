@@ -96,7 +96,9 @@ export default function DataPortability({ onNavigate, onBack }) {
 
   return (
     <main className="portability-page" aria-label="Data portability export">
-      <section className="portability-shell">
+      <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
+      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+        <div style={{ flexShrink: 0, padding: "18px 18px 0", boxSizing: "border-box", width: "100%" }}>
         <header className="portability-topbar">
           <button
             className="portability-icon-btn"
@@ -115,8 +117,10 @@ export default function DataPortability({ onNavigate, onBack }) {
             <Icon name="help" />
           </button>
         </header>
+        </div>
 
-        <div className="portability-content">
+        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "18px 18px 40px", boxSizing: "border-box", width: "100%" }}>
+        <div className="portability-content" style={{ display: "flex", flexDirection: "column", gap: 20, boxSizing: "border-box" }}>
           <div className="portability-primary">
             <article className="portability-intro">
               <div className="portability-intro-head">
@@ -136,7 +140,7 @@ export default function DataPortability({ onNavigate, onBack }) {
 
             <section className="portability-formats" aria-label="Format selection">
               <h3 className="portability-label">Format Selection</h3>
-              <div className="portability-format-grid">
+              <div className="portability-format-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
                 {FORMATS.map((item) => {
                   const active = item.id === format;
                   return (
@@ -213,7 +217,9 @@ export default function DataPortability({ onNavigate, onBack }) {
             </button>
           </div>
         </div>
+        </div>
       </section>
+      </div>
     </main>
   );
 }

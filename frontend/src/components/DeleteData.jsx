@@ -75,7 +75,9 @@ export default function DeleteData({ onNavigate, onBack }) {
 
   return (
     <main className="delete-data-page" aria-label="Delete my data">
-      <section className="delete-data-shell">
+      <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
+      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+        <div style={{ flexShrink: 0, padding: "18px 18px 0", boxSizing: "border-box", width: "100%" }}>
         <header className="delete-data-topbar">
           <button
             className="delete-data-back"
@@ -88,8 +90,10 @@ export default function DeleteData({ onNavigate, onBack }) {
           <h1>Delete My Data</h1>
           <span className="delete-data-topbar-spacer" aria-hidden="true" />
         </header>
+        </div>
 
-        <div className="delete-data-content">
+        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "18px 18px 40px", boxSizing: "border-box", width: "100%" }}>
+        <div className="delete-data-content" style={{ display: "flex", flexDirection: "column", gap: 22, boxSizing: "border-box" }}>
           <div className="delete-data-primary">
             <article className="delete-data-warning">
               <div className="delete-data-warning-head">
@@ -183,7 +187,9 @@ export default function DeleteData({ onNavigate, onBack }) {
             </p>
           </div>
         </div>
+        </div>
       </section>
+      </div>
     </main>
   );
 }
