@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -112,9 +113,20 @@ export default function PulseTradePin({
   businessName,
   setBalance,
   setMoneyIn,
+  setMoneyOut,
   setTransactionsList,
 }) {
   const [pin, setPin] = useState("");
+  const location = useLocation();
+  const transactionData = location.state?.transactionData || {
+    type: "credit",
+    amount: 15000,
+    description: "Bulk Garri Sale",
+    category: "Dry Goods"
+  };
+  const amountNum = Number(transactionData.amount) || 15000;
+  const isIncome = transactionData.type?.toLowerCase() === 'income' || transactionData.type?.toLowerCase() === 'credit';
+  
   const canConfirm = pin.length === 4;
 
   const addDigit = (digit) => {
@@ -131,30 +143,32 @@ export default function PulseTradePin({
     if (!canConfirm) return;
 
     if (setBalance) {
-      setBalance((prev) => prev + 15000);
+      setBalance((prev) => isIncome ? prev + amountNum : prev - amountNum);
     }
 
-    if (setMoneyIn) {
-      setMoneyIn((prev) => prev + 15000);
+    if (isIncome && setMoneyIn) {
+      setMoneyIn((prev) => prev + amountNum);
+    } else if (!isIncome && setMoneyOut) {
+      setMoneyOut((prev) => prev + amountNum);
     }
 
     if (setTransactionsList) {
       const newTx = {
         id: Date.now(),
-        type: "credit",
-        icon: "bag",
-        title: "Bulk Garri Sale",
-        meta: "Today, 11:30 AM - Voice Input",
-        amount: "+\u20A615,000",
-        isPositive: true,
-        iconBg: "bg-green-100",
-        iconColor: "text-green-800",
+        type: isIncome ? "credit" : "debit",
+        icon: isIncome ? "bag" : "bolt",
+        title: transactionData.description || "Voice Input",
+        meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - Voice Input`,
+        amount: `${isIncome ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
+        isPositive: isIncome,
+        iconBg: isIncome ? "bg-green-100" : "bg-red-100",
+        iconColor: isIncome ? "text-green-800" : "text-red-600",
       };
 
       setTransactionsList((prev) => [newTx, ...prev]);
     }
 
-    onNavigate("weekly_pulse");
+    onNavigate("home"); // Navigate back to dashboard after completing
   };
 
   return (
@@ -215,7 +229,7 @@ export default function PulseTradePin({
 
               <div className="trade-pin-hero-card">
                 <span>Transaction amount</span>
-                <strong>&#8358;15,000</strong>
+                <strong>&#8358;{amountNum.toLocaleString()}</strong>
               </div>
             </div>
 
@@ -228,8 +242,8 @@ export default function PulseTradePin({
           <section className="trade-pin-panel">
             <div className="trade-pin-intro">
               <p>
-                Enter your 4-digit PIN to confirm this sale of{" "}
-                <strong>&#8358;15,000.</strong>
+                Enter your 4-digit PIN to confirm this {isIncome ? 'sale' : 'expense'} of{" "}
+                <strong>&#8358;{amountNum.toLocaleString()}.</strong>
               </p>
             </div>
 

@@ -106,8 +106,8 @@ function App() {
   ]);
 
   // Navigate by page id (keeps the existing onNavigate("id") API across the app).
-  const handleNavigate = (page) => {
-    navigate(PATHS[page] ?? "/home");
+  const handleNavigate = (page, state) => {
+    navigate(PATHS[page] ?? "/home", { state });
   };
 
   // "Back" uses the real browser history, so arrows return to the actual
@@ -205,6 +205,7 @@ function App() {
             businessName={businessName}
             setBalance={setBalance}
             setMoneyIn={setMoneyIn}
+            setMoneyOut={setMoneyOut}
             setTransactionsList={setTransactionsList}
           />
         }

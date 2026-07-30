@@ -1,4 +1,15 @@
+import { useLocation } from 'react-router-dom';
+
 export default function AIConfirmation({ onNavigate }) {
+  const location = useLocation();
+  const transactionData = location.state?.transactionData || {
+    type: 'Income',
+    amount: 15000,
+    description: '2 bags of garri',
+    category: 'Dry Goods'
+  };
+
+  const isIncome = transactionData.type?.toLowerCase() === 'income';
   return (
     <div className="min-h-screen bg-[#eef1f7] flex justify-center items-center p-0 sm:p-4 font-sans text-gray-800 antialiased selection:bg-[#052e16] selection:text-white">
       {/* Mobile Screen Container Mockup */}
@@ -69,8 +80,8 @@ export default function AIConfirmation({ onNavigate }) {
                   <path d="M10 12h4" />
                 </svg>
               </div>
-              <span className="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-                INCOME (SALE)
+              <span className={`text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${isIncome ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                {transactionData.type}
               </span>
             </div>
 
@@ -80,7 +91,7 @@ export default function AIConfirmation({ onNavigate }) {
                 Transaction Value
               </span>
               <h3 className="text-3xl font-black text-gray-950 tracking-tight leading-none mt-1 font-sans">
-                ₦15,000
+                ₦{Number(transactionData.amount).toLocaleString()}
               </h3>
               
               <div className="h-[1px] bg-gray-100 my-4" />
@@ -91,7 +102,7 @@ export default function AIConfirmation({ onNavigate }) {
                     Description
                   </span>
                   <span className="text-[13.5px] font-extrabold text-gray-950 leading-tight block mt-1 font-sans">
-                    2 bags of garri
+                    {transactionData.description}
                   </span>
                 </div>
                 <div>
@@ -99,7 +110,7 @@ export default function AIConfirmation({ onNavigate }) {
                     Category
                   </span>
                   <span className="text-[13.5px] font-extrabold text-[#052e16] leading-tight block mt-1 font-sans">
-                    Dry Goods
+                    {transactionData.category}
                   </span>
                 </div>
               </div>
@@ -131,7 +142,7 @@ export default function AIConfirmation({ onNavigate }) {
         {/* 5. Fixed Primary Action Button at Bottom */}
         <div className="absolute bottom-0 left-0 right-0 px-5 py-6 bg-gradient-to-t from-[#f8f9ff] via-[#f8f9ff] to-transparent sticky-bottom z-30">
           <button
-            onClick={() => onNavigate('pulse_trade_pin')}
+            onClick={() => onNavigate('pulse_trade_pin', { transactionData })}
             className="w-full bg-[#052e16] hover:bg-[#084221] active:scale-[0.98] text-white font-extrabold py-4 px-6 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-200 text-sm tracking-wide"
           >
             <span>Confirm &amp; Save</span>

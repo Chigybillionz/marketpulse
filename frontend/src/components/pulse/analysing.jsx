@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { transcribeAndAnalyze } from '../../services/geminiService';
 
 const ANALYSIS_DURATION_MS = 3500;
-const ANALYSIS_NEXT_PAGE = 'pulse_trade_pin';
+const ANALYSIS_NEXT_PAGE = 'ai_confirmation';
 
 function StoreIcon() {
   return (
@@ -73,15 +75,56 @@ function CreditIcon() {
 }
 
 export default function Analysing({ onNavigate, businessName }) {
+  const location = useLocation();
+
   useEffect(() => {
     if (!onNavigate) return undefined;
 
-    const timer = setTimeout(() => {
-      onNavigate(ANALYSIS_NEXT_PAGE);
-    }, ANALYSIS_DURATION_MS + 250);
+    let isMounted = true;
 
-    return () => clearTimeout(timer);
-  }, [onNavigate]);
+    const analyzeAudio = async () => {
+      try {
+        const audioBase64 = location.state?.audioBase64;
+        let transactionData = null;
+
+        if (audioBase64) {
+          transactionData = await transcribeAndAnalyze(audioBase64);
+        } else {
+          // Fallback static analysis if no audio provided (simulated delay)
+          await new Promise(resolve => setTimeout(resolve, ANALYSIS_DURATION_MS));
+          transactionData = {
+            type: "Income",
+            amount: 15000,
+            description: "Sold 2 bags of garri",
+            category: "Dry Goods"
+          };
+        }
+
+        if (isMounted) {
+          onNavigate(ANALYSIS_NEXT_PAGE, { transactionData });
+        }
+      } catch (error) {
+        console.error("Analysis failed:", error);
+        // Fallback on error
+        if (isMounted) {
+          onNavigate(ANALYSIS_NEXT_PAGE, { 
+            transactionData: {
+                type: "Income",
+                amount: 0,
+                description: "Analysis failed",
+                category: "Other"
+            }
+          });
+        }
+      }
+    };
+
+    analyzeAudio();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [onNavigate, location.state]);
 
   return (
     <main className="listening-page" aria-label="MarketPulse AI speech analysis screen">

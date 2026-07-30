@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from 'react';
+import { VoiceRecorder } from '../../services/voiceRecorder';
+
 function StoreIcon() {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true">
@@ -66,9 +69,50 @@ function CreditIcon() {
 }
 
 export default function Listeng({ onNavigate, businessName }) {
-  const handleStopAndAnalyze = () => {
-    if (onNavigate) {
-      onNavigate('analysing');
+  const recorderRef = useRef(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    recorderRef.current = new VoiceRecorder();
+    
+    const startAudio = async () => {
+      try {
+        await recorderRef.current.startRecording();
+        setIsRecording(true);
+      } catch (err) {
+        console.error(err);
+        setError("Microphone access denied or not supported.");
+      }
+    };
+    
+    startAudio();
+
+    return () => {
+      if (recorderRef.current) {
+        recorderRef.current.stopMediaStream();
+      }
+    };
+  }, []);
+
+  const handleStopAndAnalyze = async () => {
+    if (!recorderRef.current || !isRecording) {
+        if (onNavigate) onNavigate('analysing'); // Fallback if mic failed
+        return;
+    }
+    
+    try {
+      const audioBlob = await recorderRef.current.stopRecording();
+      setIsRecording(false);
+      const audioBase64 = await recorderRef.current.audioToBase64(audioBlob);
+      
+      if (onNavigate) {
+        onNavigate('analysing', { audioBase64 });
+      }
+    } catch (err) {
+      console.error("Error stopping recording:", err);
+      setError("Failed to process audio.");
+      if (onNavigate) onNavigate('analysing'); // Fallback
     }
   };
 
