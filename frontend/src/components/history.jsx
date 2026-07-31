@@ -257,12 +257,7 @@ export default function History({
       subtitle="Every sale and expense, logged"
     >
       <main className="history-page">
-        <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
-        <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
-          <div style={{ flexShrink: 0 }}>
-            <Header businessName={businessName} onNavigate={onNavigate} />
-          </div>
-          <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "12px 28px 40px", boxSizing: "border-box", width: "100%" }}>
+        <Header businessName={businessName} onNavigate={onNavigate} />
           <div className="history-tabs">
             {historyTabs.map((tab) => (
               <button
@@ -296,7 +291,7 @@ export default function History({
               </section>
             </>
           )}
-          <nav className="mp-bottom-nav history-active">
+          <nav className="mp-bottom-nav mobile-only-nav history-active">
             {["home", "pulse", "history", "credit"].map((item) => (
               <button
                 type="button"
@@ -315,9 +310,6 @@ export default function History({
               </button>
             ))}
           </nav>
-          </div>
-        </section>
-        </div>
       </main>
     </AppShell>
   );

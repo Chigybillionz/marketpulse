@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Header from '../home/Header';
+import AppShell from '../layout/AppShell';
 
 export default function WeeklyPulse({ onNavigate, businessName }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -27,8 +28,14 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
-      <div style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+    <AppShell
+      active="pulse"
+      onNavigate={onNavigate}
+      businessName={businessName}
+      title="Weekly Pulse"
+      subtitle="Real-time performance audio-summary and insights."
+    >
+      <div style={{ width: "100%", height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
         
         <div style={{ flexShrink: 0 }}>
           <Header businessName={businessName} onNavigate={onNavigate} />
@@ -87,6 +94,8 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
                         transition: "all 0.3s",
                         backgroundColor: isPlayed ? "#052e16" : "#e5e7eb",
                         height: `${height}px`,
+                        flex: 1,
+                        margin: "0 1px"
                       }}
                     />
                   );
@@ -175,7 +184,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
 
         </div>
         
-        <div style={{ flexShrink: 0, width: "100%" }}>
+        <div style={{ flexShrink: 0, width: "100%" }} className="mp-bottom-nav mobile-only-nav">
           <nav style={{ backgroundColor: "white", borderTop: "1px solid #f3f4f6", padding: "10px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 30, borderTopLeftRadius: 24, borderTopRightRadius: 24, boxShadow: "0 -4px 16px rgba(0,0,0,0.02)" }}>
             <button 
               onClick={() => onNavigate('home')}
@@ -235,6 +244,6 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
         </div>
 
       </div>
-    </div>
+    </AppShell>
   );
 }

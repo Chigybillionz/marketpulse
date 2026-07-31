@@ -61,12 +61,7 @@ export default function Credit({ onNavigate, businessName }) {
       subtitle="Track money owed to your store"
     >
     <main className="credit-page">
-      <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
-      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
-        <div style={{ flexShrink: 0 }}>
-          <Header businessName={businessName} onNavigate={onNavigate} />
-        </div>
-        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "12px 28px 40px", boxSizing: "border-box", width: "100%" }}>
+        <Header businessName={businessName} onNavigate={onNavigate} />
         <section className="credit-overview">
           <span>CREDIT OVERVIEW</span>
           <h1>Total Money Outside:<br />₦150,000</h1>
@@ -74,7 +69,7 @@ export default function Credit({ onNavigate, businessName }) {
         </section>
         <div className="credit-section-title"><h2>Active Debtors</h2><span>14 People</span></div>
         <section className="credit-list">{debtors.map((debtor) => <DebtorCard debtor={debtor} key={debtor.name} />)}</section>
-        <nav className="mp-bottom-nav credit-active">
+        <nav className="mp-bottom-nav mobile-only-nav credit-active">
           {['home', 'pulse', 'history', 'credit'].map((item) => (
             <button 
               type="button" 
@@ -87,9 +82,6 @@ export default function Credit({ onNavigate, businessName }) {
             </button>
           ))}
           </nav>
-        </div>
-      </section>
-      </div>
     </main>
     </AppShell>
   )

@@ -3961,3 +3961,10 @@
     font-size: 26px;
   }
 }
+
+@media (min-width: 1024px) {
+  .mobile-only-header,
+  .mobile-only-nav {
+    display: none !important;
+  }
+}

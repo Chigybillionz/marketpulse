@@ -129,12 +129,7 @@ export default function Listeng({ onNavigate, businessName }) {
 
   return (
     <main className="listening-page" aria-label="MarketPulse AI voice listening screen">
-      <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
-      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
-        <div style={{ flexShrink: 0 }}>
-          <Header businessName={businessName} onNavigate={onNavigate} />
-        </div>
-        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "13px 36px 0", boxSizing: "border-box", width: "100%" }}>
+        <Header businessName={businessName} onNavigate={onNavigate} />
 
         <section className="listening-main" aria-labelledby="listening-title">
           <button 
@@ -197,8 +192,7 @@ export default function Listeng({ onNavigate, businessName }) {
             </button>
           </div>
           </section>
-        </div>
-        <div style={{ flexShrink: 0, width: "100%" }}>
+        <div style={{ flexShrink: 0, width: "100%" }} className="mobile-only-nav">
           <nav className="listening-bottom-nav" aria-label="Primary navigation">
             <button 
               onClick={() => onNavigate && onNavigate('home')} 
@@ -235,8 +229,6 @@ export default function Listeng({ onNavigate, businessName }) {
             </button>
           </nav>
         </div>
-      </section>
-      </div>
     </main>
   )
 }

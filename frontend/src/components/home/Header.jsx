@@ -8,6 +8,7 @@ export default function Header({ businessName, onNavigate }) {
   return (
     <>
     <header
+      className="mobile-only-header"
       style={{
         display: 'flex',
         alignItems: 'center',
