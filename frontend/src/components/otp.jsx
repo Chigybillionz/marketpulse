@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 // import { verifyOTP } from "../services/authService";
 import FlowLayout from "./layout/FlowLayout";
+import TermsOfService from "./TermsOfService";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 export default function Otp({ onNavigate, phoneNumber, isNewUser, businessName }) {
   const [legalView, setLegalView] = useState(null);
@@ -39,10 +41,10 @@ export default function Otp({ onNavigate, phoneNumber, isNewUser, businessName }
     const otp = otpDigits.join("");
     // OTP validation is temporarily bypassed while the UI flow is being built.
     // Restore this block and the verifyOTP call when the backend is ready.
-    // if (otp.length < 4) {
-    //   setError("Please enter the full 4-digit code");
-    //   return;
-    // }
+    if (otp.length < 4) {
+      setError("Please enter the full 4-digit code");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -521,125 +523,14 @@ export default function Otp({ onNavigate, phoneNumber, isNewUser, businessName }
       </div>
 
       {/* ── LEGAL OVERLAY ── */}
-      {legalView && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "#F5F5E8",
-            zIndex: 50,
-            display: "flex",
-            flexDirection: "column",
-            padding: "24px",
-            maxWidth: 430,
-            margin: "0 auto",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 14,
-              marginBottom: 20,
-            }}
-          >
-            <button
-              onClick={() => setLegalView(null)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 4,
-              }}
-            >
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#111827"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="19" y1="12" x2="5" y2="12" />
-                <polyline points="12 19 5 12 12 5" />
-              </svg>
-            </button>
-            <h1
-              style={{
-                fontSize: 20,
-                fontWeight: 800,
-                color: "#111827",
-                margin: 0,
-              }}
-            >
-              {legalView === "terms" ? "Terms of Service" : "Privacy Policy"}
-            </h1>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              fontSize: 14,
-              color: "#4B5563",
-              lineHeight: 1.7,
-            }}
-          >
-            {legalView === "terms" ? (
-              <>
-                <p style={{ fontWeight: 700, color: "#111827" }}>
-                  1. Acceptance of Terms
-                </p>
-                <p>
-                  Welcome to MarketPulse AI. By accessing or using our
-                  application, you agree to comply with and be bound by these
-                  Terms of Service.
-                </p>
-                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
-                  2. Description of Service
-                </p>
-                <p>
-                  MarketPulse AI provides local merchants with tools to track
-                  sales, manage inventory alerts, log credits, and analyze
-                  trading voice notes using advanced AI parsing.
-                </p>
-                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
-                  3. Security and Trade PIN
-                </p>
-                <p>
-                  You are responsible for safeguarding your 4-digit Trade PIN
-                  used to authenticate financial records.
-                </p>
-              </>
-            ) : (
-              <>
-                <p style={{ fontWeight: 700, color: "#111827" }}>
-                  1. Information We Collect
-                </p>
-                <p>
-                  We collect your business name, verified phone number,
-                  inventory thresholds, and voice transcripts parsed by Gemini
-                  1.5 Flash.
-                </p>
-                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
-                  2. How We Use Data
-                </p>
-                <p>
-                  Your details are stored securely and used only to present
-                  customized Weekly Pulse summaries and alert logs to your store
-                  profile.
-                </p>
-                <p style={{ fontWeight: 700, color: "#111827", marginTop: 16 }}>
-                  3. Encryption & Protection
-                </p>
-                <p>
-                  All sensitive information is encrypted in transit and at rest.
-                  We never share your data with third parties.
-                </p>
-              </>
-            )}
-          </div>
+      {legalView === "terms" && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#fff", display: "flex", flexDirection: "column" }}>
+          <TermsOfService onBack={() => setLegalView(null)} />
+        </div>
+      )}
+      {legalView === "privacy" && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#fff", display: "flex", flexDirection: "column" }}>
+          <PrivacyPolicy onBack={() => setLegalView(null)} />
         </div>
       )}
     </div>
