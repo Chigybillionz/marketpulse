@@ -1,6 +1,8 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 // import { requestOTP } from "../services/authService";
 import FlowLayout from "./layout/FlowLayout";
+import TermsOfService from "./TermsOfService";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 export default function WelcomePage({
   onNavigate,
@@ -12,6 +14,8 @@ export default function WelcomePage({
 }) {
   const [language, setLanguage] = useState("English");
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,8 +37,12 @@ export default function WelcomePage({
       // await requestOTP(phoneNumber, businessName);
       // console.log("OTP request successful!");
 
-      // Logic for new/returning user (can be refined based on backend response later)
-      setIsNewUser(true);
+      // Logic for new/returning user
+      if (businessName.trim().toLowerCase() === "mama ngozi provisions") {
+        setIsNewUser(false);
+      } else {
+        setIsNewUser(true);
+      }
 
       onNavigate("otp");
     } catch (err) {
@@ -506,7 +514,7 @@ export default function WelcomePage({
           <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
             <button
               type="button"
-              onClick={() => onNavigate && onNavigate("privacy_policy")}
+              onClick={() => setShowPrivacy(true)}
               style={{
                 fontSize: 12,
                 color: "#9CA3AF",
@@ -519,7 +527,7 @@ export default function WelcomePage({
             </button>
             <button
               type="button"
-              onClick={() => onNavigate && onNavigate("terms_of_service")}
+              onClick={() => setShowTerms(true)}
               style={{
                 fontSize: 12,
                 color: "#9CA3AF",
@@ -534,6 +542,17 @@ export default function WelcomePage({
         </div>
 
       </div>
+
+      {showTerms && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#fff", display: "flex", flexDirection: "column" }}>
+          <TermsOfService onBack={() => setShowTerms(false)} />
+        </div>
+      )}
+      {showPrivacy && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#fff", display: "flex", flexDirection: "column" }}>
+          <PrivacyPolicy onBack={() => setShowPrivacy(false)} />
+        </div>
+      )}
     </FlowLayout>
   );
 }

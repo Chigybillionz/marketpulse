@@ -196,42 +196,43 @@ export default function Listeng({ onNavigate, businessName }) {
               Cancel
             </button>
           </div>
-        </section>
-
-        <nav className="listening-bottom-nav" aria-label="Primary navigation">
-          <button 
-            onClick={() => onNavigate && onNavigate('home')} 
-            aria-label="Home"
-            className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
-          >
-            <HomeIcon />
-            <span>Home</span>
-          </button>
-          <button 
-            onClick={() => onNavigate && onNavigate('listeng')} 
-            className="active cursor-pointer flex flex-col items-center bg-transparent border-0 font-sans"
-          >
-            <span className="active-icon">
-              <MicrophoneIcon />
-            </span>
-            <span>Pulse</span>
-          </button>
-          <button 
-            onClick={() => onNavigate && onNavigate('history')} 
-            aria-label="History"
-            className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
-          >
-            <HistoryIcon />
-            <span>History</span>
-          </button>
-          <button 
-            onClick={() => onNavigate && onNavigate('credit')} 
-            aria-label="Credit"
-            className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
-          >
-            <CreditIcon />
-            <span>Credit</span>
-          </button>
+          </section>
+        </div>
+        <div style={{ flexShrink: 0, width: "100%" }}>
+          <nav className="listening-bottom-nav" aria-label="Primary navigation">
+            <button 
+              onClick={() => onNavigate && onNavigate('home')} 
+              aria-label="Home"
+              className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
+            >
+              <HomeIcon />
+              <span>Home</span>
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('listeng')} 
+              className="active cursor-pointer flex flex-col items-center bg-transparent border-0 font-sans"
+            >
+              <span className="active-icon">
+                <MicrophoneIcon />
+              </span>
+              <span>Pulse</span>
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('history')} 
+              aria-label="History"
+              className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
+            >
+              <HistoryIcon />
+              <span>History</span>
+            </button>
+            <button 
+              onClick={() => onNavigate && onNavigate('credit')} 
+              aria-label="Credit"
+              className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
+            >
+              <CreditIcon />
+              <span>Credit</span>
+            </button>
           </nav>
         </div>
       </section>

@@ -1,7 +1,7 @@
 # MarketPulse AI - Implementation Todo List
 
 ## Phase 2: Onboarding Flow
-- [ ] **WelcomePage.jsx**: Connect inputs to global state, add "Send OTP" logic, full-screen overlays (Terms/Privacy), and back navigation.
+- [x] **WelcomePage.jsx**: Connect inputs to global state, add "Send OTP" logic, full-screen overlays (Terms/Privacy), and back navigation.
 - [ ] **otp.jsx**: Display phone number from state, implement "Verify & Continue" logic for new/returning users, full-screen overlays, and back navigation.
 - [ ] **ledger.jsx**: Add onNavigate prop, "Set Secure PIN" logic, back navigation, and PIN validation.
 
