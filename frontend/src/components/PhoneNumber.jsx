@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ChevronLeft,
   Edit3,
@@ -6,8 +6,6 @@ import {
   Shield,
   Bell,
   Package,
-  Store,
-  Truck,
 } from "lucide-react";
 
 export default function PhoneNumber({ onNavigate }) {

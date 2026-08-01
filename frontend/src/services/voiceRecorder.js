@@ -48,7 +48,7 @@ export class VoiceRecorder {
       return true;
     } catch (error) {
       console.error("Error accessing microphone:", error);
-      throw new Error(`Microphone access denied: ${error.message}`);
+      throw new Error(`Microphone access denied: ${error.message}`, { cause: error });
     }
   }
 

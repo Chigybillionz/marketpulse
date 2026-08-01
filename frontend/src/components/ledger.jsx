@@ -70,7 +70,7 @@ function CheckIcon() {
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-export default function Ledger({ onNavigate, phoneNumber }) {
+export default function Ledger({ onNavigate }) {
   const [pin, setPin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

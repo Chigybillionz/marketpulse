@@ -24,7 +24,7 @@
 - [x] **AI Confirmation**: Connect real parsed data to the confirmation UI.
 
 ## Phase 6: Vercel Deployment
-- [ ] **Preparation**: Run `npm run build`, `npm run lint`, create `.env.example`, update `.gitignore`.
+- [x] **Preparation**: Run `npm run build`, `npm run lint`, create `.env.example`, update `.gitignore`.
 - [ ] **Vercel Setup**: Connect GitHub, config env vars, set root directory, configure build settings.
 - [ ] **Domain & SSL**: Add domain, verify HTTPS, update whitelist.
 - [ ] **Post-Deployment**: Test flows, monitor logs, setup analytics.

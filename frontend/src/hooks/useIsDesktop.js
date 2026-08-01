@@ -18,7 +18,6 @@ export default function useIsDesktop(minWidth = 1024) {
     if (typeof window === "undefined" || !window.matchMedia) return;
     const mql = window.matchMedia(query);
     const handler = (e) => setIsDesktop(e.matches);
-    setIsDesktop(mql.matches);
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, [query]);
