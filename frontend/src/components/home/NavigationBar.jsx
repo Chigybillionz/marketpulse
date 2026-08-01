@@ -11,13 +11,20 @@ export default function NavigationBar({ onNavigate, currentPage }) {
   return (
     <nav
       style={{
+        position: 'fixed',
+        bottom: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1000,
         width: '100%',
+        maxWidth: 768,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-around',
-        padding: '8px 8px 20px 8px',
-        background: '#fff',
+        padding: '14px 8px 24px 8px',
+        background: 'rgba(255, 255, 255, 0.98)',
         borderTop: '1px solid #eee',
+        boxShadow: '0 -8px 24px rgba(20, 33, 43, 0.04)',
       }}
     >
       {NAV_ITEMS.map(({ key, label, Icon }) => {
