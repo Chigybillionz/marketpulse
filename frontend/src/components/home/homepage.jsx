@@ -39,76 +39,27 @@ export default function Homepage({
           <FloatingMic onNavigate={onNavigate} variant="desktop" />
         </div>
       ) : (
-        /* ── Mobile: phone frame with fixed header + bottom nav ── */
-        <div
-          style={{
-            minHeight: "100vh",
-            background: "#e8ede8",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            fontFamily:
-              "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-            WebkitFontSmoothing: "antialiased",
-          }}
-        >
-          {/* Phone container */}
-          <div
-            style={{
-              width: "100%",
-              maxWidth: 480,
-              height: "100dvh",
-              background: "#f4f6f4",
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            {/* 1 — Header */}
-            <div style={{ flexShrink: 0 }}>
-              <Header businessName={businessName} onNavigate={onNavigate} />
-            </div>
-
-            {/* 2 — Scrollable body */}
-            <div
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                WebkitOverflowScrolling: "touch",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              <style>{`.home-scroll::-webkit-scrollbar{display:none}`}</style>
-              <div
-                className="home-scroll"
-                style={{
-                  height: "100%",
-                  overflowY: "auto",
-                  scrollbarWidth: "none",
-                }}
-              >
-                <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
-                <MarketPulse onNavigate={onNavigate} />
-                <TransactionList
-                  transactionsList={transactionsList}
-                  onNavigate={onNavigate}
-                />
-                {/* Spacer for floating mic clearance */}
-                <div style={{ height: 40 }} />
-              </div>
-            </div>
-
-            {/* 3 — Floating mic */}
-            <FloatingMic onNavigate={onNavigate} />
-
-            {/* 4 — Bottom navigation — always at bottom */}
-            <div style={{ flexShrink: 0 }}>
-              <NavigationBar onNavigate={onNavigate} currentPage="home" />
-            </div>
+        /* ── Mobile: Native fluid layout with fixed header + bottom nav ── */
+        <main className="home-page">
+          <Header businessName={businessName} onNavigate={onNavigate} />
+          
+          <div className="home-scroll">
+            <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
+            <MarketPulse onNavigate={onNavigate} />
+            <TransactionList
+              transactionsList={transactionsList}
+              onNavigate={onNavigate}
+            />
+            {/* Spacer for floating mic clearance */}
+            <div style={{ height: 120 }} />
           </div>
-        </div>
+
+          <FloatingMic onNavigate={onNavigate} />
+
+          <div className="mobile-only-nav" style={{ width: "100%", flexShrink: 0 }}>
+            <NavigationBar onNavigate={onNavigate} currentPage="home" />
+          </div>
+        </main>
       )}
     </AppShell>
   );

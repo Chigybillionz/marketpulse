@@ -1618,6 +1618,7 @@
 
 /* trade-pin styles moved to styles/responsive.css (single source of truth). */
 
+.home-page,
 .history-page,
 .credit-page {
   min-height: 100svh;
