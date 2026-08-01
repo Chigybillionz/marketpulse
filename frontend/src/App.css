@@ -896,7 +896,8 @@
   background: #eef1f7;
   color: #052e16;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .listening-phone {
@@ -1622,7 +1623,8 @@
   min-height: 100svh;
   background: #eef1f7;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   color: #061309;
 }
 
@@ -2281,7 +2283,8 @@
   min-height: 100svh;
   background: #eef1f7;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   color: #07150d;
 }
 
