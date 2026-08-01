@@ -10,11 +10,17 @@ export default function Header({ businessName, onNavigate }) {
     <header
       className="mobile-only-header"
       style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '48px 20px 12px 20px',
-        background: 'transparent',
+        background: 'rgba(238, 241, 247, 0.85)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.03)',
       }}
     >
       {/* Left icon — opens the slide-in navigation menu */}
