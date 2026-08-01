@@ -898,6 +898,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  padding-bottom: 120px;
 }
 
 .listening-phone {
@@ -1119,8 +1120,13 @@
 }
 
 .listening-bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(100%, 768px);
+  z-index: 1000;
   height: 118px;
-  margin: 58px -36px 0;
   padding: 18px 38px 13px;
   border-radius: 19px 19px 0 0;
   background: rgba(255, 255, 255, 0.96);
@@ -1532,7 +1538,6 @@
 
   .listening-bottom-nav {
     height: 64px;
-    margin: 32px -20px 0;
     padding: 8px 16px 8px;
   }
 
@@ -1627,6 +1632,7 @@
   flex-direction: column;
   justify-content: flex-start;
   color: #061309;
+  padding-bottom: 120px;
 }
 
 .history-phone,
@@ -2022,6 +2028,7 @@
   bottom: 0;
   transform: translateX(-50%);
   width: min(100%, 768px);
+  z-index: 1000;
   height: 118px;
   border-radius: 18px 18px 0 0;
   background: rgba(255, 255, 255, 0.96);
@@ -2287,6 +2294,7 @@
   flex-direction: column;
   justify-content: flex-start;
   color: #07150d;
+  padding-bottom: 120px;
 }
 
 .profile-phone {
