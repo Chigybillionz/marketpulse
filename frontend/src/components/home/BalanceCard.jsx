@@ -1,8 +1,6 @@
 import { TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
 
-export default function BalanceCard({ moneyIn, moneyOut }) {
-  const netProfit = moneyIn - moneyOut;
-
+export default function BalanceCard({ balance, moneyIn, moneyOut }) {
   const fmt = (n) => {
     if (n >= 1_000_000) return `₦${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}m`;
     if (n >= 1_000)     return `₦${Math.round(n / 1_000)}k`;
@@ -84,7 +82,7 @@ export default function BalanceCard({ moneyIn, moneyOut }) {
           </div>
         </div>
 
-        {/* NET PROFIT */}
+        {/* GLOBAL BALANCE */}
         <div
           style={{
             flex: 1,
@@ -102,10 +100,10 @@ export default function BalanceCard({ moneyIn, moneyOut }) {
           }}
         >
           <span style={{ fontSize: 10, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            Net Profit
+            Balance
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
-            {fmt(netProfit)}
+            {fmt(balance || 142500)}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 'auto' }}>
             <BarChart2 size={13} strokeWidth={2.5} color="#888" />

@@ -11,8 +11,8 @@ export default function AIConfirmation({ onNavigate }) {
 
   const isIncome = transactionData.type?.toLowerCase() === 'income';
   return (
-    <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
-      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f8f9ff", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+    <div className="ai-confirmation-page">
+      <section className="ai-confirmation-shell">
         
         {/* 1. Top Navigation Bar */}
         <header style={{ flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "#f8f9ff", zIndex: 30 }}>

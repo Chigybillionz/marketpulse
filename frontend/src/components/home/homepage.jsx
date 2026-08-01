@@ -10,6 +10,7 @@ import useIsDesktop from "../../hooks/useIsDesktop";
 export default function Homepage({
   onNavigate,
   businessName,
+  balance,
   moneyIn,
   moneyOut,
   transactionsList,
@@ -27,7 +28,7 @@ export default function Homepage({
       {isDesktop ? (
         /* ── Desktop: wide dashboard grid inside the app shell ── */
         <div className="mp-home">
-          <BalanceCard moneyIn={moneyIn} moneyOut={moneyOut} />
+          <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
           <div className="mp-home-grid">
             <MarketPulse onNavigate={onNavigate} />
             <TransactionList
@@ -88,7 +89,7 @@ export default function Homepage({
                   scrollbarWidth: "none",
                 }}
               >
-                <BalanceCard moneyIn={moneyIn} moneyOut={moneyOut} />
+                <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
                 <MarketPulse onNavigate={onNavigate} />
                 <TransactionList
                   transactionsList={transactionsList}

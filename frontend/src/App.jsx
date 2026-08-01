@@ -158,6 +158,7 @@ function App() {
           <Homepage
             onNavigate={handleNavigate}
             businessName={businessName}
+            balance={balance}
             moneyIn={moneyIn}
             moneyOut={moneyOut}
             transactionsList={transactionsList}
