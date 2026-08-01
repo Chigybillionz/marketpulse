@@ -5,8 +5,8 @@ export default function FloatingMic({ onNavigate, variant }) {
     <div
       className={variant === 'desktop' ? 'mp-fab-desktop' : undefined}
       style={{
-        position: 'absolute',
-        bottom: 52,
+        position: 'fixed',
+        bottom: 100,
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 100,
