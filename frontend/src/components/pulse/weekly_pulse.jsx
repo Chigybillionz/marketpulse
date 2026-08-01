@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from '../home/Header';
 import AppShell from '../layout/AppShell';
+import NavigationBar from '../home/NavigationBar';
 
 export default function WeeklyPulse({ onNavigate, businessName }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -184,64 +185,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
 
         </div>
         
-        <div style={{ flexShrink: 0, width: "100%" }} className="mp-bottom-nav mobile-only-nav">
-          <nav style={{ backgroundColor: "white", borderTop: "1px solid #f3f4f6", padding: "10px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 30, borderTopLeftRadius: 24, borderTopRightRadius: 24, boxShadow: "0 -4px 16px rgba(0,0,0,0.02)" }}>
-            <button 
-              onClick={() => onNavigate('home')}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1, color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}
-            >
-              <svg style={{ width: 20, height: 20 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                Home
-              </span>
-            </button>
-
-            <button style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1, background: "none", border: "none", cursor: "pointer" }}>
-              <div style={{ backgroundColor: "#052e16", color: "white", padding: "6px 20px", borderRadius: 9999, display: "flex", alignItems: "center", justifyContent: "center", transform: "scale(1.05)", boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)" }}>
-                <svg style={{ width: 20, height: 20 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                  <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
-                  <line x1="12" y1="19" x2="12" y2="22" />
-                </svg>
-              </div>
-              <span style={{ fontSize: 10, fontWeight: 800, color: "#052e16", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                Pulse
-              </span>
-            </button>
-
-            <button 
-              onClick={() => onNavigate('history')}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1, color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}
-            >
-              <svg style={{ width: 20, height: 20 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                <polyline points="3 3 3 8 8 8" />
-                <line x1="12" y1="7" x2="12" y2="12" />
-                <line x1="12" y1="12" x2="16" y2="14" />
-              </svg>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                History
-              </span>
-            </button>
-
-            <button 
-              onClick={() => onNavigate('credit')}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1, color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}
-            >
-              <svg style={{ width: 20, height: 20 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-                <line x1="2" y1="10" x2="22" y2="10" />
-                <path d="M6 14h.01M10 14h.01" />
-              </svg>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                Credit
-              </span>
-            </button>
-          </nav>
-        </div>
+        <NavigationBar onNavigate={onNavigate} currentPage="pulse" />
 
       </div>
     </AppShell>

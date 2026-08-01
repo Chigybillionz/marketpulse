@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { transcribeAndAnalyze } from '../../services/geminiService';
-
+import NavigationBar from '../home/NavigationBar';
 const ANALYSIS_DURATION_MS = 3500;
 const ANALYSIS_NEXT_PAGE = 'ai_confirmation';
 
@@ -36,43 +36,7 @@ function SparklesIcon() {
   );
 }
 
-function MicrophoneIcon() {
-  return (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <rect x="24" y="10" width="16" height="31" rx="8" fill="currentColor" />
-      <path d="M16 31c0 9 6.7 16 16 16s16-7 16-16" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-      <path d="M32 47v9" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-    </svg>
-  );
-}
 
-function HomeIcon() {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <path d="M5 12.4 14 5l9 7.4V24h-6v-7h-6v7H5V12.4Z" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function HistoryIcon() {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <path d="M7.5 8.2A9 9 0 1 1 6 15" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M4 8.2h3.5V4.7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M14 9v6l4 2" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function CreditIcon() {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <rect x="4" y="8" width="20" height="13" rx="1.5" fill="none" stroke="currentColor" strokeWidth="2.4" />
-      <circle cx="14" cy="14.5" r="3.2" fill="none" stroke="currentColor" strokeWidth="2.1" />
-      <path d="M4 12h3M21 17h3" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 export default function Analysing({ onNavigate, businessName }) {
   const location = useLocation();
@@ -179,43 +143,7 @@ export default function Analysing({ onNavigate, businessName }) {
 
         <div className="analysing-bottom-preview" aria-hidden="true" />
 
-        <nav className="listening-bottom-nav" aria-label="Primary navigation">
-          <button
-            onClick={() => onNavigate && onNavigate('home')}
-            type="button"
-            aria-label="Home"
-          >
-            <HomeIcon />
-            <span>Home</span>
-          </button>
-          <button
-            onClick={() => onNavigate && onNavigate('listeng')}
-            type="button"
-            className="active"
-            aria-label="Pulse"
-          >
-            <span className="active-icon">
-              <MicrophoneIcon />
-            </span>
-            <span>Pulse</span>
-          </button>
-          <button
-            onClick={() => onNavigate && onNavigate('history')}
-            type="button"
-            aria-label="History"
-          >
-            <HistoryIcon />
-            <span>History</span>
-          </button>
-          <button
-            onClick={() => onNavigate && onNavigate('credit')}
-            type="button"
-            aria-label="Credit"
-          >
-            <CreditIcon />
-            <span>Credit</span>
-          </button>
-        </nav>
+        <NavigationBar onNavigate={onNavigate} currentPage="pulse" />
       </section>
     </main>
   );

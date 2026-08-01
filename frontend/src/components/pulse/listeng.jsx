@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { VoiceRecorder } from '../../services/voiceRecorder';
 import Header from '../home/Header';
+import NavigationBar from '../home/NavigationBar';
 
 
 function MicrophoneIcon() {
@@ -32,33 +33,7 @@ function StopIcon() {
   )
 }
 
-function HomeIcon() {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <path d="M5 12.4 14 5l9 7.4V24h-6v-7h-6v7H5V12.4Z" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" />
-    </svg>
-  )
-}
 
-function HistoryIcon() {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <path d="M7.5 8.2A9 9 0 1 1 6 15" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M4 8.2h3.5V4.7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M14 9v6l4 2" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function CreditIcon() {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <rect x="4" y="8" width="20" height="13" rx="1.5" fill="none" stroke="currentColor" strokeWidth="2.4" />
-      <circle cx="14" cy="14.5" r="3.2" fill="none" stroke="currentColor" strokeWidth="2.1" />
-      <path d="M4 12h3M21 17h3" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  )
-}
 
 export default function Listeng({ onNavigate, businessName }) {
   const recorderRef = useRef(null);
@@ -171,43 +146,7 @@ export default function Listeng({ onNavigate, businessName }) {
             </button>
           </div>
           </section>
-        <div style={{ flexShrink: 0, width: "100%" }} className="mobile-only-nav">
-          <nav className="listening-bottom-nav" aria-label="Primary navigation">
-            <button 
-              onClick={() => onNavigate && onNavigate('home')} 
-              aria-label="Home"
-              className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
-            >
-              <HomeIcon />
-              <span>Home</span>
-            </button>
-            <button 
-              onClick={() => onNavigate && onNavigate('listeng')} 
-              className="active cursor-pointer flex flex-col items-center bg-transparent border-0 font-sans"
-            >
-              <span className="active-icon">
-                <MicrophoneIcon />
-              </span>
-              <span>Pulse</span>
-            </button>
-            <button 
-              onClick={() => onNavigate && onNavigate('history')} 
-              aria-label="History"
-              className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
-            >
-              <HistoryIcon />
-              <span>History</span>
-            </button>
-            <button 
-              onClick={() => onNavigate && onNavigate('credit')} 
-              aria-label="Credit"
-              className="cursor-pointer flex flex-col items-center bg-transparent border-0 text-gray-400 hover:text-gray-600 font-sans"
-            >
-              <CreditIcon />
-              <span>Credit</span>
-            </button>
-          </nav>
-        </div>
+        <NavigationBar onNavigate={onNavigate} currentPage="listeng" />
     </main>
   )
 }

@@ -1,82 +1,56 @@
-import { Home, Mic2, History, CreditCard } from 'lucide-react';
-
-const NAV_ITEMS = [
-  { key: 'home',         label: 'Home',    Icon: Home       },
-  { key: 'listeng',      label: 'Pulse',   Icon: Mic2       },
-  { key: 'history',      label: 'History', Icon: History    },
-  { key: 'credit',       label: 'Credit',  Icon: CreditCard },
-];
+function NavIcon({ name }) {
+  const paths = {
+    home: <path d="M5 12.4 14 5l9 7.4V24h-6v-7h-6v7H5V12.4Z" />,
+    pulse: (
+      <>
+        <rect x="11" y="5" width="6" height="13" rx="3" />
+        <path d="M6 14c0 4.5 3.4 8 8 8s8-3.5 8-8M14 22v4" />
+      </>
+    ),
+    history: (
+      <>
+        <path d="M7.5 8.2A9 9 0 1 1 6 15" />
+        <path d="M4 8.2h3.5V4.7" />
+        <path d="M14 9v6l4 2" />
+      </>
+    ),
+    credit: (
+      <>
+        <rect x="4" y="8" width="20" height="13" rx="1.5" />
+        <circle cx="14" cy="14.5" r="3.2" />
+      </>
+    ),
+  };
+  return (
+    <svg viewBox="0 0 28 28" aria-hidden="true" width="20" height="20">
+      {paths[name]}
+    </svg>
+  );
+}
 
 export default function NavigationBar({ onNavigate, currentPage }) {
+  // Normalize currentPage so 'listeng' matches 'pulse'
+  const activePage = currentPage === 'listeng' ? 'pulse' : currentPage;
+  
   return (
-    <nav
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 1000,
-        width: '100%',
-        maxWidth: 768,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        padding: '14px 8px 24px 8px',
-        background: 'rgba(255, 255, 255, 0.98)',
-        borderTop: '1px solid #eee',
-        boxShadow: '0 -8px 24px rgba(20, 33, 43, 0.04)',
-      }}
-    >
-      {NAV_ITEMS.map(({ key, label, Icon }) => {
-        const active = currentPage === key;
-        return (
-          <button
-            key={key}
-            onClick={() => onNavigate(key)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 4,
-              flex: 1,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {/* Icon pill */}
-            <div
-              style={{
-                width: 48,
-                height: 32,
-                borderRadius: 50,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: active ? '#0d3d22' : 'transparent',
-                transition: 'background 0.2s',
-              }}
-            >
-              <Icon
-                size={20}
-                strokeWidth={2}
-                color={active ? '#fff' : '#999'}
-              />
-            </div>
-            {/* Label */}
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: 600,
-                color: active ? '#0d3d22' : '#999',
-              }}
-            >
-              {label}
-            </span>
-          </button>
-        );
-      })}
+    <nav className={`mp-bottom-nav mobile-only-nav ${activePage}-active`}>
+      {["home", "pulse", "history", "credit"].map((item) => (
+        <button
+          type="button"
+          className={`cursor-pointer ${
+            item === activePage ? "active" : ""
+          }`}
+          onClick={() =>
+            onNavigate && onNavigate(item === "pulse" ? "listeng" : item)
+          }
+          key={item}
+        >
+          <span className="nav-icon">
+            <NavIcon name={item} />
+          </span>
+          <span>{item[0].toUpperCase() + item.slice(1)}</span>
+        </button>
+      ))}
     </nav>
   );
 }
