@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 
 const CATEGORIES = [
   {
@@ -207,6 +208,17 @@ const CATEGORIES = [
 export default function MarketCategory({ onNavigate }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState("dry-goods");
+  const [showNotification, setShowNotification] = useState(false);
+
+  const handleUpdate = () => {
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+      if (onNavigate) {
+        onNavigate("profile");
+      }
+    }, 2000);
+  };
 
   const selectedCategory =
     CATEGORIES.find((category) => category.id === selectedId) || CATEGORIES[0];
@@ -374,7 +386,7 @@ export default function MarketCategory({ onNavigate }) {
         <footer className="market-category-footer">
           <button
             type="button"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={handleUpdate}
           >
             <span>Update Category</span>
             <svg
@@ -390,6 +402,11 @@ export default function MarketCategory({ onNavigate }) {
             </svg>
           </button>
         </footer>
+      </div>
+
+      <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
+        <CheckCircle2 size={24} />
+        <span>Changes saved successfully!</span>
       </div>
     </div>
   );
