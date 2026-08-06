@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 
 const LANGUAGES = [
   {
@@ -30,6 +31,17 @@ const LANGUAGES = [
 
 export default function LanguageSetting({ onNavigate, businessName }) {
   const [selectedId, setSelectedId] = useState("en");
+  const [showNotification, setShowNotification] = useState(false);
+
+  const handleSave = () => {
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+      if (onNavigate) {
+        onNavigate("profile");
+      }
+    }, 2000);
+  };
 
   const selectedLanguage =
     LANGUAGES.find((lang) => lang.id === selectedId) || LANGUAGES[0];
@@ -143,11 +155,16 @@ export default function LanguageSetting({ onNavigate, businessName }) {
         <footer className="language-footer">
           <button
             type="button"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={handleSave}
           >
             Set Language
           </button>
         </footer>
+      </div>
+
+      <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
+        <CheckCircle2 size={24} />
+        <span>Language updated successfully!</span>
       </div>
     </div>
   );
