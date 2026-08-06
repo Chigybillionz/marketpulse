@@ -6,6 +6,7 @@ import {
   ChevronDown,
   Info,
   Save,
+  CheckCircle2,
 } from "lucide-react";
 
 export default function StoreProfile({
@@ -20,6 +21,7 @@ export default function StoreProfile({
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   const handleFieldChange = (field) => (event) => {
     setFormData((current) => ({ ...current, [field]: event.target.value }));
@@ -32,10 +34,13 @@ export default function StoreProfile({
       if (setBusinessName) {
         setBusinessName(formData.businessName);
       }
-      alert("Changes saved successfully!");
-      if (onNavigate) {
-        onNavigate("profile");
-      }
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+        if (onNavigate) {
+          onNavigate("profile");
+        }
+      }, 2000);
     }, 1500);
   };
 
@@ -213,6 +218,11 @@ export default function StoreProfile({
             </button>
           </section>
         </main>
+      </div>
+
+      <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
+        <CheckCircle2 size={24} />
+        <span>Changes saved successfully!</span>
       </div>
     </div>
   );
