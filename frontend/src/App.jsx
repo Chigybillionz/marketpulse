@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import LandingPage from "./components/landing_page/LandingPage";
 import FeaturesPage from "./components/landing_page/FeaturesPage";
 import HowItWorksPage from "./components/landing_page/HowItWorksPage";
+import PricingPage from "./components/landing_page/PricingPage";
 import WelcomePage from "./components/WelcomePage";
 import Otp from "./components/otp";
 import Homepage from "./components/home/homepage";
@@ -36,6 +37,7 @@ const PATHS = {
   landing: "/",
   features: "/features",
   "how-it-works": "/how-it-works",
+  pricing: "/pricing",
   login: "/login",
   welcome: "/login",
   otp: "/otp",
@@ -140,6 +142,10 @@ function App() {
       <Route
         path={PATHS["how-it-works"]}
         element={<HowItWorksPage onNavigate={handleNavigate} />}
+      />
+      <Route
+        path={PATHS.pricing}
+        element={<PricingPage onNavigate={handleNavigate} />}
       />
       <Route
         path={PATHS.welcome}

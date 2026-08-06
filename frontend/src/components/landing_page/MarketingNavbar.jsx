@@ -31,8 +31,8 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
   ];
 
   return (
-    <nav className="w-full px-4 sm:px-6 lg:px-12 py-6 max-w-7xl mx-auto relative z-50">
-      <div className="flex items-center justify-between">
+    <nav className="sticky top-0 w-full px-4 sm:px-6 lg:px-12 py-4 md:py-6 z-50 bg-[#F9FAFB]/90 backdrop-blur-md border-b border-gray-200/50 transition-all duration-300">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div 
           className="flex items-center gap-2 cursor-pointer"
@@ -46,7 +46,7 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
           {tabs.map((tab) => (
             <button 
               key={tab.id}
-              onClick={() => handleNavClick(tab.id === 'pricing' ? 'landing' : tab.id)}
+              onClick={() => handleNavClick(tab.id)}
               className={`${
                 activeTab === tab.id 
                   ? "text-gray-900 border-b-2 border-[#064E3B] pb-1 cursor-default" 
@@ -81,7 +81,7 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
           {tabs.map((tab) => (
             <button 
               key={tab.id}
-              onClick={() => handleNavClick(tab.id === 'pricing' ? 'landing' : tab.id)}
+              onClick={() => handleNavClick(tab.id)}
               className={`text-left text-base font-semibold px-4 py-3 rounded-xl ${
                 activeTab === tab.id ? "bg-green-50 text-[#064E3B]" : "text-gray-700 hover:bg-gray-50"
               }`}
