@@ -31,13 +31,15 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
   ];
 
   return (
-    <nav className="sticky top-0 w-full px-4 sm:px-6 lg:px-12 py-4 md:py-6 z-50 bg-[#F9FAFB]/90 backdrop-blur-md border-b border-gray-200/50 transition-all duration-300">
+    <>
+    <nav className="fixed top-0 left-0 w-full px-4 sm:px-6 lg:px-12 py-4 md:py-6 z-50 bg-[#F9FAFB]/90 backdrop-blur-md border-b border-gray-200/50 transition-all duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div 
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex items-center gap-2 md:gap-3 cursor-pointer"
           onClick={() => handleNavClick('landing')}
         >
+          <img src="/mylogo.png" alt="MarketPulse AI logo" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
           <span className="text-xl md:text-2xl font-bold tracking-tight text-[#064E3B]">MarketPulse AI</span>
         </div>
         
@@ -59,11 +61,13 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
         </div>
 
         {/* Desktop Buttons & Mobile Toggle */}
-        <div className="flex items-center gap-4 md:gap-6">
-          <button onClick={handleGetStarted} className="hidden sm:block text-sm font-bold text-gray-800 hover:text-[#064E3B] transition-colors">Login</button>
-          <button onClick={handleGetStarted} className="bg-[#064E3B] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#043d2e] transition-colors">
-            Get Started
-          </button>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-6">
+            <button onClick={handleGetStarted} className="text-sm font-bold text-gray-800 hover:text-[#064E3B] transition-colors">Login</button>
+            <button onClick={handleGetStarted} className="bg-[#064E3B] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#043d2e] transition-colors">
+              Get Started
+            </button>
+          </div>
           
           {/* Mobile Menu Toggle */}
           <button 
@@ -90,14 +94,24 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
             </button>
           ))}
           <div className="h-[1px] w-full bg-gray-100 my-1"></div>
-          <button 
-            onClick={handleGetStarted} 
-            className="text-center text-base font-bold text-gray-800 px-4 py-3 sm:hidden hover:bg-gray-50 rounded-xl"
-          >
-            Login
-          </button>
+          <div className="flex flex-col gap-2">
+            <button 
+              onClick={handleGetStarted} 
+              className="text-center text-base font-bold text-gray-800 px-4 py-3 hover:bg-gray-50 rounded-xl"
+            >
+              Login
+            </button>
+            <button 
+              onClick={handleGetStarted} 
+              className="text-center text-base font-bold text-white bg-[#064E3B] px-4 py-3 hover:bg-[#043d2e] rounded-xl"
+            >
+              Get Started
+            </button>
+          </div>
         </div>
       )}
     </nav>
+    <div className="h-[73px] md:h-[89px] w-full shrink-0"></div>
+    </>
   );
 }
