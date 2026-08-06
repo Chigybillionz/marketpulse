@@ -1,6 +1,7 @@
 import React from 'react';
 import { Mic, BarChart2, Lock, Wallet, Play, ArrowRight, ArrowUp, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import MarketingNavbar from './MarketingNavbar';
 
 export default function LandingPage({ onNavigate }) {
   const navigate = useNavigate();
@@ -14,28 +15,18 @@ export default function LandingPage({ onNavigate }) {
     }
   };
 
+  const handleNavClick = (path) => {
+    if (onNavigate) {
+      onNavigate(path);
+    } else {
+      navigate(path === 'landing' ? '/' : `/${path}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 w-full overflow-x-hidden">
       {/* Navbar */}
-      <nav className="w-full px-4 sm:px-6 lg:px-12 py-6 flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
-          <img src="/mylogo.png" alt="MarketPulse AI logo" className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover" />
-          <span className="text-xl md:text-2xl font-bold tracking-tight text-[#064E3B]">MarketPulse AI</span>
-        </div>
-        
-        <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-500">
-          <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-gray-900 transition-colors">How it Works</a>
-          <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
-        </div>
-
-        <div className="flex items-center gap-4 md:gap-6">
-          <button onClick={handleGetStarted} className="hidden sm:block text-sm font-bold text-gray-800 hover:text-[#064E3B] transition-colors">Login</button>
-          <button onClick={handleGetStarted} className="bg-[#064E3B] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#043d2e] transition-colors">
-            Get Started
-          </button>
-        </div>
-      </nav>
+      <MarketingNavbar onNavigate={onNavigate} activeTab="landing" />
 
       {/* Hero Section */}
       <section className="w-full px-4 sm:px-6 lg:px-12 pt-12 md:pt-20 pb-24 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">

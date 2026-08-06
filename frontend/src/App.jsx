@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import LandingPage from "./components/landing_page/LandingPage";
+import FeaturesPage from "./components/landing_page/FeaturesPage";
+import HowItWorksPage from "./components/landing_page/HowItWorksPage";
 import WelcomePage from "./components/WelcomePage";
 import Otp from "./components/otp";
 import Homepage from "./components/home/homepage";
@@ -32,6 +34,8 @@ import "./App.css";
 // Single source of truth: page id (used everywhere as onNavigate("id")) -> URL path.
 const PATHS = {
   landing: "/",
+  features: "/features",
+  "how-it-works": "/how-it-works",
   login: "/login",
   welcome: "/login",
   otp: "/otp",
@@ -128,6 +132,14 @@ function App() {
       <Route
         path={PATHS.landing}
         element={<LandingPage onNavigate={handleNavigate} />}
+      />
+      <Route
+        path={PATHS.features}
+        element={<FeaturesPage onNavigate={handleNavigate} />}
+      />
+      <Route
+        path={PATHS["how-it-works"]}
+        element={<HowItWorksPage onNavigate={handleNavigate} />}
       />
       <Route
         path={PATHS.welcome}
