@@ -4048,3 +4048,21 @@
   width: 24px;
   height: 24px;
 }
+
+.privacy-accept.is-accepted {
+  background-color: #013f1f;
+  color: #ffffff;
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(1, 63, 31, 0.25);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkmarkPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1.3); }
+}
+
+.privacy-accept.is-accepted svg {
+  animation: checkmarkPop 0.4s ease forwards;
+}

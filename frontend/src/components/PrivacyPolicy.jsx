@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const DATA_POINTS = [
   {
     id: "voice",
@@ -120,11 +122,20 @@ function Icon({ name }) {
 }
 
 export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
+  const [isAccepted, setIsAccepted] = useState(false);
+
   // Works as a routed page (back -> real history) and as a modal (back -> onClose).
   const dismiss = () => {
     if (onClose) onClose();
     else if (onBack) onBack();
     else if (onNavigate) onNavigate("profile");
+  };
+
+  const handleAccept = () => {
+    setIsAccepted(true);
+    setTimeout(() => {
+      dismiss();
+    }, 600); // Wait for animation
   };
 
   return (
@@ -249,8 +260,12 @@ export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
         </div>
 
         <footer className="privacy-footer">
-          <button className="privacy-accept" type="button" onClick={dismiss}>
-            <span>I Understand</span>
+          <button 
+            className={`privacy-accept ${isAccepted ? 'is-accepted' : ''}`} 
+            type="button" 
+            onClick={handleAccept}
+          >
+            <span>{isAccepted ? "Confirmed" : "I Understand"}</span>
             <Icon name="checkmark" />
           </button>
           <small>By clicking, you confirm you have read the policy.</small>
