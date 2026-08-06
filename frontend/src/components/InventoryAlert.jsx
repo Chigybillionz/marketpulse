@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, Calendar, TrendingUp, Save } from "lucide-react";
+import { AlertTriangle, Calendar, TrendingUp, Save, CheckCircle2 } from "lucide-react";
 
 const ToggleSwitch = ({ isActive, onToggle }) => (
   <button
@@ -25,6 +25,7 @@ export default function InventoryAlert({ onNavigate }) {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   const toggleSwitch = (key) => {
     setSettings((prev) => ({
@@ -44,10 +45,13 @@ export default function InventoryAlert({ onNavigate }) {
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
-      alert("Settings saved successfully!");
-      if (onNavigate) {
-        onNavigate("profile");
-      }
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+        if (onNavigate) {
+          onNavigate("profile");
+        }
+      }, 2000);
     }, 1500);
   };
 
@@ -218,6 +222,11 @@ export default function InventoryAlert({ onNavigate }) {
             <span>{isSaving ? "Saving..." : "Save Settings"}</span>
           </button>
         </footer>
+      </div>
+
+      <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
+        <CheckCircle2 size={24} />
+        <span>Settings saved successfully!</span>
       </div>
     </div>
   );
