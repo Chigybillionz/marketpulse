@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import LandingPage from "./components/landing_page/LandingPage";
 import WelcomePage from "./components/WelcomePage";
 import Otp from "./components/otp";
 import Homepage from "./components/home/homepage";
@@ -30,7 +31,9 @@ import "./App.css";
 
 // Single source of truth: page id (used everywhere as onNavigate("id")) -> URL path.
 const PATHS = {
-  welcome: "/",
+  landing: "/",
+  login: "/login",
+  welcome: "/login",
   otp: "/otp",
   ledger: "/ledger",
   home: "/home",
@@ -122,6 +125,10 @@ function App() {
 
   return (
     <Routes>
+      <Route
+        path={PATHS.landing}
+        element={<LandingPage onNavigate={handleNavigate} />}
+      />
       <Route
         path={PATHS.welcome}
         element={
