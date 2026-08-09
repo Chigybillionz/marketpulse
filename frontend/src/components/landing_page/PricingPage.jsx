@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MarketingNavbar from './MarketingNavbar';
 
 export default function PricingPage({ onNavigate }) {
   const navigate = useNavigate();
+  const [activePlan, setActivePlan] = useState('Pro');
 
   const handleGetStarted = () => {
     if (onNavigate) {
@@ -13,6 +14,52 @@ export default function PricingPage({ onNavigate }) {
       navigate("/login");
     }
   };
+
+  const plans = [
+    {
+      id: 'Free',
+      title: 'Free',
+      subtitle: 'For small traders getting started.',
+      price: '$0',
+      period: '/mo',
+      features: [
+        'Basic voice entry (up to 50/mo)',
+        'Standard reporting dashboard',
+        'Email support'
+      ],
+      buttonText: 'Start for Free'
+    },
+    {
+      id: 'Pro',
+      title: 'Pro',
+      subtitle: 'For growing businesses needing more power.',
+      price: '$29',
+      period: '/mo',
+      badge: 'Most Popular',
+      features: [
+        'Unlimited voice entry',
+        'Advanced AI analytics & forecasting',
+        'Priority chat support',
+        'Export to popular accounting software'
+      ],
+      buttonText: 'Get Pro'
+    },
+    {
+      id: 'Enterprise',
+      title: 'Enterprise',
+      subtitle: 'For large cooperatives & organizations.',
+      price: 'Custom',
+      period: '/mo',
+      isCustom: true,
+      features: [
+        'Everything in Pro',
+        'Dedicated account manager',
+        'Custom API integration',
+        'On-premise deployment options'
+      ],
+      buttonText: 'Contact Sales'
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 w-full overflow-x-hidden flex flex-col">
@@ -33,114 +80,80 @@ export default function PricingPage({ onNavigate }) {
       <section className="w-full px-4 sm:px-6 lg:px-12 pb-24 max-w-7xl mx-auto flex-1">
         <div className="grid md:grid-cols-3 gap-8 md:gap-6 lg:gap-8 items-stretch pt-8">
           
-          {/* Free Plan */}
-          <div className="bg-white rounded-2xl md:rounded-[2rem] p-8 md:p-10 border border-gray-100 shadow-sm flex flex-col hover:shadow-md transition-shadow">
-            <h3 className="text-3xl font-bold text-[#064E3B] mb-2 text-center">Free</h3>
-            <p className="text-gray-500 text-sm font-medium text-center mb-8">
-              For small traders getting started.
-            </p>
-            
-            <div className="text-center mb-10">
-               <span className="text-5xl font-black text-[#064E3B]">$0</span>
-               <span className="text-gray-500 font-medium">/mo</span>
-            </div>
+          {plans.map((plan) => {
+            const isActive = activePlan === plan.id;
 
-            <ul className="space-y-4 mb-10 flex-1">
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Basic voice entry (up to 50/mo)</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Standard reporting dashboard</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Email support</span>
-               </li>
-            </ul>
+            return (
+              <div 
+                key={plan.id}
+                onClick={() => setActivePlan(plan.id)}
+                className={`cursor-pointer bg-white rounded-2xl md:rounded-[2rem] p-8 md:p-10 flex flex-col transition-all duration-300 ${
+                  isActive 
+                    ? 'border-4 border-[#064E3B] shadow-xl md:-translate-y-4 z-10 relative' 
+                    : 'border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 opacity-90 hover:opacity-100'
+                }`}
+              >
+                {/* Badge for Pro plan */}
+                {plan.badge && (
+                  <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-xs font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-md transition-colors ${
+                    isActive ? 'bg-orange-500' : 'bg-gray-400'
+                  }`}>
+                     {plan.badge}
+                  </div>
+                )}
 
-            <button onClick={handleGetStarted} className="w-full bg-[#EBF3FF] text-[#064E3B] hover:bg-[#dce9fa] py-3.5 rounded-xl font-bold transition-colors">
-               Start for Free
-            </button>
-          </div>
+                <h3 className={`text-3xl font-bold mb-2 text-center transition-colors ${isActive ? 'text-[#064E3B]' : 'text-gray-800'}`}>
+                  {plan.title}
+                </h3>
+                <p className="text-gray-500 text-sm font-medium text-center mb-8 h-10">
+                  {plan.subtitle}
+                </p>
+                
+                <div className="text-center mb-10 h-16 flex items-center justify-center">
+                   {plan.isCustom ? (
+                     <div className="flex flex-col items-center justify-center">
+                        <span className={`text-4xl font-black leading-[1.1] ${isActive ? 'text-[#064E3B]' : 'text-gray-800'}`}>
+                          {plan.price}
+                        </span>
+                        <div className="text-transparent font-medium mt-1">/mo</div>
+                     </div>
+                   ) : (
+                     <div>
+                        <span className={`text-5xl font-black ${isActive ? 'text-[#064E3B]' : 'text-gray-800'}`}>
+                          {plan.price}
+                        </span>
+                        <span className="text-gray-500 font-medium">{plan.period}</span>
+                     </div>
+                   )}
+                </div>
 
-          {/* Pro Plan */}
-          <div className="bg-white rounded-2xl md:rounded-[2rem] p-8 md:p-10 border-4 border-[#064E3B] shadow-xl relative flex flex-col md:-translate-y-4 z-10">
-            {/* Badge */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 text-white text-xs font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-md">
-               Most Popular
-            </div>
+                <ul className="space-y-4 mb-10 flex-1">
+                   {plan.features.map((feature, index) => (
+                     <li key={index} className="flex items-start gap-3">
+                        <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 transition-colors ${isActive ? 'text-[#064E3B]' : 'text-gray-400'}`} />
+                        <span className={`text-sm font-medium transition-colors ${isActive ? 'text-gray-800' : 'text-gray-500'}`}>
+                          {feature}
+                        </span>
+                     </li>
+                   ))}
+                </ul>
 
-            <h3 className="text-3xl font-bold text-[#064E3B] mb-2 text-center">Pro</h3>
-            <p className="text-gray-500 text-sm font-medium text-center mb-8">
-              For growing businesses needing more power.
-            </p>
-            
-            <div className="text-center mb-10">
-               <span className="text-5xl font-black text-[#064E3B]">$29</span>
-               <span className="text-gray-500 font-medium">/mo</span>
-            </div>
-
-            <ul className="space-y-4 mb-10 flex-1">
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Unlimited voice entry</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Advanced AI analytics & forecasting</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Priority chat support</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Export to popular accounting software</span>
-               </li>
-            </ul>
-
-            <button onClick={handleGetStarted} className="w-full bg-[#064E3B] text-white hover:bg-[#043d2e] py-3.5 rounded-xl font-bold transition-colors shadow-lg">
-               Get Pro
-            </button>
-          </div>
-
-          {/* Enterprise Plan */}
-          <div className="bg-white rounded-2xl md:rounded-[2rem] p-8 md:p-10 border border-gray-100 shadow-sm flex flex-col hover:shadow-md transition-shadow">
-            <h3 className="text-3xl font-bold text-[#064E3B] mb-2 text-center">Enterprise</h3>
-            <p className="text-gray-500 text-sm font-medium text-center mb-8">
-              For large cooperatives & organizations.
-            </p>
-            
-            <div className="text-center mb-10">
-               <span className="text-4xl font-black text-[#064E3B] leading-[1.1]">Custom</span>
-               <div className="text-transparent font-medium mt-1">/mo</div> {/* Spacer to keep alignment */}
-            </div>
-
-            <ul className="space-y-4 mb-10 flex-1">
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Everything in Pro</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Dedicated account manager</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">Custom API integration</span>
-               </li>
-               <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#064E3B] shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-gray-700">On-premise deployment options</span>
-               </li>
-            </ul>
-
-            <button onClick={handleGetStarted} className="w-full bg-[#EBF3FF] text-[#064E3B] hover:bg-[#dce9fa] py-3.5 rounded-xl font-bold transition-colors">
-               Contact Sales
-            </button>
-          </div>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation(); // prevent clicking button from also triggering card click
+                    handleGetStarted();
+                  }} 
+                  className={`w-full py-3.5 rounded-xl font-bold transition-all ${
+                    isActive 
+                      ? 'bg-[#064E3B] text-white hover:bg-[#043d2e] shadow-lg' 
+                      : 'bg-[#EBF3FF] text-[#064E3B] hover:bg-[#dce9fa]'
+                  }`}
+                >
+                   {plan.buttonText}
+                </button>
+              </div>
+            );
+          })}
 
         </div>
       </section>
