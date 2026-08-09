@@ -1,5 +1,13 @@
 const otpGenerator = require('otp-generator');
 const WelcomeUser = require('../models/WelcomeUser');
+const jwt = require('jsonwebtoken');
+
+// Helper to generate JWT
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback_secret_key', {
+    expiresIn: '30d',
+  });
+};
 
 /**
  * Generates a 4-digit OTP and sets expiration for 2 minutes
@@ -59,7 +67,9 @@ const verifyWelcomeOTP = async (phoneNumber, otp) => {
   user.isVerified = true;
   await user.save();
 
-  return user;
+  const token = generateToken(user._id);
+
+  return { user, token };
 };
 
 /**

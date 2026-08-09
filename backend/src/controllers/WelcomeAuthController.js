@@ -38,14 +38,17 @@ const verifyOTP = async (req, res) => {
       return res.status(400).json({ message: 'Phone number and OTP are required' });
     }
 
-    const user = await verifyWelcomeOTP(phoneNumber, otp);
+    const result = await verifyWelcomeOTP(phoneNumber, otp);
 
-    if (!user) {
+    if (!result) {
       return res.status(401).json({ message: 'Invalid or expired OTP' });
     }
 
+    const { user, token } = result;
+
     res.status(200).json({ 
       message: 'OTP verified successfully',
+      token,
       user: {
         id: user._id,
         phoneNumber: user.phoneNumber,

@@ -4,7 +4,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const welcomeAuthRoutes = require('./routes/WelcomeAuthRoutes');
-
+const productRoutes = require('./routes/ProductRoutes');
+const transactionRoutes = require('./routes/TransactionRoutes');
 const app = express();
 
 // Middleware
@@ -19,6 +20,8 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/welcome-auth', welcomeAuthRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 // Database Connection
 const PORT = process.env.PORT || 5000;
