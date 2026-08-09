@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { requestOTP } from "../services/authService";
+import { requestOTP } from "../services/authService";
 import FlowLayout from "./layout/FlowLayout";
 import TermsOfService from "./TermsOfService";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -33,9 +33,9 @@ export default function WelcomePage({
     try {
       // OTP is temporarily bypassed on the frontend so the onboarding flow can be tested
       // without waiting for SMS delivery or backend verification.
-      // console.log("Sending OTP request to backend...");
-      // await requestOTP(phoneNumber, businessName);
-      // console.log("OTP request successful!");
+      console.log("Sending OTP request to backend...");
+      await requestOTP(phoneNumber, businessName);
+      console.log("OTP request successful!");
 
       // Logic for new/returning user
       if (businessName.trim().toLowerCase() === "mama ngozi provisions") {

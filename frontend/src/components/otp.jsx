@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-// import { verifyOTP } from "../services/authService";
+import { verifyOTP } from "../services/authService";
 import FlowLayout from "./layout/FlowLayout";
 import TermsOfService from "./TermsOfService";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -50,7 +50,13 @@ export default function Otp({ onNavigate, phoneNumber, isNewUser, businessName }
     setError(null);
 
     try {
-      // await verifyOTP(phoneNumber, otp);
+      const response = await verifyOTP(phoneNumber, otp);
+      
+      // Save the JWT token
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+      }
+
       if (onNavigate) {
         onNavigate(isNewUser ? "ledger" : "pulse_trade_pin");
       }

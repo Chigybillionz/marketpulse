@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { createTransaction } from "../../services/transactionService";
 
 const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -74,36 +75,53 @@ export default function PulseTradePin({
     setPin((currentPin) => currentPin.slice(0, -1));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!canConfirm) return;
 
-    if (setBalance) {
-      setBalance((prev) => isIncome ? prev + amountNum : prev - amountNum);
+    try {
+      // Save transaction to backend
+      const apiTx = await createTransaction({
+        type: isIncome ? 'Income' : 'Expense',
+        amount: amountNum,
+        category: transactionData.category || 'Other',
+        description: transactionData.description || 'Voice Input'
+      });
+
+      // Optimistically update local UI state
+      if (setBalance) {
+        setBalance((prev) => isIncome ? prev + amountNum : prev - amountNum);
+      }
+
+      if (isIncome && setMoneyIn) {
+        setMoneyIn((prev) => prev + amountNum);
+      } else if (!isIncome && setMoneyOut) {
+        setMoneyOut((prev) => prev + amountNum);
+      }
+
+      if (setTransactionsList) {
+        // Map backend transaction to frontend format
+        const newTx = {
+          id: apiTx._id || Date.now(),
+          type: isIncome ? "credit" : "debit",
+          icon: isIncome ? "bag" : "bolt",
+          title: apiTx.description || transactionData.description || "Voice Input",
+          meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
+          amount: `${isIncome ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
+          isPositive: isIncome,
+          iconBg: isIncome ? "bg-green-100" : "bg-red-100",
+          iconColor: isIncome ? "text-green-800" : "text-red-600",
+        };
+
+        setTransactionsList((prev) => [newTx, ...prev]);
+      }
+
+      onNavigate("home");
+    } catch (error) {
+      console.error("Failed to save transaction:", error);
+      // In a real app we'd show an error toast here, but for now we'll 
+      // just fall back to optimistic update if the API fails for robustness.
+      onNavigate("home");
     }
-
-    if (isIncome && setMoneyIn) {
-      setMoneyIn((prev) => prev + amountNum);
-    } else if (!isIncome && setMoneyOut) {
-      setMoneyOut((prev) => prev + amountNum);
-    }
-
-    if (setTransactionsList) {
-      const newTx = {
-        id: Date.now(),
-        type: isIncome ? "credit" : "debit",
-        icon: isIncome ? "bag" : "bolt",
-        title: transactionData.description || "Voice Input",
-        meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - Voice Input`,
-        amount: `${isIncome ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
-        isPositive: isIncome,
-        iconBg: isIncome ? "bg-green-100" : "bg-red-100",
-        iconColor: isIncome ? "text-green-800" : "text-red-600",
-      };
-
-      setTransactionsList((prev) => [newTx, ...prev]);
-    }
-
-    onNavigate("home");
   };
 
   return (

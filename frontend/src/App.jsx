@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getTransactions } from "./services/transactionService";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import LandingPage from "./components/landing_page/LandingPage";
 import FeaturesPage from "./components/landing_page/FeaturesPage";
@@ -75,44 +76,60 @@ function App() {
   const [isNewUser, setIsNewUser] = useState(true);
 
   // Financial States
-  const [balance, setBalance] = useState(142500); // initial balance of 142,500
-  const [moneyIn, setMoneyIn] = useState(142000);
-  const [moneyOut, setMoneyOut] = useState(89000);
-  const [transactionsList, setTransactionsList] = useState([
-    {
-      id: 1,
-      type: "debit",
-      icon: "bag",
-      title: "Bulk Flour Restock",
-      meta: "Today, 10:45 AM",
-      amount: "-₦24,500",
-      isPositive: false,
-      iconBg: "bg-green-100",
-      iconColor: "text-green-800",
-    },
-    {
-      id: 2,
-      type: "credit",
-      icon: "receipt",
-      title: "POS Settlement",
-      meta: "Today, 08:30 AM",
-      amount: "+₦12,200",
-      isPositive: true,
-      iconBg: "bg-[#052e16]/10",
-      iconColor: "text-[#052e16]",
-    },
-    {
-      id: 3,
-      type: "debit",
-      icon: "bolt",
-      title: "Utility Payment",
-      meta: "Yesterday",
-      amount: "-₦5,000",
-      isPositive: false,
-      iconBg: "bg-red-100",
-      iconColor: "text-red-600",
-    },
-  ]);
+  const [balance, setBalance] = useState(0); 
+  const [moneyIn, setMoneyIn] = useState(0);
+  const [moneyOut, setMoneyOut] = useState(0);
+  const [transactionsList, setTransactionsList] = useState([]);
+
+  // Fetch transactions on load
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return; // Wait until logged in
+
+        const data = await getTransactions();
+        
+        let calcBalance = 0;
+        let calcMoneyIn = 0;
+        let calcMoneyOut = 0;
+        
+        const formattedTxs = data.map(tx => {
+          const isIncome = tx.type === 'Income';
+          const amountNum = Number(tx.amount);
+          
+          if (isIncome) {
+            calcMoneyIn += amountNum;
+            calcBalance += amountNum;
+          } else {
+            calcMoneyOut += amountNum;
+            calcBalance -= amountNum;
+          }
+
+          return {
+            id: tx._id,
+            type: isIncome ? "credit" : "debit",
+            icon: isIncome ? "bag" : "bolt",
+            title: tx.description,
+            meta: new Date(tx.date).toLocaleDateString() + ' ' + new Date(tx.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            amount: `${isIncome ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
+            isPositive: isIncome,
+            iconBg: isIncome ? "bg-green-100" : "bg-red-100",
+            iconColor: isIncome ? "text-green-800" : "text-red-600",
+          };
+        });
+
+        setTransactionsList(formattedTxs);
+        setBalance(calcBalance);
+        setMoneyIn(calcMoneyIn);
+        setMoneyOut(calcMoneyOut);
+      } catch (error) {
+        console.error("Failed to load transactions:", error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   // Navigate by page id (keeps the existing onNavigate("id") API across the app).
   const handleNavigate = (page, state) => {
