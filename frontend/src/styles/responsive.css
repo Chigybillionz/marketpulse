@@ -2684,11 +2684,11 @@
 
   .trade-pin-shell {
     width: 100%;
-    max-width: 1040px;
+    max-width: 1200px;
     min-height: 0;
     margin: 0 auto;
     padding: 0;
-    gap: 20px;
+    gap: 24px;
   }
 
   .trade-pin-topbar {
@@ -2741,9 +2741,9 @@
   .trade-pin-preview {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
     justify-content: center;
-    padding: 40px 36px;
+    padding: 50px 48px;
     background:
       radial-gradient(circle at 100% 0%, rgba(5, 46, 22, 0.05), transparent 55%),
       linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(247, 249, 252, 0.2));
@@ -2773,10 +2773,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 18px;
+    gap: 24px;
     height: auto;
     min-height: 0;
-    padding: 40px 40px 34px;
+    padding: 50px 60px 40px;
   }
 
   .trade-pin-intro p {

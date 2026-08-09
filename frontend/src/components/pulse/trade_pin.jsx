@@ -5,60 +5,20 @@ const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 function StoreIcon() {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden="true">
-      <path
-        d="M6 13h20l-2.2-6.5H8.2L6 13Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.3"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M8 13v12h16V13"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.3"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M11 25v-7h10v7"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.3"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 13h22"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.3"
-        strokeLinecap="round"
-      />
+    <svg className="w-full h-full" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M6 13h20l-2.2-6.5H8.2L6 13Z" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinejoin="round" />
+      <path d="M8 13v12h16V13" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinejoin="round" />
+      <path d="M11 25v-7h10v7" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinejoin="round" />
+      <path d="M5 13h22" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" />
     </svg>
   );
 }
 
 function LockIcon() {
   return (
-    <svg viewBox="0 0 48 48" aria-hidden="true">
-      <path
-        d="M15 21v-6.2C15 9.6 18.9 6 24 6s9 3.6 9 8.8V21"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3.5"
-        strokeLinecap="round"
-      />
-      <rect
-        x="12"
-        y="20"
-        width="24"
-        height="20"
-        rx="2.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3.5"
-        strokeLinejoin="round"
-      />
+    <svg className="w-full h-full" viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M15 21v-6.2C15 9.6 18.9 6 24 6s9 3.6 9 8.8V21" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+      <rect x="12" y="20" width="24" height="20" rx="2.5" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinejoin="round" />
       <circle cx="24" cy="30" r="3" fill="currentColor" />
     </svg>
   );
@@ -66,43 +26,18 @@ function LockIcon() {
 
 function DeleteIcon() {
   return (
-    <svg viewBox="0 0 32 24" aria-hidden="true">
-      <path
-        d="M11 4h15c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H11l-7-8 7-8Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m16 8 7 8M23 8l-7 8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
+    <svg className="w-full h-full" viewBox="0 0 32 24" aria-hidden="true">
+      <path d="M11 4h15c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H11l-7-8 7-8Z" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinejoin="round" />
+      <path d="m16 8 7 8M23 8l-7 8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
     </svg>
   );
 }
 
 function ArrowRightIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M5 12h13"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="m13 6 6 6-6 6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg className="w-full h-full" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 12h13" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="m13 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -168,156 +103,158 @@ export default function PulseTradePin({
       setTransactionsList((prev) => [newTx, ...prev]);
     }
 
-    onNavigate("home"); // Navigate back to dashboard after completing
+    onNavigate("home");
   };
 
   return (
-    <main className="trade-pin-page" aria-label="Verify transaction PIN screen">
-      <section className="trade-pin-shell">
-        <header className="trade-pin-topbar">
+    <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 lg:p-12 font-sans">
+      <div className="w-full max-w-5xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row relative">
+        
+        {/* Topbar for mobile, absolutely positioned on desktop */}
+        <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-20 pointer-events-none lg:pointer-events-auto">
           <button
-            className="trade-pin-close"
             type="button"
             aria-label="Back"
             onClick={() => (onBack ? onBack() : onNavigate("ai_confirmation"))}
-            style={{ cursor: "pointer" }}
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm border border-slate-200 text-slate-800 pointer-events-auto hover:bg-white transition-colors"
           >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#111827"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5" />
               <path d="M12 19l-7-7 7-7" />
             </svg>
           </button>
 
-          <div className="trade-pin-titleblock">
-            <p>Secure approval</p>
-            <h1>Trade PIN</h1>
-          </div>
-
-          <div
-            className="trade-pin-brand"
-            aria-label={businessName || "My Store"}
-          >
-            <span className="trade-pin-store">
+          <div className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm border border-slate-200 pointer-events-auto">
+            <span className="w-6 h-6 text-slate-700">
               <StoreIcon />
             </span>
-            <span>{businessName || "My Store"}</span>
+            <span className="font-bold text-slate-800 text-sm">{businessName || "My Store"}</span>
           </div>
         </header>
 
-        <main className="trade-pin-content">
-          <aside className="trade-pin-preview">
-            <div className="trade-pin-hero">
-              <div className="trade-pin-lock-badge">
-                <LockIcon />
-              </div>
-
-              <span className="trade-pin-kicker">Approval required</span>
-              <h2>Confirm this transaction with your 4-digit Trade PIN.</h2>
-              <p>
-                Your PIN protects sales, expenses, and credit entries before
-                they reach your secure ledger.
-              </p>
-
-              <div className="trade-pin-hero-card">
-                <span>Transaction amount</span>
-                <strong>&#8358;{amountNum.toLocaleString()}</strong>
-              </div>
+        {/* Left Side: Rich Hero Panel */}
+        <div className="flex-1 lg:max-w-md bg-[#052e16] p-8 lg:p-14 flex flex-col justify-center text-white relative overflow-hidden pt-24">
+          <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-green-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-10 border border-white/20 shadow-inner">
+            <div className="w-7 h-7 text-green-100">
+              <LockIcon />
             </div>
+          </div>
 
-            <div className="trade-pin-preview-note">
-              <span>Locked by design</span>
-              <p>Only the right 4 digits can authorize this action.</p>
-            </div>
-          </aside>
+          <span className="text-green-300/80 text-xs font-bold tracking-widest uppercase mb-3 block">
+            Approval required
+          </span>
+          <h2 className="text-3xl lg:text-4xl font-serif font-bold leading-tight mb-6">
+            Confirm this transaction with your 4-digit Trade PIN.
+          </h2>
+          <p className="text-green-100/70 text-base leading-relaxed mb-12">
+            Your PIN protects sales, expenses, and credit entries before they reach your secure ledger.
+          </p>
 
-          <section className="trade-pin-panel">
-            <div className="trade-pin-intro">
-              <p>
+          <div className="bg-white/10 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+            <span className="block text-green-200/80 text-xs font-bold tracking-widest uppercase mb-2">
+              Transaction amount
+            </span>
+            <strong className="text-4xl font-serif font-bold text-white">
+              &#8358;{amountNum.toLocaleString()}
+            </strong>
+          </div>
+        </div>
+
+        {/* Right Side: Keypad Panel */}
+        <div className="flex-1 p-8 lg:p-16 flex flex-col justify-center bg-white">
+          <div className="max-w-sm mx-auto w-full lg:mt-8">
+            <div className="mb-10 text-center lg:text-left">
+              <p className="text-slate-600 text-lg lg:text-xl">
                 Enter your 4-digit PIN to confirm this {isIncome ? 'sale' : 'expense'} of{" "}
-                <strong>&#8358;{amountNum.toLocaleString()}.</strong>
+                <strong className="text-slate-900 font-bold">&#8358;{amountNum.toLocaleString()}</strong>.
               </p>
             </div>
 
-            <div className="trade-pin-sections">
-              <article className="trade-pin-section current">
-                <div className="trade-pin-section-head">
-                  <h2>Enter your Trade PIN</h2>
-                </div>
-                <div
-                  className="trade-pin-dots"
-                  aria-label="Trade PIN digits entered"
-                >
-                  {[0, 1, 2, 3].map((index) => (
-                    <span
-                      className={index < pin.length ? "filled" : ""}
-                      key={index}
-                    />
-                  ))}
-                </div>
-              </article>
+            <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-12 shadow-inner">
+              <div className="text-center mb-6">
+                <h2 className="text-xs font-bold text-slate-400 tracking-widest uppercase">
+                  Enter your Trade PIN
+                </h2>
+              </div>
+              <div className="flex justify-center gap-6" aria-label="Trade PIN digits entered">
+                {[0, 1, 2, 3].map((index) => (
+                  <div
+                    key={index}
+                    className={`w-5 h-5 rounded-full border-4 transition-all duration-200 ${
+                      index < pin.length 
+                        ? "bg-slate-800 border-slate-800 scale-110" 
+                        : "bg-transparent border-slate-300"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
 
-            <section className="trade-pin-keypad" aria-label="PIN keypad">
+            {/* Keypad */}
+            <div className="grid grid-cols-3 gap-4 lg:gap-6 max-w-[320px] mx-auto mb-10">
               {digits.map((digit) => (
                 <button
-                  className="trade-pin-key"
+                  key={digit}
                   type="button"
                   onClick={() => addDigit(digit)}
-                  key={digit}
+                  className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-slate-50 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-3xl font-bold text-slate-800 active:scale-95 transition-all"
                 >
                   {digit}
                 </button>
               ))}
-              <span className="trade-pin-empty" />
+              <div className="h-16 lg:h-20"></div> {/* Empty cell */}
               <button
-                className="trade-pin-key"
                 type="button"
                 onClick={() => addDigit("0")}
+                className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-slate-50 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-3xl font-bold text-slate-800 active:scale-95 transition-all"
               >
                 0
               </button>
               <button
-                className="trade-pin-delete"
                 type="button"
                 onClick={removeDigit}
                 aria-label="Delete last digit"
+                className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center justify-center text-slate-500 active:scale-95 transition-all"
               >
-                <DeleteIcon />
+                <div className="w-8 h-6">
+                  <DeleteIcon />
+                </div>
               </button>
-            </section>
+            </div>
 
-            <footer className="trade-pin-footer">
+            <div className="flex items-center justify-between">
               <a
                 href="#forgot-pin"
                 onClick={(event) => {
                   event.preventDefault();
                   onNavigate("forgot_pin");
                 }}
+                className="text-slate-500 font-semibold hover:text-slate-800 transition-colors"
               >
                 Forgot PIN?
               </a>
               <button
-                className="trade-pin-confirm"
                 type="button"
                 onClick={handleConfirm}
                 disabled={!canConfirm}
+                className={`flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg ${
+                  canConfirm 
+                    ? "bg-[#7e9c86] hover:bg-[#6b8572] text-white shadow-[#7e9c86]/30 active:scale-95 cursor-pointer" 
+                    : "bg-slate-200 text-slate-400 shadow-none cursor-not-allowed"
+                }`}
               >
                 <span>Confirm</span>
-                <ArrowRightIcon />
+                <div className="w-6 h-6">
+                  <ArrowRightIcon />
+                </div>
               </button>
-            </footer>
-          </section>
-        </main>
-      </section>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </main>
   );
 }

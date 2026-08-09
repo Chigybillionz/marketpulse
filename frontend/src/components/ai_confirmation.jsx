@@ -10,144 +10,142 @@ export default function AIConfirmation({ onNavigate }) {
   };
 
   const isIncome = transactionData.type?.toLowerCase() === 'income';
-  return (
-    <div className="ai-confirmation-page">
-      <section className="ai-confirmation-shell">
-        
-        {/* 1. Top Navigation Bar */}
-        <header style={{ flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "#f8f9ff", zIndex: 30 }}>
-          <button 
-            onClick={() => onNavigate('home')}
-            style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", cursor: "pointer", border: "none", background: "transparent", color: "#111827" }}
-            aria-label="Go back"
-          >
-            <svg style={{ width: 24, height: 24 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          
-          <h1 style={{ fontWeight: 800, color: "#111827", fontSize: "20px", letterSpacing: "-0.025em", margin: 0 }}>
-            AI Confirmation
-          </h1>
-          
-          <div style={{ width: 40, height: 40, borderRadius: "50%", overflow: "hidden", border: "1px solid #e5e7eb" }}>
-            <img 
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" 
-              alt="User profile" 
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-        </header>
 
-        {/* Content Container */}
-        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "10px 20px 120px", boxSizing: "border-box", width: "100%" }}>
-          
-          {/* Introduction Text */}
-          <div style={{ paddingBottom: "20px", textAlign: "left" }}>
-            <h2 style={{ color: "#6b7280", fontSize: "14px", fontWeight: 500, lineHeight: 1.625, margin: 0 }}>
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 lg:p-12">
+      <div className="w-full max-w-3xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row">
+        
+        {/* Left Side: Information Panel */}
+        <div className="flex-1 p-8 lg:p-12 bg-gradient-to-br from-slate-50 to-slate-100 border-r border-slate-100 flex flex-col">
+          <div className="flex justify-between items-center mb-12">
+            <button 
+              onClick={() => onNavigate('home')}
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+              aria-label="Go back"
+            >
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+            </button>
+            <h1 className="text-xl lg:text-2xl font-bold text-slate-800">
+              AI Confirmation
+            </h1>
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm">
+              <img 
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" 
+                alt="User profile" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-center">
+            <h2 className="text-slate-500 text-lg lg:text-xl font-medium mb-8 leading-relaxed">
               Confirm the transaction details parsed by Gemini 1.5 Flash.
             </h2>
-          </div>
-
-          {/* Transaction Confirmation Card */}
-          <div style={{ background: "#ffffff", borderRadius: "16px", padding: "24px", border: "1px solid #e5e7eb", boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "220px", textAlign: "left" }}>
             
-            {/* Card Watermark */}
-            <svg style={{ position: "absolute", right: "16px", bottom: "16px", width: "112px", height: "112px", color: "#f9fafb", pointerEvents: "none" }} viewBox="0 0 100 100" fill="currentColor">
-              <circle cx="50" cy="20" r="6" />
-              <circle cx="35" cy="35" r="6" />
-              <circle cx="65" cy="35" r="6" />
-              <circle cx="20" cy="50" r="6" />
-              <circle cx="50" cy="50" r="6" />
-              <circle cx="80" cy="50" r="6" />
-              <circle cx="35" cy="65" r="6" />
-              <circle cx="65" cy="65" r="6" />
-              <circle cx="50" cy="80" r="6" />
-            </svg>
-
-            {/* Icon Box + Transaction Type Tag */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", zIndex: 10 }}>
-              <div style={{ width: 48, height: 48, borderRadius: "12px", background: "#dcfce7", color: "#15803d", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg style={{ width: 24, height: 24 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 8v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8" />
-                  <path d="M21 8l-2-4H5L3 8" />
-                  <path d="M10 12h4" />
+            <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100 flex gap-4 items-start">
+              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-blue-600 shrink-0">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
               </div>
-              <span style={{ fontSize: "11px", fontWeight: 800, padding: "4px 12px", borderRadius: "9999px", textTransform: "uppercase", letterSpacing: "0.05em", background: isIncome ? "#dcfce7" : "#fee2e2", color: isIncome ? "#166534" : "#991b1b" }}>
+              <div>
+                <h4 className="text-base font-bold text-blue-900 mb-1">
+                  Trade PIN Required
+                </h4>
+                <p className="text-blue-700/80 text-sm leading-relaxed">
+                  To commit this transaction to your secure ledger, you must verify your Trade PIN in the next step.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side: Transaction Card & Action */}
+        <div className="flex-1 p-8 lg:p-12 bg-white flex flex-col justify-between relative">
+          {/* Card Watermark */}
+          <svg className="absolute right-0 bottom-32 w-48 h-48 text-slate-50 pointer-events-none" viewBox="0 0 100 100" fill="currentColor">
+            <circle cx="50" cy="20" r="6" />
+            <circle cx="35" cy="35" r="6" />
+            <circle cx="65" cy="35" r="6" />
+            <circle cx="20" cy="50" r="6" />
+            <circle cx="50" cy="50" r="6" />
+            <circle cx="80" cy="50" r="6" />
+            <circle cx="35" cy="65" r="6" />
+            <circle cx="65" cy="65" r="6" />
+            <circle cx="50" cy="80" r="6" />
+          </svg>
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-10">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${isIncome ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  {isIncome ? (
+                    <>
+                      <path d="M21 8v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8" />
+                      <path d="M21 8l-2-4H5L3 8" />
+                      <path d="M10 12h4" />
+                    </>
+                  ) : (
+                    <>
+                      <line x1="12" y1="2" x2="12" y2="22" />
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </>
+                  )}
+                </svg>
+              </div>
+              <span className={`text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider ${isIncome ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                 {transactionData.type}
               </span>
             </div>
 
-            {/* Parsed details text */}
-            <div style={{ zIndex: 10, marginTop: "auto" }}>
-              <span style={{ fontSize: "10px", fontWeight: 700, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>
+            <div className="mb-10">
+              <span className="text-xs font-bold text-slate-400 tracking-widest uppercase block mb-2">
                 Transaction Value
               </span>
-              <h3 style={{ fontSize: "30px", fontWeight: 900, color: "#111827", letterSpacing: "-0.025em", lineHeight: 1, margin: 0 }}>
+              <h3 className="text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
                 ₦{Number(transactionData.amount).toLocaleString()}
               </h3>
-              
-              <div style={{ height: "1px", background: "#f3f4f6", margin: "16px 0", width: "100%" }} />
+            </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                <div>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>
-                    Description
-                  </span>
-                  <span style={{ fontSize: "14px", fontWeight: 800, color: "#111827", lineHeight: 1.25, display: "block" }}>
-                    {transactionData.description}
-                  </span>
-                </div>
-                <div>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>
-                    Category
-                  </span>
-                  <span style={{ fontSize: "14px", fontWeight: 800, color: "#14532d", lineHeight: 1.25, display: "block" }}>
-                    {transactionData.category}
-                  </span>
-                </div>
+            <div className="h-px w-full bg-slate-100 mb-8" />
+
+            <div className="grid grid-cols-2 gap-8 mb-12">
+              <div>
+                <span className="text-xs font-bold text-slate-400 tracking-widest uppercase block mb-2">
+                  Description
+                </span>
+                <span className="text-lg font-bold text-slate-800 leading-tight">
+                  {transactionData.description}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-400 tracking-widest uppercase block mb-2">
+                  Category
+                </span>
+                <span className="text-lg font-bold text-slate-800 leading-tight">
+                  {transactionData.category}
+                </span>
               </div>
             </div>
-
           </div>
 
-          {/* Info Tip Card */}
-          <div style={{ background: "#eff6ff", borderRadius: "16px", padding: "20px", marginTop: "24px", textAlign: "left", display: "flex", gap: "16px", border: "1px solid #dbeafe" }}>
-            <div style={{ width: 36, height: 36, borderRadius: "8px", background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#14532d" }}>
-              <svg style={{ width: 20, height: 20 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-            </div>
-            <div>
-              <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#14532d", lineHeight: 1, marginBottom: "8px", marginTop: "4px" }}>
-                Trade PIN Required
-              </h4>
-              <p style={{ color: "#4b5563", fontSize: "12px", lineHeight: 1.5, margin: 0 }}>
-                To commit this transaction to your secure ledger, you must verify your Trade PIN in the next step.
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        {/* 5. Fixed Primary Action Button at Bottom */}
-        <div style={{ padding: "20px", background: "linear-gradient(to top, #f8f9ff 70%, transparent)", position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 30 }}>
           <button
             onClick={() => onNavigate('pulse_trade_pin', { transactionData })}
-            style={{ width: "100%", backgroundColor: "#052e16", color: "#ffffff", fontWeight: 800, padding: "16px 24px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", cursor: "pointer", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)", transition: "all 0.2s", fontSize: "14px", letterSpacing: "0.025em", border: "none" }}
+            className="w-full bg-[#052e16] hover:bg-[#022c22] text-white font-bold py-5 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-green-900/20 active:scale-[0.98] z-20 relative"
           >
-            <span>Confirm &amp; Save</span>
-            <svg style={{ width: 20, height: 20 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <span className="text-lg tracking-wide">Confirm & Save</span>
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
           </button>
-        </div>
 
-      </section>
+        </div>
+      </div>
     </div>
   );
 }
