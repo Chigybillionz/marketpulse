@@ -14,6 +14,7 @@ export default function WelcomePage({
 }) {
   const [language, setLanguage] = useState("English");
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [countryCode, setCountryCode] = useState("+234");
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,10 +23,12 @@ export default function WelcomePage({
   const handleSendOtp = async () => {
     const phoneDigits = phoneNumber.replace(/\D/g, "");
 
-    if (phoneDigits.length !== 10) {
+    if (phoneDigits.length < 9) {
       setError("enter a valid contact");
       return;
     }
+
+    const fullPhoneNumber = `${countryCode}${phoneDigits}`;
 
     setIsLoading(true);
     setError(null);
@@ -34,7 +37,7 @@ export default function WelcomePage({
       // OTP is temporarily bypassed on the frontend so the onboarding flow can be tested
       // without waiting for SMS delivery or backend verification.
       console.log("Sending OTP request to backend...");
-      await requestOTP(phoneNumber, businessName);
+      await requestOTP(fullPhoneNumber, businessName);
       console.log("OTP request successful!");
 
       // Logic for new/returning user
@@ -384,28 +387,41 @@ export default function WelcomePage({
                 overflow: "hidden",
               }}
             >
-              <div
+              <select
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
                 style={{
-                  padding: "12px 14px",
+                  padding: "12px 8px 12px 14px",
+                  border: "none",
                   borderRight: "1.5px solid #D1D5DB",
                   fontSize: 15,
                   fontWeight: 600,
                   color: "#111827",
                   backgroundColor: "#EAECEF",
-                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                  outline: "none",
                   flexShrink: 0,
                 }}
               >
-                +234
-              </div>
+                <option value="+234">🇳🇬 +234</option>
+                <option value="+233">🇬🇭 +233</option>
+                <option value="+255">🇹🇿 +255</option>
+                <option value="+260">🇿🇲 +260</option>
+                <option value="+254">🇰🇪 +254</option>
+                <option value="+27">🇿🇦 +27</option>
+              </select>
               <input
                 type="tel"
                 inputMode="numeric"
                 maxLength={10}
                 value={phoneNumber}
                 onChange={(e) => {
+                  let val = e.target.value.replace(/\D/g, "");
+                  if (val.startsWith("0")) {
+                    val = val.substring(1);
+                  }
                   // Keep digits only and never allow more than 10 (11th is dropped).
-                  setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10));
+                  setPhoneNumber(val.slice(0, 10));
                   setError(null);
                 }}
                 placeholder="803 000 0000"
