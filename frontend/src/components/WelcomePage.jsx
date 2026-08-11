@@ -40,6 +40,10 @@ export default function WelcomePage({
       await requestOTP(fullPhoneNumber, businessName);
       console.log("OTP request successful!");
 
+      // Store the full phone number (with country code) so the OTP
+      // verification page sends the exact same value to the backend.
+      setPhoneNumber(fullPhoneNumber);
+
       // Logic for new/returning user
       if (businessName.trim().toLowerCase() === "mama ngozi provisions") {
         setIsNewUser(false);

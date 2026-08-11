@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getTransactions } from "./services/transactionService";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import LandingPage from "./components/landing_page/LandingPage";
 import FeaturesPage from "./components/landing_page/FeaturesPage";
 import HowItWorksPage from "./components/landing_page/HowItWorksPage";
@@ -69,6 +69,7 @@ const PATHS = {
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // User Onboarding Details
   const [businessName, setBusinessName] = useState("");
@@ -129,7 +130,7 @@ function App() {
     };
 
     fetchTransactions();
-  }, []);
+  }, [location.pathname]);
 
   // Navigate by page id (keeps the existing onNavigate("id") API across the app).
   const handleNavigate = (page, state) => {

@@ -81,7 +81,10 @@ export default function Logout({ onNavigate }) {
               <button
                 className="logout-confirm"
                 type="button"
-                onClick={() => onNavigate && onNavigate("welcome")}
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  window.location.href = "/";
+                }}
               >
                 Yes, Log Out
               </button>
