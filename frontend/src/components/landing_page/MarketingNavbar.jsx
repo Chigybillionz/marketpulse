@@ -15,7 +15,16 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
     }
   };
 
-  const handleGetStarted = () => {
+  const handleSignup = () => {
+    setIsMobileMenuOpen(false);
+    if (onNavigate) {
+      onNavigate("signup");
+    } else {
+      navigate("/signup");
+    }
+  };
+
+  const handleLogin = () => {
     setIsMobileMenuOpen(false);
     if (onNavigate) {
       onNavigate("login");
@@ -63,8 +72,8 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
         {/* Desktop Buttons & Mobile Toggle */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-6">
-            <button onClick={handleGetStarted} className="text-sm font-bold text-gray-800 hover:text-[#064E3B] transition-colors">Login</button>
-            <button onClick={handleGetStarted} className="bg-[#064E3B] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#043d2e] transition-colors">
+            <button onClick={handleLogin} className="text-sm font-bold text-gray-800 hover:text-[#064E3B] transition-colors">Login</button>
+            <button onClick={handleSignup} className="bg-[#064E3B] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#043d2e] transition-colors">
               Get Started
             </button>
           </div>
@@ -96,13 +105,13 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
           <div className="h-[1px] w-full bg-gray-100 my-1"></div>
           <div className="flex flex-col gap-2">
             <button 
-              onClick={handleGetStarted} 
+              onClick={handleLogin} 
               className="text-center text-base font-bold text-gray-800 px-4 py-3 hover:bg-gray-50 rounded-xl"
             >
               Login
             </button>
             <button 
-              onClick={handleGetStarted} 
+              onClick={handleSignup} 
               className="text-center text-base font-bold text-white bg-[#064E3B] px-4 py-3 hover:bg-[#043d2e] rounded-xl"
             >
               Get Started

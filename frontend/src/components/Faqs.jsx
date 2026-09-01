@@ -121,7 +121,7 @@ function ChatIcon() {
   );
 }
 
-export default function Faqs({ onNavigate }) {
+export default function Faqs({ onNavigate, onBack }) {
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState("data-safe");
 
@@ -143,7 +143,7 @@ export default function Faqs({ onNavigate }) {
             className="faqs-back"
             type="button"
             aria-label="Go back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={() => onBack ? onBack() : (onNavigate && onNavigate("profile"))}
           >
             <BackIcon />
           </button>

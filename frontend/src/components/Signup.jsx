@@ -34,13 +34,8 @@ export default function Signup({
       const res = await signup(businessName, email, password);
       console.log("Signup successful!");
       
-      // Save token if returned
-      if (res && res.token) {
-        localStorage.setItem('token', res.token);
-      }
-
       setIsNewUser(true);
-      onNavigate("home");
+      onNavigate("login");
     } catch (err) {
       setError(err.message || "Failed to create account. Please try again.");
     } finally {

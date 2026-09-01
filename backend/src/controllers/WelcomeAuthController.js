@@ -1,85 +1,77 @@
-const { generateWelcomeOTP, verifyWelcomeOTP, setTradePin } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin } = require('../services/WelcomeAuthService');
 
-/**
- * Handles initial phone submission from Welcome Page
- */
-const requestOTP = async (req, res) => {
-  console.log(">>> [CONTROLLER] Entering requestOTP");
+const handleSignup = async (req, res) => {
   try {
-    const { phoneNumber, businessName } = req.body;
-    console.log(`>>> [CONTROLLER] Request Body: phone=${phoneNumber}, business=${businessName}`);
+    const { businessName, email, password } = req.body;
 
-    if (!phoneNumber) {
-      console.log(">>> [CONTROLLER] Error: Missing phone number");
-      return res.status(400).json({ message: 'Phone number is required' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    console.log(">>> [CONTROLLER] Calling generateWelcomeOTP service...");
-    await generateWelcomeOTP(phoneNumber, businessName);
-    console.log(">>> [CONTROLLER] Service call finished successfully.");
+    const { user, token } = await signup(businessName, email, password);
 
-    res.status(200).json({ 
-      message: 'OTP sent successfully. It will expire in 2 minutes.' 
-    });
-  } catch (error) {
-    console.error('>>> [CONTROLLER] Request OTP Error:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-/**
- * Handles OTP verification
- */
-const verifyOTP = async (req, res) => {
-  try {
-    const { phoneNumber, otp } = req.body;
-
-    if (!phoneNumber || !otp) {
-      return res.status(400).json({ message: 'Phone number and OTP are required' });
-    }
-
-    const result = await verifyWelcomeOTP(phoneNumber, otp);
-
-    if (!result) {
-      return res.status(401).json({ message: 'Invalid or expired OTP' });
-    }
-
-    const { user, token } = result;
-
-    res.status(200).json({ 
-      message: 'OTP verified successfully',
+    res.status(201).json({ 
+      message: 'Account created successfully',
       token,
       user: {
         id: user._id,
-        phoneNumber: user.phoneNumber,
+        email: user.email,
         businessName: user.businessName
       }
     });
   } catch (error) {
-    console.error('Verify OTP Error:', error);
+    if (error.message === 'Email is already registered') {
+      return res.status(400).json({ message: error.message });
+    }
+    console.error('Signup Error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-/**
- * Handles PIN setup
- */
+const handleLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const { user, token } = await login(email, password);
+
+    res.status(200).json({ 
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        businessName: user.businessName
+      }
+    });
+  } catch (error) {
+    if (error.message === 'Invalid email or password') {
+      return res.status(401).json({ message: error.message });
+    }
+    console.error('Login Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 const setupPin = async (req, res) => {
   try {
-    const { phoneNumber, pin } = req.body;
+    const { email, pin } = req.body;
 
-    if (!phoneNumber || !pin) {
-      return res.status(400).json({ message: 'Phone number and PIN are required' });
+    if (!email || !pin) {
+      return res.status(400).json({ message: 'Email and PIN are required' });
     }
 
     if (pin.length !== 4) {
       return res.status(400).json({ message: 'PIN must be 4 digits' });
     }
 
-    const user = await setTradePin(phoneNumber, pin);
+    const user = await setTradePin(email, pin);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found or not verified' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     res.status(200).json({ message: 'PIN set successfully' });
@@ -90,7 +82,7 @@ const setupPin = async (req, res) => {
 };
 
 module.exports = {
-  requestOTP,
-  verifyOTP,
+  handleSignup,
+  handleLogin,
   setupPin
 };

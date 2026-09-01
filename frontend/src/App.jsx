@@ -345,7 +345,7 @@ function App() {
       />
       <Route
         path={PATHS.faqs}
-        element={<Faqs onNavigate={handleNavigate} businessName={businessName} />}
+        element={<Faqs onNavigate={handleNavigate} onBack={() => handleBack("landing")} businessName={businessName} />}
       />
       <Route
         path={PATHS.privacy_policy}

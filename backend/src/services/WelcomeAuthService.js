@@ -1,6 +1,6 @@
-const otpGenerator = require('otp-generator');
 const WelcomeUser = require('../models/WelcomeUser');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 // Helper to generate JWT
 const generateToken = (id) => {
@@ -9,74 +9,42 @@ const generateToken = (id) => {
   });
 };
 
-/**
- * Generates a 4-digit OTP and sets expiration for 2 minutes
- */
-const generateWelcomeOTP = async (phoneNumber, businessName) => {
-  const otp = otpGenerator.generate(4, { 
-    upperCaseAlphabets: false, 
-    specialChars: false, 
-    lowerCaseAlphabets: false 
-  });
-  
-  // Set expiration to 2 minutes from now
-  const otpExpires = new Date(Date.now() + 2 * 60 * 1000);
-
-  let user = await WelcomeUser.findOne({ phoneNumber });
-
-  if (user) {
-    user.otp = otp;
-    user.otpExpires = otpExpires;
-    user.businessName = businessName || user.businessName;
-    await user.save();
-  } else {
-    user = await WelcomeUser.create({
-      phoneNumber,
-      businessName,
-      otp,
-      otpExpires
-    });
+const signup = async (businessName, email, password) => {
+  const existingUser = await WelcomeUser.findOne({ email });
+  if (existingUser) {
+    throw new Error('Email is already registered');
   }
 
-  // NOTE: In production, integrate with SMS provider (Twilio, etc.)
-  console.log("\n-------------------------------------------");
-  console.log(`🔑 OTP REQUEST RECEIVED`);
-  console.log(`📱 Phone: ${phoneNumber}`);
-  console.log(`🔢 CODE:  ${otp}`);
-  console.log(`⏰ Expires at: ${otpExpires.toLocaleTimeString()}`);
-  console.log("-------------------------------------------\n");
-  
-  return otp;
-};
-
-/**
- * Verifies if the provided OTP is valid and not expired
- */
-const verifyWelcomeOTP = async (phoneNumber, otp) => {
-  const user = await WelcomeUser.findOne({ 
-    phoneNumber, 
-    otp, 
-    otpExpires: { $gt: Date.now() } 
+  const user = await WelcomeUser.create({
+    businessName,
+    email,
+    password
   });
 
-  if (!user) return false;
+  const token = generateToken(user._id);
+  return { user, token };
+};
 
-  // Clear OTP after successful verification
-  user.otp = undefined;
-  user.otpExpires = undefined;
-  user.isVerified = true;
-  await user.save();
+const login = async (email, password) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('Invalid email or password');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error('Invalid email or password');
+  }
 
   const token = generateToken(user._id);
-
   return { user, token };
 };
 
 /**
  * Sets the trade PIN for a verified user
  */
-const setTradePin = async (phoneNumber, pin) => {
-  const user = await WelcomeUser.findOne({ phoneNumber, isVerified: true });
+const setTradePin = async (email, pin) => {
+  const user = await WelcomeUser.findOne({ email });
   if (!user) return null;
 
   user.tradePin = pin;
@@ -85,7 +53,7 @@ const setTradePin = async (phoneNumber, pin) => {
 };
 
 module.exports = {
-  generateWelcomeOTP,
-  verifyWelcomeOTP,
+  signup,
+  login,
   setTradePin
 };

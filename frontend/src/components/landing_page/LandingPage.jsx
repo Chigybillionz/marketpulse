@@ -9,9 +9,9 @@ export default function LandingPage({ onNavigate }) {
   const handleGetStarted = () => {
     // Navigate to the onboarding/login flow
     if (onNavigate) {
-      onNavigate("login");
+      onNavigate("signup");
     } else {
-      navigate("/login");
+      navigate("/signup");
     }
   };
 
@@ -230,9 +230,9 @@ export default function LandingPage({ onNavigate }) {
             </div>
             
             <div className="flex items-center gap-8 text-sm font-bold text-gray-500">
-               <a href="#" className="hover:text-gray-900 transition-colors">Privacy Policy</a>
-               <a href="#" className="hover:text-gray-900 transition-colors">Terms of Service</a>
-               <a href="#" className="hover:text-gray-900 transition-colors">Help Center</a>
+               <button onClick={() => handleNavClick('privacy_policy')} className="hover:text-gray-900 transition-colors">Privacy Policy</button>
+               <button onClick={() => handleNavClick('terms_of_service')} className="hover:text-gray-900 transition-colors">Terms of Service</button>
+               <button onClick={() => handleNavClick('faqs')} className="hover:text-gray-900 transition-colors">Help Center</button>
             </div>
 
             <div className="text-sm font-semibold text-gray-400">

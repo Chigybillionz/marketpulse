@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { requestOTP, verifyOTP, setupPin } = require('../controllers/WelcomeAuthController');
+const { handleSignup, handleLogin, setupPin } = require('../controllers/WelcomeAuthController');
 
 // Welcome Page Auth Routes
-router.post('/request-otp', requestOTP);
-router.post('/verify-otp', verifyOTP);
+router.post('/signup', handleSignup);
+router.post('/login', handleLogin);
 router.post('/setup-pin', setupPin);
 
 module.exports = router;
