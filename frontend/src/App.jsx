@@ -5,8 +5,8 @@ import LandingPage from "./components/landing_page/LandingPage";
 import FeaturesPage from "./components/landing_page/FeaturesPage";
 import HowItWorksPage from "./components/landing_page/HowItWorksPage";
 import PricingPage from "./components/landing_page/PricingPage";
-import WelcomePage from "./components/WelcomePage";
-import Otp from "./components/otp";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 import Homepage from "./components/home/homepage";
 import Listeng from "./components/pulse/listeng";
 import PulseTradePin from "./components/pulse/trade_pin";
@@ -18,7 +18,7 @@ import WeeklyPulse from "./components/pulse/weekly_pulse";
 import Profile from "./components/profile";
 import StoreProfile from "./components/StoreProfile";
 import InventoryAlert from "./components/InventoryAlert";
-import PhoneNumber from "./components/PhoneNumber";
+import Email from "./components/Email";
 import MarketCategory from "./components/market_category";
 import LanguageSetting from "./components/language_setting";
 import ContactSupport from "./components/ContactSupport";
@@ -40,8 +40,7 @@ const PATHS = {
   "how-it-works": "/how-it-works",
   pricing: "/pricing",
   login: "/login",
-  welcome: "/login",
-  otp: "/otp",
+  signup: "/signup",
   ledger: "/ledger",
   home: "/home",
   listeng: "/record",
@@ -55,7 +54,7 @@ const PATHS = {
   profile: "/profile",
   storeProfile: "/store-profile",
   inventoryAlert: "/inventory-alerts",
-  phoneNumber: "/phone-number",
+  email: "/email",
   market_category: "/market-category",
   language_setting: "/language",
   contact_support: "/contact-support",
@@ -73,7 +72,7 @@ function App() {
 
   // User Onboarding Details
   const [businessName, setBusinessName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [isNewUser, setIsNewUser] = useState(true);
 
   // Financial States
@@ -166,33 +165,33 @@ function App() {
         element={<PricingPage onNavigate={handleNavigate} />}
       />
       <Route
-        path={PATHS.welcome}
+        path={PATHS.login}
         element={
-          <WelcomePage
+          <Login
             onNavigate={handleNavigate}
-            businessName={businessName}
-            setBusinessName={setBusinessName}
-            phoneNumber={phoneNumber}
-            setPhoneNumber={setPhoneNumber}
+            email={email}
+            setEmail={setEmail}
             setIsNewUser={setIsNewUser}
           />
         }
       />
       <Route
-        path={PATHS.otp}
+        path={PATHS.signup}
         element={
-          <Otp
+          <Signup
             onNavigate={handleNavigate}
-            phoneNumber={phoneNumber}
-            isNewUser={isNewUser}
             businessName={businessName}
+            setBusinessName={setBusinessName}
+            email={email}
+            setEmail={setEmail}
+            setIsNewUser={setIsNewUser}
           />
         }
       />
       <Route
         path={PATHS.ledger}
         element={
-          <Ledger onNavigate={handleNavigate} phoneNumber={phoneNumber} />
+          <Ledger onNavigate={handleNavigate} email={email} />
         }
       />
       <Route
@@ -260,7 +259,7 @@ function App() {
           <ForgotPin
             onNavigate={handleNavigate}
             onBack={() => handleBack("pulse_trade_pin")}
-            phoneNumber={phoneNumber}
+            email={email}
           />
         }
       />
@@ -293,7 +292,7 @@ function App() {
           <Profile
             onNavigate={handleNavigate}
             businessName={businessName}
-            phoneNumber={phoneNumber}
+            email={email}
           />
         }
       />
@@ -312,12 +311,12 @@ function App() {
         element={<InventoryAlert onNavigate={handleNavigate} />}
       />
       <Route
-        path={PATHS.phoneNumber}
+        path={PATHS.email}
         element={
-          <PhoneNumber
+          <Email
             onNavigate={handleNavigate}
-            phoneNumber={phoneNumber}
-            setPhoneNumber={setPhoneNumber}
+            email={email}
+            setEmail={setEmail}
           />
         }
       />
@@ -353,7 +352,7 @@ function App() {
         element={
           <PrivacyPolicy
             onNavigate={handleNavigate}
-            onBack={() => handleBack("welcome")}
+            onBack={() => handleBack("login")}
           />
         }
       />
@@ -362,7 +361,7 @@ function App() {
         element={
           <TermsOfService
             onNavigate={handleNavigate}
-            onBack={() => handleBack("welcome")}
+            onBack={() => handleBack("login")}
           />
         }
       />
@@ -385,7 +384,7 @@ function App() {
         }
       />
       <Route path={PATHS.logout} element={<Logout onNavigate={handleNavigate} />} />
-      <Route path="*" element={<Navigate to={PATHS.welcome} replace />} />
+      <Route path="*" element={<Navigate to={PATHS.login} replace />} />
     </Routes>
   );
 }

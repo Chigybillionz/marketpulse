@@ -1,31 +1,31 @@
 import apiClient from './api';
 
 /**
- * Requests an OTP for a given phone number and business name
+ * Signs up a new user with business name, email, and password
  */
-export const requestOTP = async (phoneNumber, businessName) => {
-  return apiClient('/welcome-auth/request-otp', {
+export const signup = async (businessName, email, password) => {
+  return apiClient('/welcome-auth/signup', {
     method: 'POST',
-    body: JSON.stringify({ phoneNumber, businessName }),
+    body: JSON.stringify({ businessName, email, password }),
   });
 };
 
 /**
- * Verifies the OTP for a given phone number
+ * Logs in a user with email and password
  */
-export const verifyOTP = async (phoneNumber, otp) => {
-  return apiClient('/welcome-auth/verify-otp', {
+export const login = async (email, password) => {
+  return apiClient('/welcome-auth/login', {
     method: 'POST',
-    body: JSON.stringify({ phoneNumber, otp }),
+    body: JSON.stringify({ email, password }),
   });
 };
 
 /**
  * Sets up the trade PIN for a user
  */
-export const setupPin = async (phoneNumber, pin) => {
+export const setupPin = async (email, pin) => {
   return apiClient('/welcome-auth/setup-pin', {
     method: 'POST',
-    body: JSON.stringify({ phoneNumber, pin }),
+    body: JSON.stringify({ email, pin }),
   });
 };

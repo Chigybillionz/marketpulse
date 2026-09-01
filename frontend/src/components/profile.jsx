@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AppShell from "./layout/AppShell";
 
-function getSections(businessName) {
+function getSections(businessName, email) {
   return [
     {
       title: "Business Details",
@@ -30,10 +30,10 @@ function getSections(businessName) {
       title: "Account Settings",
       items: [
         {
-          icon: "phone",
-          label: "Phone Number",
-          sub: "+234 803 123 4567",
-          target: "phoneNumber",
+          icon: "bell",
+          label: "Email Address",
+          sub: email || "Not set",
+          target: "email",
         },
         {
           icon: "language",
@@ -189,8 +189,8 @@ function SettingItem({ item, onClick }) {
   );
 }
 
-export default function Profile({ onNavigate, businessName }) {
-  const sections = getSections(businessName);
+export default function Profile({ onNavigate, businessName, email }) {
+  const sections = getSections(businessName, email);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [businessAvatarUrl, setBusinessAvatarUrl] = useState(null);
 

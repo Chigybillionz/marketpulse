@@ -70,7 +70,7 @@ function CheckIcon() {
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-export default function Ledger({ onNavigate, phoneNumber }) {
+export default function Ledger({ onNavigate, email }) {
   const [pin, setPin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -93,7 +93,7 @@ export default function Ledger({ onNavigate, phoneNumber }) {
     setError(null);
 
     try {
-      await setupPin(phoneNumber, pin);
+      await setupPin(email, pin);
       onNavigate?.("home");
     } catch (err) {
       setError(err.message || "Failed to set PIN. Please try again.");
@@ -140,7 +140,7 @@ export default function Ledger({ onNavigate, phoneNumber }) {
           <header className="ledger-nav">
             <button
               className="ledger-back"
-              onClick={() => onNavigate?.("otp")}
+              onClick={() => onNavigate?.("signup")}
               aria-label="Go back"
               type="button"
             >

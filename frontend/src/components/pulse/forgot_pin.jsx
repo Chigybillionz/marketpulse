@@ -4,10 +4,13 @@ const CODE_LENGTH = 4;
 const PIN_LENGTH = 4;
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-function maskPhone(phone) {
-  const digits = (phone || "").replace(/\D/g, "");
-  const last4 = digits.length >= 4 ? digits.slice(-4) : "4567";
-  return `+234 ••• ••• ${last4}`;
+function maskEmail(email) {
+  if (!email) return "u***@example.com";
+  const [localPart, domain] = email.split('@');
+  const maskedLocal = localPart.length > 2 
+    ? `${localPart.slice(0, 2)}***` 
+    : `${localPart.charAt(0)}***`;
+  return `${maskedLocal}@${domain || 'example.com'}`;
 }
 
 function Icon({ name }) {
@@ -90,14 +93,14 @@ function Dots({ length, filled }) {
   );
 }
 
-export default function ForgotPin({ onNavigate, onBack, phoneNumber }) {
+export default function ForgotPin({ onNavigate, onBack, email }) {
   const [step, setStep] = useState("verify"); // verify | code | create | confirm | done
   const [code, setCode] = useState("");
   const [newPin, setNewPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [error, setError] = useState("");
 
-  const masked = maskPhone(phoneNumber);
+  const masked = maskEmail(email);
   const stepNumber = { verify: 1, code: 1, create: 2, confirm: 2, done: 3 }[step];
 
   const goBack = () => {
@@ -192,8 +195,8 @@ export default function ForgotPin({ onNavigate, onBack, phoneNumber }) {
                 </span>
                 <h2>Reset your Trade PIN</h2>
                 <p>
-                  We&apos;ll send a 4-digit reset code to your registered phone
-                  number to confirm it&apos;s you.
+                  We&apos;ll send a 4-digit reset code to your registered email
+                  address to confirm it&apos;s you.
                 </p>
                 <div className="forgot-pin-phone">{masked}</div>
                 <button

@@ -8,28 +8,28 @@ import {
   Package,
 } from "lucide-react";
 
-export default function PhoneNumber({ onNavigate }) {
+export default function Email({ onNavigate, email, setEmail }) {
   const [isChanging, setIsChanging] = useState(false);
 
   const verificationItems = [
     {
       icon: Shield,
       title: "Secure Trading",
-      copy: "Phone numbers are encrypted and never shared with third parties.",
+      copy: "Email addresses are encrypted and never shared with third parties.",
       tone: "secure",
     },
     {
       icon: Bell,
       title: "Instant Alerts",
-      copy: "Get SMS alerts for successful provision deliveries and credit updates.",
+      copy: "Get email alerts for successful provision deliveries and credit updates.",
       tone: "alerts",
     },
   ];
 
-  const handleChangeNumber = () => {
+  const handleChangeEmail = () => {
     setIsChanging(true);
     setTimeout(() => {
-      alert("Redirecting to phone number change flow...");
+      alert("Redirecting to email change flow...");
       setIsChanging(false);
       if (onNavigate) {
         onNavigate("profile");
@@ -52,7 +52,7 @@ export default function PhoneNumber({ onNavigate }) {
 
           <div className="phone-number-titleblock">
             <p>Account security</p>
-            <h1>Phone Number</h1>
+            <h1>Email Address</h1>
           </div>
 
           <button
@@ -70,17 +70,17 @@ export default function PhoneNumber({ onNavigate }) {
         <main className="phone-number-content">
           <aside className="phone-number-preview">
             <div className="phone-number-hero">
-              <span className="phone-number-kicker">Verified line</span>
-              <h2>Keep your store connected with a secure phone number.</h2>
+              <span className="phone-number-kicker">Verified email</span>
+              <h2>Keep your store connected with a secure email address.</h2>
               <p>
-                Your verified line is used for alerts, account recovery, and
+                Your verified email is used for alerts, account recovery, and
                 identity checks.
               </p>
 
               <div className="phone-number-hero-card">
                 <div>
-                  <span>Current verified number</span>
-                  <strong>+234 803 123 4567</strong>
+                  <span>Current verified email</span>
+                  <strong>{email || "No email set"}</strong>
                 </div>
                 <div className="phone-number-badge">
                   <CheckCircle size={16} />
@@ -92,7 +92,7 @@ export default function PhoneNumber({ onNavigate }) {
             <div className="phone-number-note">
               <Package size={18} />
               <p>
-                One verified number keeps delivery updates and support messages
+                One verified email keeps delivery updates and support messages
                 in one place.
               </p>
             </div>
@@ -100,31 +100,31 @@ export default function PhoneNumber({ onNavigate }) {
 
           <section className="phone-number-panel">
             <p className="phone-number-intro">
-              Your phone number is used for account security, trade
+              Your email address is used for account security, trade
               notifications, and identity verification.
             </p>
 
             <div className="phone-number-card">
               <div className="phone-number-card-top">
-                <h2>Current Verified Number</h2>
+                <h2>Current Verified Email</h2>
                 <div className="phone-number-verified-pill">
                   <CheckCircle size={16} />
                   <span>Verified</span>
                 </div>
               </div>
 
-              <p className="phone-number-value">+234 803 123 4567</p>
+              <p className="phone-number-value">{email || "No email set"}</p>
             </div>
 
             <button
               type="button"
-              onClick={handleChangeNumber}
+              onClick={handleChangeEmail}
               disabled={isChanging}
               className="phone-number-change"
             >
               <Edit3 size={22} />
               <span>
-                {isChanging ? "Processing..." : "Change Phone Number"}
+                {isChanging ? "Processing..." : "Change Email Address"}
               </span>
             </button>
 
@@ -153,11 +153,11 @@ export default function PhoneNumber({ onNavigate }) {
         <footer className="phone-number-footer">
           <button
             type="button"
-            onClick={handleChangeNumber}
+            onClick={handleChangeEmail}
             disabled={isChanging}
           >
             <Edit3 size={20} />
-            <span>{isChanging ? "Processing..." : "Change Phone Number"}</span>
+            <span>{isChanging ? "Processing..." : "Change Email Address"}</span>
           </button>
         </footer>
       </div>
