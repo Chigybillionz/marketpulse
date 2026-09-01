@@ -9,6 +9,7 @@ export default function Login({
   email,
   setEmail,
   setIsNewUser,
+  setBusinessName,
 }) {
   const [language, setLanguage] = useState("English");
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
@@ -35,6 +36,12 @@ export default function Login({
       // Save token if returned
       if (res && res.token) {
         localStorage.setItem('token', res.token);
+        if (res.user) {
+          localStorage.setItem('businessName', res.user.businessName || "");
+          localStorage.setItem('email', res.user.email || "");
+          if (setBusinessName) setBusinessName(res.user.businessName || "");
+          if (setEmail) setEmail(res.user.email || "");
+        }
       }
 
       setIsNewUser(false);

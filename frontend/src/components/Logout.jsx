@@ -83,6 +83,8 @@ export default function Logout({ onNavigate }) {
                 type="button"
                 onClick={() => {
                   localStorage.removeItem("token");
+                  localStorage.removeItem("businessName");
+                  localStorage.removeItem("email");
                   window.location.href = "/";
                 }}
               >

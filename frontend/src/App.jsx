@@ -71,8 +71,8 @@ function App() {
   const location = useLocation();
 
   // User Onboarding Details
-  const [businessName, setBusinessName] = useState("");
-  const [email, setEmail] = useState("");
+  const [businessName, setBusinessName] = useState(() => localStorage.getItem('businessName') || "");
+  const [email, setEmail] = useState(() => localStorage.getItem('email') || "");
   const [isNewUser, setIsNewUser] = useState(true);
 
   // Financial States
@@ -172,6 +172,7 @@ function App() {
             email={email}
             setEmail={setEmail}
             setIsNewUser={setIsNewUser}
+            setBusinessName={setBusinessName}
           />
         }
       />
