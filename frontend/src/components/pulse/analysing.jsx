@@ -75,7 +75,7 @@ export default function Analysing({ onNavigate, businessName }) {
             transactionData: {
                 type: "Income",
                 amount: 0,
-                description: "Analysis failed",
+                description: `Analysis failed: ${error.message || error.toString()}`,
                 category: "Other"
             }
           });

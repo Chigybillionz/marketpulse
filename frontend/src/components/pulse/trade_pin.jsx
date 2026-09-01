@@ -60,7 +60,7 @@ export default function PulseTradePin({
     description: "Bulk Garri Sale",
     category: "Dry Goods"
   };
-  const amountNum = Number(transactionData.amount) || 15000;
+  const amountNum = transactionData.amount !== undefined && transactionData.amount !== null ? Number(transactionData.amount) : 15000;
   const isIncome = transactionData.type?.toLowerCase() === 'income' || transactionData.type?.toLowerCase() === 'credit';
   
   const canConfirm = pin.length === 4;

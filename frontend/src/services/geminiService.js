@@ -4,10 +4,10 @@ const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 export const transcribeAndAnalyze = async (
   audioBase64,
-  mimeType = "audio/wav",
+  mimeType = "audio/webm",
 ) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const response = await model.generateContent([
       {
@@ -29,7 +29,7 @@ Extract and respond ONLY with valid JSON (no markdown, no extra text):
 
 Rules:
 - type: must be "Income" or "Expense"
-- amount: number only (no currency symbol)
+- amount: IMPORTANT: You must return a strict number (e.g. 30000). If the user speaks the number in words (e.g. "thirty thousand", "five k", "two hundred"), you MUST convert it to the numeric digit equivalent. Do not include currency symbols or commas.
 - description: what was bought/sold
 - category: one of [Dry Goods, Grains, Produce, Textiles, Electronics, Other]
 
@@ -58,7 +58,7 @@ If you cannot extract clear information, respond with:
 
 export const generateTextResponse = async (prompt) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const response = await model.generateContent(prompt);
     return response.response.text();
   } catch (error) {
@@ -69,7 +69,7 @@ export const generateTextResponse = async (prompt) => {
 
 export const analyzeMarketTrend = async (description) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `Based on this market transaction: "${description}", provide a brief market insight in one sentence.`;
     const response = await model.generateContent(prompt);
     return response.response.text();
