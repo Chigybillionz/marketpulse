@@ -7,7 +7,7 @@ export const transcribeAndAnalyze = async (
   mimeType = "audio/webm",
 ) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
     const response = await model.generateContent([
       {
@@ -58,7 +58,7 @@ If you cannot extract clear information, respond with:
 
 export const generateTextResponse = async (prompt) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
     const response = await model.generateContent(prompt);
     return response.response.text();
   } catch (error) {
@@ -69,7 +69,7 @@ export const generateTextResponse = async (prompt) => {
 
 export const analyzeMarketTrend = async (description) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
     const prompt = `Based on this market transaction: "${description}", provide a brief market insight in one sentence.`;
     const response = await model.generateContent(prompt);
     return response.response.text();
