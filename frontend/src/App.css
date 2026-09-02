@@ -4061,13 +4061,207 @@
 @keyframes checkmarkPop {
   0% { transform: scale(1); }
   50% { transform: scale(1.4); }
+    box-shadow: 0 10px 20px rgba(8, 21, 14, 0.06);
+  }
+
+  .market-category-preview-details span {
+    display: block;
+    color: #747d78;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .market-category-preview-details strong {
+    display: block;
+    color: #08150e;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .market-category-panel {
+    padding: 4px 0 0;
+  }
+
+  .market-category-search {
+    min-height: 84px;
+    padding: 0 22px;
+    border-radius: 26px;
+  }
+
+  .market-category-search input {
+    font-size: 20px;
+  }
+
+  .market-category-heading {
+    padding-top: 12px;
+  }
+
+  .market-category-heading h2 {
+    font-size: 15px;
+  }
+
+  .market-category-heading p {
+    font-size: 17px;
+  }
+
+  .market-category-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .market-category-card {
+    min-height: 220px;
+    grid-template-columns: 64px 1fr;
+    grid-template-areas:
+      "icon action"
+      "copy copy";
+    align-content: space-between;
+    padding: 26px 26px 24px;
+    border-radius: 30px;
+  }
+
+  .market-category-card-icon {
+    grid-area: icon;
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+  }
+
+  .market-category-card-copy {
+    grid-area: copy;
+    align-self: end;
+  }
+
+  .market-category-card-action {
+    grid-area: action;
+    justify-self: end;
+    align-self: start;
+  }
+
+  .market-category-card>svg:last-child {
+    width: 106px;
+    height: 106px;
+    right: 16px;
+    bottom: 10px;
+  }
+
+  .market-category-card-copy h3 {
+    font-size: 26px;
+  }
+
+  .market-category-card-copy p {
+    max-width: 28ch;
+    font-size: 15px;
+  }
+
+  .market-category-footer {
+    padding-top: 18px;
+  }
+
+  .market-category-footer button {
+    min-height: 84px;
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-only-header,
+  .mobile-only-nav {
+    display: none !important;
+  }
+}
+
+.ai-confirmation-page {
+  min-height: 100vh;
+  background: #e8ede8;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ai-confirmation-shell {
+  width: 100%;
+  max-width: 480px;
+  height: 100dvh;
+  background: #f8f9ff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .ai-confirmation-page {
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at top left, rgba(5, 46, 22, 0.05), transparent 24%), radial-gradient(circle at bottom right, rgba(226, 232, 240, 0.72), transparent 30%), linear-gradient(180deg, #f7f8ff 0%, #eef2f8 100%);
+    padding: 60px 40px;
+    overflow: auto;
+  }
+
+  .ai-confirmation-shell {
+    height: auto;
+    min-height: 600px;
+    max-width: 680px;
+    border-radius: 24px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.store-profile-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: #013f1f;
+  color: #ffffff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(1, 63, 31, 0.25);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+}
+
+.store-profile-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.store-profile-notification svg {
+  width: 24px;
+  height: 24px;
+}
+
+.privacy-accept.is-accepted {
+  background-color: #013f1f;
+  color: #ffffff;
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(1, 63, 31, 0.25);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkmarkPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
   100% { transform: scale(1.3); }
 }
 
 .privacy-accept.is-accepted svg {
   animation: checkmarkPop 0.4s ease forwards;
-}i n p u t ,   s e l e c t ,   t e x t a r e a   {   f o n t - s i z e :   1 6 p x   ! i m p o r t a n t ;   }  
- 
+}
 
 input, select, textarea { font-size: 16px !important; }
 
