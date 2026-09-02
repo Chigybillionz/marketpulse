@@ -116,6 +116,7 @@ function App() {
             isPositive: isIncome,
             iconBg: isIncome ? "bg-green-100" : "bg-red-100",
             iconColor: isIncome ? "text-green-800" : "text-red-600",
+            rawDate: new Date(tx.date),
           };
         });
 

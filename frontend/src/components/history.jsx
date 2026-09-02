@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import AppShell from "./layout/AppShell";
 import Header from "./home/Header";
 import NavigationBar from "./home/NavigationBar";
@@ -8,79 +8,6 @@ const historyTabs = [
   { key: "yesterday", label: "Yesterday" },
   { key: "week", label: "This Week" },
 ];
-
-const demoHistory = {
-  today: [
-    {
-      type: "credit",
-      icon: "bag",
-      title: "Bulk Flour Sale",
-      meta: "10:24 AM • Invoice #882",
-      amount: "+ ₦45,000",
-    },
-    {
-      type: "debit",
-      icon: "truck",
-      title: "Logistics Fee",
-      meta: "09:15 AM • GIG Motors",
-      amount: "- ₦12,400",
-    },
-    {
-      type: "credit",
-      icon: "receipt",
-      title: "Retail Groceries",
-      meta: "08:45 AM • POS Terminal 1",
-      amount: "+ ₦8,200",
-    },
-  ],
-  yesterday: [
-    {
-      type: "debit",
-      icon: "box",
-      title: "Wholesale Stock",
-      meta: "Yesterday • Dangote Ltd",
-      amount: "- ₦210,000",
-    },
-    {
-      type: "debit",
-      icon: "bolt",
-      title: "Electricity Bill",
-      meta: "Yesterday • EKEDP",
-      amount: "- ₦15,000",
-    },
-    {
-      type: "credit",
-      icon: "receipt",
-      title: "Card Settlement",
-      meta: "Yesterday • Bank Transfer",
-      amount: "+ ₦62,500",
-    },
-  ],
-  week: [
-    {
-      type: "credit",
-      icon: "receipt",
-      title: "Wholesale Tomatoes",
-      meta: "Monday • Northside Market",
-      amount: "+ ₦31,000",
-    },
-    {
-      type: "debit",
-      icon: "truck",
-      title: "Fuel Refill",
-      meta: "Tuesday • TotalEnergies",
-      amount: "- ₦18,000",
-    },
-    {
-      type: "credit",
-      icon: "bag",
-      title: "Weekly Cash Sale",
-      meta: "Thursday • Front Desk",
-      amount: "+ ₦74,000",
-    },
-  ],
-};
-
 
 function ItemIcon({ icon }) {
   const paths = {
@@ -114,14 +41,18 @@ function ItemIcon({ icon }) {
   };
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true">
-      {paths[icon]}
+      {paths[icon] || paths.bag}
     </svg>
   );
 }
 
-
-
 function TransactionCard({ item }) {
+  // Extract just the time part for meta, unless it's older than today, then we show date + time
+  let displayMeta = item.meta;
+  if (item.rawDate) {
+    displayMeta = item.rawDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
   return (
     <button className="history-card" type="button">
       <span className={`history-icon ${item.type}`}>
@@ -129,7 +60,7 @@ function TransactionCard({ item }) {
       </span>
       <span className="history-details">
         <strong>{item.title}</strong>
-        <small>{item.meta}</small>
+        <small>{displayMeta}</small>
       </span>
       <span className={`history-money ${item.type}`}>
         <strong>{item.amount}</strong>
@@ -146,16 +77,63 @@ export default function History({
   businessName,
 }) {
   const [activePeriod, setActivePeriod] = useState("today");
-  const visibleTransactions =
-    transactionsList?.length && activePeriod === "today"
-      ? transactionsList
-      : demoHistory[activePeriod];
+
+  // Group transactions by date
+  const groupedTransactions = useMemo(() => {
+    const now = new Date();
+    // Start of today
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Start of yesterday
+    const startOfYesterday = new Date(startOfToday);
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+    
+    // Start of "this week" (we'll define it as the last 7 days excluding today/yesterday)
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - 7);
+
+    const groups = {
+      today: [],
+      yesterday: [],
+      week: [],
+      older: []
+    };
+
+    if (!transactionsList) return groups;
+
+    transactionsList.forEach((tx) => {
+      const txDate = tx.rawDate || new Date();
+      
+      if (txDate >= startOfToday) {
+        groups.today.push(tx);
+      } else if (txDate >= startOfYesterday && txDate < startOfToday) {
+        groups.yesterday.push(tx);
+      } else if (txDate >= startOfWeek && txDate < startOfYesterday) {
+        groups.week.push(tx);
+      } else {
+        groups.older.push(tx);
+      }
+    });
+
+    return groups;
+  }, [transactionsList]);
+
+  const visibleTransactions = groupedTransactions[activePeriod] || [];
 
   const balanceLabel = {
     today: "NET BALANCE TODAY",
     yesterday: "NET BALANCE YESTERDAY",
     week: "NET BALANCE THIS WEEK",
   }[activePeriod];
+
+  // Calculate balance for the active period
+  const periodBalance = visibleTransactions.reduce((acc, curr) => {
+    // Strip everything except numbers from amount string, then parse
+    const rawNumStr = curr.amount.replace(/[^0-9.-]+/g, "");
+    const amountVal = parseFloat(rawNumStr) || 0;
+    return curr.isPositive ? acc + amountVal : acc - amountVal;
+  }, 0);
+
 
   return (
     <AppShell
@@ -181,25 +159,35 @@ export default function History({
           </div>
           <section className="history-balance">
             <span>{balanceLabel}</span>
-            <strong>₦{(balance || 142500).toLocaleString()}.00</strong>
+            <strong>₦{periodBalance.toLocaleString()}.00</strong>
           </section>
-          <section className="history-list">
-            {visibleTransactions.map((item) => (
-              <TransactionCard item={item} key={item.id || item.title} />
-            ))}
-          </section>
-          {activePeriod === "today" && (
+          
+          {visibleTransactions.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "#888" }}>
+              <p>No transactions found for {activePeriod}.</p>
+            </div>
+          ) : (
+            <section className="history-list">
+              {visibleTransactions.map((item) => (
+                <TransactionCard item={item} key={item.id || item.title} />
+              ))}
+            </section>
+          )}
+
+          {activePeriod === "today" && groupedTransactions.yesterday.length > 0 && (
             <>
               <div className="history-divider">
                 <span>YESTERDAY</span>
               </div>
               <section className="history-list yesterday">
-                {demoHistory.yesterday.map((item) => (
-                  <TransactionCard item={item} key={item.title} />
+                {groupedTransactions.yesterday.map((item) => (
+                  <TransactionCard item={item} key={item.id || item.title} />
                 ))}
               </section>
             </>
           )}
+          
+          <div style={{ height: "100px" }}></div>
           <NavigationBar onNavigate={onNavigate} currentPage="history" />
       </main>
     </AppShell>
