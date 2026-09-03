@@ -39,3 +39,23 @@ export const uploadProfilePicture = async (email, profilePicture) => {
     body: JSON.stringify({ email, profilePicture }),
   });
 };
+
+/**
+ * Verifies a user's trade PIN against the stored hash
+ */
+export const verifyPin = async (email, pin) => {
+  return apiClient('/welcome-auth/verify-pin', {
+    method: 'POST',
+    body: JSON.stringify({ email, pin }),
+  });
+};
+
+/**
+ * Checks if a user has a trade PIN set
+ */
+export const checkHasPin = async (email) => {
+  return apiClient(`/welcome-auth/has-pin/${encodeURIComponent(email)}`, {
+    method: 'GET',
+  });
+};
+

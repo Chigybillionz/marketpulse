@@ -47,13 +47,40 @@ const setTradePin = async (email, pin) => {
   const user = await WelcomeUser.findOne({ email });
   if (!user) return null;
 
+  // Don't allow overwriting an existing PIN through this endpoint
+  if (user.tradePin) {
+    throw new Error('PIN already set');
+  }
+
   user.tradePin = pin;
   await user.save();
   return user;
 };
 
+/**
+ * Verifies a trade PIN against the stored hash
+ */
+const verifyTradePin = async (email, pin) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user || !user.tradePin) return false;
+
+  const isMatch = await bcrypt.compare(pin, user.tradePin);
+  return isMatch;
+};
+
+/**
+ * Checks if a user has a trade PIN set
+ */
+const hasTradePin = async (email) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) return false;
+  return !!user.tradePin;
+};
+
 module.exports = {
   signup,
   login,
-  setTradePin
+  setTradePin,
+  verifyTradePin,
+  hasTradePin
 };

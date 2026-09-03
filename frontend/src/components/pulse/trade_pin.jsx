@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { createTransaction } from "../../services/transactionService";
+import { setupPin, verifyPin } from "../../services/authService";
 
 const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -43,16 +44,35 @@ function ArrowRightIcon() {
   );
 }
 
+function WarningIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
 export default function PulseTradePin({
   onNavigate,
   onBack,
   businessName,
+  email,
   setBalance,
   setMoneyIn,
   setMoneyOut,
   setTransactionsList,
 }) {
   const [pin, setPin] = useState("");
+  const [createdPin, setCreatedPin] = useState("");
+  const [error, setError] = useState("");
+  const [shake, setShake] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Determine mode: "create" | "confirm" | "verify"
+  const [mode, setMode] = useState("verify"); // default, will be resolved by useEffect
+
   const location = useLocation();
   const transactionData = location.state?.transactionData || {
     type: "credit",
@@ -62,10 +82,28 @@ export default function PulseTradePin({
   };
   const amountNum = transactionData.amount !== undefined && transactionData.amount !== null ? Number(transactionData.amount) : 15000;
   const isIncome = transactionData.type?.toLowerCase() === 'income' || transactionData.type?.toLowerCase() === 'credit';
-  
+
+  // On mount, check if user has a PIN
+  useEffect(() => {
+    const hasPin = localStorage.getItem('hasPin');
+    if (hasPin === 'true') {
+      setMode("verify");
+    } else {
+      setMode("create");
+    }
+  }, []);
+
   const canConfirm = pin.length === 4;
 
+  const triggerShake = (msg) => {
+    setError(msg);
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+    setPin("");
+  };
+
   const addDigit = (digit) => {
+    if (error) setError("");
     setPin((currentPin) =>
       currentPin.length < 4 ? `${currentPin}${digit}` : currentPin,
     );
@@ -75,11 +113,8 @@ export default function PulseTradePin({
     setPin((currentPin) => currentPin.slice(0, -1));
   };
 
-  const handleConfirm = async () => {
-    if (!canConfirm) return;
-
+  const saveTransaction = async () => {
     try {
-      // Save transaction to backend
       const apiTx = await createTransaction({
         type: isIncome ? 'Income' : 'Expense',
         amount: amountNum,
@@ -87,19 +122,15 @@ export default function PulseTradePin({
         description: transactionData.description || 'Voice Input'
       });
 
-      // Optimistically update local UI state
       if (setBalance) {
         setBalance((prev) => isIncome ? prev + amountNum : prev - amountNum);
       }
-
       if (isIncome && setMoneyIn) {
         setMoneyIn((prev) => prev + amountNum);
       } else if (!isIncome && setMoneyOut) {
         setMoneyOut((prev) => prev + amountNum);
       }
-
       if (setTransactionsList) {
-        // Map backend transaction to frontend format
         const newTx = {
           id: apiTx._id || Date.now(),
           type: isIncome ? "credit" : "debit",
@@ -111,24 +142,94 @@ export default function PulseTradePin({
           iconBg: isIncome ? "bg-green-100" : "bg-red-100",
           iconColor: isIncome ? "text-green-800" : "text-red-600",
         };
-
         setTransactionsList((prev) => [newTx, ...prev]);
       }
-
       onNavigate("home");
     } catch (error) {
       console.error("Failed to save transaction:", error);
-      // In a real app we'd show an error toast here, but for now we'll 
-      // just fall back to optimistic update if the API fails for robustness.
       onNavigate("home");
     }
+  };
+
+  const handleConfirm = async () => {
+    if (!canConfirm) return;
+    setIsLoading(true);
+
+    try {
+      if (mode === "create") {
+        // Save the first PIN entry and move to confirm mode
+        setCreatedPin(pin);
+        setPin("");
+        setMode("confirm");
+        setIsLoading(false);
+        return;
+      }
+
+      if (mode === "confirm") {
+        // Check if confirmation matches
+        if (pin !== createdPin) {
+          triggerShake("PINs don't match. Try again.");
+          setCreatedPin("");
+          setMode("create");
+          setIsLoading(false);
+          return;
+        }
+
+        // PINs match — save to backend
+        const userEmail = email || localStorage.getItem('email');
+        await setupPin(userEmail, pin);
+        localStorage.setItem('hasPin', 'true');
+
+        // PIN set successfully, now save the transaction
+        await saveTransaction();
+        return;
+      }
+
+      if (mode === "verify") {
+        // Verify against backend
+        const userEmail = email || localStorage.getItem('email');
+        try {
+          await verifyPin(userEmail, pin);
+          // PIN is valid — save the transaction
+          await saveTransaction();
+        } catch (err) {
+          triggerShake("Invalid PIN. Please try again.");
+          setIsLoading(false);
+        }
+        return;
+      }
+    } catch (err) {
+      console.error("PIN Error:", err);
+      triggerShake(err.message || "Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Dynamic title/subtitle based on mode
+  const heroTitle = {
+    create: "Create a 4-digit Trade PIN to secure your transactions.",
+    confirm: "Re-enter your PIN to confirm.",
+    verify: "Confirm this transaction with your 4-digit Trade PIN.",
+  };
+
+  const keypadTitle = {
+    create: "Create your Trade PIN",
+    confirm: "Confirm your Trade PIN",
+    verify: "Enter your Trade PIN",
+  };
+
+  const keypadSubtitle = {
+    create: `Set a PIN to secure your ${isIncome ? 'sale' : 'expense'} of`,
+    confirm: `Re-enter the same PIN to confirm`,
+    verify: `Enter your 4-digit PIN to confirm this ${isIncome ? 'sale' : 'expense'} of`,
   };
 
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 lg:p-12 font-sans">
       <div className="w-full max-w-5xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row relative">
         
-        {/* Topbar for mobile, absolutely positioned on desktop */}
+        {/* Topbar */}
         <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-20 pointer-events-none lg:pointer-events-auto">
           <button
             type="button"
@@ -161,14 +262,26 @@ export default function PulseTradePin({
           </div>
 
           <span className="text-green-300/80 text-xs font-bold tracking-widest uppercase mb-3 block">
-            Approval required
+            {mode === "create" ? "PIN Setup" : mode === "confirm" ? "Confirm PIN" : "Approval required"}
           </span>
           <h2 className="text-3xl lg:text-4xl font-serif font-bold leading-tight mb-6">
-            Confirm this transaction with your 4-digit Trade PIN.
+            {heroTitle[mode]}
           </h2>
           <p className="text-green-100/70 text-base leading-relaxed mb-12">
             Your PIN protects sales, expenses, and credit entries before they reach your secure ledger.
           </p>
+
+          {/* Warning for create mode */}
+          {(mode === "create" || mode === "confirm") && (
+            <div className="bg-yellow-500/15 border border-yellow-400/30 rounded-2xl p-5 mb-8 flex items-start gap-3">
+              <span className="text-yellow-300 flex-shrink-0 mt-0.5">
+                <WarningIcon />
+              </span>
+              <p className="text-yellow-100/90 text-sm font-semibold leading-relaxed">
+                Remember your PIN — it cannot be recovered. You'll need it for every transaction. Keep it safe!
+              </p>
+            </div>
+          )}
 
           <div className="bg-white/10 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
             <span className="block text-green-200/80 text-xs font-bold tracking-widest uppercase mb-2">
@@ -185,15 +298,24 @@ export default function PulseTradePin({
           <div className="max-w-sm mx-auto w-full lg:mt-8">
             <div className="mb-10 text-center lg:text-left">
               <p className="text-slate-600 text-lg lg:text-xl">
-                Enter your 4-digit PIN to confirm this {isIncome ? 'sale' : 'expense'} of{" "}
-                <strong className="text-slate-900 font-bold">&#8358;{amountNum.toLocaleString()}</strong>.
+                {mode === "confirm" ? (
+                  <>Re-enter your PIN to confirm.</>
+                ) : (
+                  <>
+                    {keypadSubtitle[mode]}{" "}
+                    {mode !== "confirm" && (
+                      <strong className="text-slate-900 font-bold">&#8358;{amountNum.toLocaleString()}</strong>
+                    )}
+                    .
+                  </>
+                )}
               </p>
             </div>
 
-            <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-12 shadow-inner">
+            <div className={`bg-slate-50 border rounded-3xl p-6 mb-8 shadow-inner transition-all ${error ? 'border-red-300 bg-red-50/30' : 'border-slate-100'} ${shake ? 'animate-shake' : ''}`}>
               <div className="text-center mb-6">
                 <h2 className="text-xs font-bold text-slate-400 tracking-widest uppercase">
-                  Enter your Trade PIN
+                  {keypadTitle[mode]}
                 </h2>
               </div>
               <div className="flex justify-center gap-6" aria-label="Trade PIN digits entered">
@@ -202,13 +324,38 @@ export default function PulseTradePin({
                     key={index}
                     className={`w-5 h-5 rounded-full border-4 transition-all duration-200 ${
                       index < pin.length 
-                        ? "bg-slate-800 border-slate-800 scale-110" 
+                        ? error
+                          ? "bg-red-500 border-red-500 scale-110"
+                          : mode === "create" || mode === "confirm"
+                            ? "bg-green-600 border-green-600 scale-110"
+                            : "bg-slate-800 border-slate-800 scale-110"
                         : "bg-transparent border-slate-300"
                     }`}
                   />
                 ))}
               </div>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 text-center">
+                <p className="text-red-500 text-sm font-bold">{error}</p>
+              </div>
+            )}
+
+            {/* Mode indicator badge */}
+            {(mode === "create" || mode === "confirm") && (
+              <div className="mb-6 text-center">
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold ${
+                  mode === "create" 
+                    ? "bg-green-50 text-green-700 border border-green-200" 
+                    : "bg-blue-50 text-blue-700 border border-blue-200"
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${mode === "create" ? "bg-green-500" : "bg-blue-500"}`}></span>
+                  {mode === "create" ? "Step 1: Create PIN" : "Step 2: Confirm PIN"}
+                </span>
+              </div>
+            )}
 
             {/* Keypad */}
             <div className="grid grid-cols-3 gap-4 lg:gap-6 max-w-[320px] mx-auto mb-10">
@@ -217,24 +364,27 @@ export default function PulseTradePin({
                   key={digit}
                   type="button"
                   onClick={() => addDigit(digit)}
-                  className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-slate-50 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-3xl font-bold text-slate-800 active:scale-95 transition-all"
+                  disabled={isLoading}
+                  className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-slate-50 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-3xl font-bold text-slate-800 active:scale-95 transition-all disabled:opacity-50"
                 >
                   {digit}
                 </button>
               ))}
-              <div className="h-16 lg:h-20"></div> {/* Empty cell */}
+              <div className="h-16 lg:h-20"></div>
               <button
                 type="button"
                 onClick={() => addDigit("0")}
-                className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-slate-50 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-3xl font-bold text-slate-800 active:scale-95 transition-all"
+                disabled={isLoading}
+                className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-slate-50 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] text-3xl font-bold text-slate-800 active:scale-95 transition-all disabled:opacity-50"
               >
                 0
               </button>
               <button
                 type="button"
                 onClick={removeDigit}
+                disabled={isLoading}
                 aria-label="Delete last digit"
-                className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center justify-center text-slate-500 active:scale-95 transition-all"
+                className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center justify-center text-slate-500 active:scale-95 transition-all disabled:opacity-50"
               >
                 <div className="w-8 h-6">
                   <DeleteIcon />
@@ -256,14 +406,18 @@ export default function PulseTradePin({
               <button
                 type="button"
                 onClick={handleConfirm}
-                disabled={!canConfirm}
+                disabled={!canConfirm || isLoading}
                 className={`flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg ${
-                  canConfirm 
-                    ? "bg-[#7e9c86] hover:bg-[#6b8572] text-white shadow-[#7e9c86]/30 active:scale-95 cursor-pointer" 
+                  canConfirm && !isLoading
+                    ? mode === "create" || mode === "confirm"
+                      ? "bg-[#052e16] hover:bg-[#0a4a2e] text-white shadow-[#052e16]/30 active:scale-95 cursor-pointer"
+                      : "bg-[#7e9c86] hover:bg-[#6b8572] text-white shadow-[#7e9c86]/30 active:scale-95 cursor-pointer"
                     : "bg-slate-200 text-slate-400 shadow-none cursor-not-allowed"
                 }`}
               >
-                <span>Confirm</span>
+                <span>
+                  {isLoading ? "Processing..." : mode === "create" ? "Next" : mode === "confirm" ? "Set PIN & Confirm" : "Confirm"}
+                </span>
                 <div className="w-6 h-6">
                   <ArrowRightIcon />
                 </div>
@@ -273,6 +427,18 @@ export default function PulseTradePin({
         </div>
 
       </div>
+
+      {/* Shake animation style */}
+      <style>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+          20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
+        }
+      `}</style>
     </main>
   );
 }

@@ -251,6 +251,7 @@ function App() {
             onNavigate={handleNavigate}
             onBack={() => handleBack("ai_confirmation")}
             businessName={businessName}
+            email={email}
             setBalance={setBalance}
             setMoneyIn={setMoneyIn}
             setMoneyOut={setMoneyOut}
