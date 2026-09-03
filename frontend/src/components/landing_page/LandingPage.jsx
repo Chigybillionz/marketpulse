@@ -1,10 +1,11 @@
-import React from 'react';
-import { Mic, BarChart2, Lock, Wallet, Play, ArrowRight, ArrowUp, ArrowDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mic, BarChart2, Lock, Wallet, Play, ArrowRight, ArrowUp, ArrowDown, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MarketingNavbar from './MarketingNavbar';
 
 export default function LandingPage({ onNavigate }) {
   const navigate = useNavigate();
+  const [showDemoVideo, setShowDemoVideo] = useState(false);
 
   const handleGetStarted = () => {
     // Navigate to the onboarding/login flow
@@ -49,7 +50,10 @@ export default function LandingPage({ onNavigate }) {
             <button onClick={handleGetStarted} className="w-full sm:w-auto bg-[#064E3B] text-white px-7 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#043d2e] transition-colors shadow-lg shadow-green-900/20">
               Get Started <ArrowRight size={18} strokeWidth={2.5} />
             </button>
-            <button className="w-full sm:w-auto bg-white border border-gray-200 text-gray-800 px-7 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
+            <button 
+              onClick={() => setShowDemoVideo(true)}
+              className="w-full sm:w-auto bg-white border border-gray-200 text-gray-800 px-7 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm"
+            >
               <Play size={18} className="text-gray-500" fill="currentColor" /> Watch Demo
             </button>
           </div>
@@ -240,6 +244,41 @@ export default function LandingPage({ onNavigate }) {
             </div>
          </div>
       </footer>
+
+      {/* Demo Video Modal */}
+      {showDemoVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-300">
+          <div className="relative w-full max-w-5xl bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden ring-1 ring-white/20 transform transition-transform duration-300 scale-100">
+            {/* Modal Header */}
+            <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent z-10 pointer-events-none">
+              <div className="flex items-center gap-2 text-white">
+                <Play size={20} fill="currentColor" />
+                <span className="font-bold text-sm md:text-base">MarketPulse AI Demo</span>
+              </div>
+              <button 
+                onClick={() => setShowDemoVideo(false)}
+                className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-white backdrop-blur-md transition-colors pointer-events-auto"
+                aria-label="Close demo video"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            {/* Video Player */}
+            <div className="aspect-video w-full bg-black">
+              <video 
+                src="/demovideo.mp4" 
+                autoPlay 
+                controls 
+                className="w-full h-full object-contain"
+                onEnded={() => setShowDemoVideo(false)}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

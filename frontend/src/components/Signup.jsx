@@ -11,6 +11,7 @@ export default function Signup({
   email,
   setEmail,
   setIsNewUser,
+  setProfilePicture,
 }) {
   const [language, setLanguage] = useState("English");
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);

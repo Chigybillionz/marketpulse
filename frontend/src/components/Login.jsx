@@ -10,6 +10,7 @@ export default function Login({
   setEmail,
   setIsNewUser,
   setBusinessName,
+  setProfilePicture,
 }) {
   const [language, setLanguage] = useState("English");
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);

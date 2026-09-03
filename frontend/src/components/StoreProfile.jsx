@@ -93,11 +93,12 @@ export default function StoreProfile({
             className="store-profile-avatar"
             aria-label="Profile avatar"
             onClick={() => fileInputRef.current?.click()}
-            style={{ opacity: isUploading ? 0.5 : 1, cursor: "pointer" }}
+            style={{ opacity: isUploading ? 0.5 : 1, cursor: "pointer", width: "40px", height: "40px", overflow: "hidden", borderRadius: "50%", padding: 0, border: "none" }}
           >
             <img
               src={profilePicture || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop"}
               alt="Profile"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           </button>
           <input

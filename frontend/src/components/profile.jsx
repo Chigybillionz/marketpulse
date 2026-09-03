@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { uploadProfilePicture } from "../services/authService";
 import AppShell from "./layout/AppShell";
 
 function getSections(businessName, email) {
@@ -192,6 +193,7 @@ function SettingItem({ item, onClick }) {
 export default function Profile({ onNavigate, businessName, email, profilePicture }) {
   const sections = getSections(businessName, email);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [pendingAvatarBase64, setPendingAvatarBase64] = useState(null);
   const [businessAvatarUrl, setBusinessAvatarUrl] = useState(profilePicture || null);
 
   useEffect(() => {
@@ -233,16 +235,17 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
           </header>
 
           <section className="profile-hero">
-            <div className="profile-avatar">
+            <div className="profile-avatar" style={{ width: "120px", height: "120px", position: "relative", margin: "0 auto", borderRadius: "50%", overflow: "hidden" }}>
               {businessAvatarUrl ? (
                 <img
                   src={businessAvatarUrl}
                   alt="Business profile"
                   style={{
-                    width: "100%",
-                    height: "100%",
+                    width: "120px",
+                    height: "120px",
                     objectFit: "cover",
                     borderRadius: "50%",
+                    display: "block",
                   }}
                 />
               ) : (
@@ -252,6 +255,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                 type="button"
                 aria-label="Edit profile photo"
                 onClick={() => setShowAvatarPicker(true)}
+                style={{ position: "absolute", bottom: "4px", right: "4px", zIndex: 2 }}
               >
                 <Icon name="pencil" />
               </button>
@@ -317,7 +321,10 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                     </div>
                     <button
                       type="button"
-                      onClick={() => setShowAvatarPicker(false)}
+                      onClick={() => {
+                        setPendingAvatarBase64(null);
+                        setShowAvatarPicker(false);
+                      }}
                       style={{
                         background: "none",
                         border: 0,
@@ -351,6 +358,17 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                       gap: 14,
                     }}
                   >
+                    {/* Preview */}
+                    {pendingAvatarBase64 && (
+                      <div style={{ display: "flex", justifyContent: "center", paddingBottom: 4 }}>
+                        <img
+                          src={pendingAvatarBase64}
+                          alt="Preview"
+                          style={{ width: 90, height: 90, borderRadius: "50%", objectFit: "cover", border: "3px solid #052e16" }}
+                        />
+                      </div>
+                    )}
+
                     <label
                       style={{
                         borderRadius: 14,
@@ -370,15 +388,35 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                         onChange={(e) => {
                           const file = e.target.files && e.target.files[0];
                           if (!file) return;
-                          const url = URL.createObjectURL(file);
-                          setBusinessAvatarUrl(url);
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            setPendingAvatarBase64(ev.target.result);
+                          };
+                          reader.readAsDataURL(file);
                         }}
                       />
                     </label>
 
                     <button
                       type="button"
-                      onClick={() => setShowAvatarPicker(false)}
+                      onClick={async () => {
+                        if (pendingAvatarBase64) {
+                          // Save to state + localStorage immediately
+                          setBusinessAvatarUrl(pendingAvatarBase64);
+                          localStorage.setItem("profilePicture", pendingAvatarBase64);
+                          // Save to backend
+                          try {
+                            const userEmail = email || localStorage.getItem("email");
+                            if (userEmail) {
+                              await uploadProfilePicture(userEmail, pendingAvatarBase64);
+                            }
+                          } catch (err) {
+                            console.error("Failed to save profile picture:", err);
+                          }
+                        }
+                        setPendingAvatarBase64(null);
+                        setShowAvatarPicker(false);
+                      }}
                       style={{
                         width: "100%",
                         borderRadius: 14,
