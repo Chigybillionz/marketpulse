@@ -39,8 +39,10 @@ export default function Login({
         if (res.user) {
           localStorage.setItem('businessName', res.user.businessName || "");
           localStorage.setItem('email', res.user.email || "");
+          localStorage.setItem('profilePicture', res.user.profilePicture || "");
           if (setBusinessName) setBusinessName(res.user.businessName || "");
           if (setEmail) setEmail(res.user.email || "");
+          if (setProfilePicture) setProfilePicture(res.user.profilePicture || "");
         }
       }
 

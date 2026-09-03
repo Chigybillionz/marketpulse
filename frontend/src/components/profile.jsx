@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppShell from "./layout/AppShell";
 
 function getSections(businessName, email) {
@@ -189,10 +189,16 @@ function SettingItem({ item, onClick }) {
   );
 }
 
-export default function Profile({ onNavigate, businessName, email }) {
+export default function Profile({ onNavigate, businessName, email, profilePicture }) {
   const sections = getSections(businessName, email);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
-  const [businessAvatarUrl, setBusinessAvatarUrl] = useState(null);
+  const [businessAvatarUrl, setBusinessAvatarUrl] = useState(profilePicture || null);
+
+  useEffect(() => {
+    if (profilePicture) {
+      setBusinessAvatarUrl(profilePicture);
+    }
+  }, [profilePicture]);
 
   const initials = businessName
     ? businessName

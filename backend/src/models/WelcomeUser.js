@@ -19,6 +19,10 @@ const WelcomeUserSchema = new mongoose.Schema({
   },
   tradePin: {
     type: String
+  },
+  profilePicture: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

@@ -73,6 +73,7 @@ function App() {
   // User Onboarding Details
   const [businessName, setBusinessName] = useState(() => localStorage.getItem('businessName') || "");
   const [email, setEmail] = useState(() => localStorage.getItem('email') || "");
+  const [profilePicture, setProfilePicture] = useState(() => localStorage.getItem('profilePicture') || "");
   const [isNewUser, setIsNewUser] = useState(true);
 
   // Financial States
@@ -174,6 +175,7 @@ function App() {
             setEmail={setEmail}
             setIsNewUser={setIsNewUser}
             setBusinessName={setBusinessName}
+            setProfilePicture={setProfilePicture}
           />
         }
       />
@@ -187,6 +189,7 @@ function App() {
             email={email}
             setEmail={setEmail}
             setIsNewUser={setIsNewUser}
+            setProfilePicture={setProfilePicture}
           />
         }
       />
@@ -295,6 +298,7 @@ function App() {
             onNavigate={handleNavigate}
             businessName={businessName}
             email={email}
+            profilePicture={profilePicture}
           />
         }
       />
@@ -305,6 +309,9 @@ function App() {
             onNavigate={handleNavigate}
             businessName={businessName}
             setBusinessName={setBusinessName}
+            email={email}
+            profilePicture={profilePicture}
+            setProfilePicture={setProfilePicture}
           />
         }
       />

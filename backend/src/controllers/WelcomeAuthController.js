@@ -16,7 +16,8 @@ const handleSignup = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        businessName: user.businessName
+        businessName: user.businessName,
+        profilePicture: user.profilePicture
       }
     });
   } catch (error) {
@@ -44,7 +45,8 @@ const handleLogin = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        businessName: user.businessName
+        businessName: user.businessName,
+        profilePicture: user.profilePicture
       }
     });
   } catch (error) {
@@ -81,8 +83,43 @@ const setupPin = async (req, res) => {
   }
 };
 
+const uploadProfilePicture = async (req, res) => {
+  try {
+    const { email, profilePicture } = req.body;
+    
+    if (!email || !profilePicture) {
+      return res.status(400).json({ message: 'Email and profilePicture are required' });
+    }
+
+    const WelcomeUser = require('../models/WelcomeUser');
+    const user = await WelcomeUser.findOneAndUpdate(
+      { email },
+      { profilePicture },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Profile picture updated successfully',
+      user: {
+        id: user._id,
+        email: user.email,
+        businessName: user.businessName,
+        profilePicture: user.profilePicture
+      }
+    });
+  } catch (error) {
+    console.error('Upload Profile Picture Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   handleSignup,
   handleLogin,
-  setupPin
+  setupPin,
+  uploadProfilePicture
 };

@@ -29,3 +29,13 @@ export const setupPin = async (email, pin) => {
     body: JSON.stringify({ email, pin }),
   });
 };
+
+/**
+ * Uploads a base64 string as the user's profile picture
+ */
+export const uploadProfilePicture = async (email, profilePicture) => {
+  return apiClient('/welcome-auth/profile-picture', {
+    method: 'PUT',
+    body: JSON.stringify({ email, profilePicture }),
+  });
+};

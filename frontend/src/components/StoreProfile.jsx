@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { uploadProfilePicture } from "../services/authService";
 import {
   ChevronLeft,
   MapPin,
@@ -13,6 +14,9 @@ export default function StoreProfile({
   onNavigate,
   businessName,
   setBusinessName,
+  email,
+  profilePicture,
+  setProfilePicture
 }) {
   const [formData, setFormData] = useState({
     businessName: businessName || "My Store",
@@ -22,9 +26,34 @@ export default function StoreProfile({
 
   const [isSaving, setIsSaving] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleFieldChange = (field) => (event) => {
     setFormData((current) => ({ ...current, [field]: event.target.value }));
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file || !email) return;
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const base64Image = e.target.result;
+        // In a real app, you would compress the image using a canvas here
+        await uploadProfilePicture(email, base64Image);
+        if (setProfilePicture) setProfilePicture(base64Image);
+        localStorage.setItem("profilePicture", base64Image);
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+        alert("Failed to upload image.");
+      } finally {
+        setIsUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveChanges = () => {
@@ -63,12 +92,21 @@ export default function StoreProfile({
             type="button"
             className="store-profile-avatar"
             aria-label="Profile avatar"
+            onClick={() => fileInputRef.current?.click()}
+            style={{ opacity: isUploading ? 0.5 : 1, cursor: "pointer" }}
           >
             <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop"
+              src={profilePicture || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop"}
               alt="Profile"
             />
           </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+          />
         </header>
 
         <main className="store-profile-content">
