@@ -324,7 +324,7 @@ export default function Login({
               cursor: "pointer",
             }}
           >
-            Don't have an account? Sign Up
+            <span style={{ color: "#6B7280", fontWeight: 500 }}>Don't have an account?</span> Sign Up
           </a>
           <a
             href="#help"

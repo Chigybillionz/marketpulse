@@ -341,7 +341,7 @@ export default function Signup({
               cursor: "pointer",
             }}
           >
-            Already have an account? Log In
+            <span style={{ color: "#6B7280", fontWeight: 500 }}>Already have an account?</span> Log In
           </a>
           <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
             <button type="button" onClick={() => setShowPrivacy(true)} style={{ fontSize: 12, color: "#9CA3AF", background: "none", border: "none", cursor: "pointer" }}>
