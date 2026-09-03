@@ -67,7 +67,7 @@ export default function StoreProfile({
       setTimeout(() => {
         setShowNotification(false);
         if (onNavigate) {
-          onNavigate("profile");
+          onNavigate("home");
         }
       }, 2000);
     }, 1500);
@@ -80,7 +80,7 @@ export default function StoreProfile({
           <button
             type="button"
             className="store-profile-back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={() => onNavigate && onNavigate("home")}
             aria-label="Go back"
           >
             <ChevronLeft size={30} />
