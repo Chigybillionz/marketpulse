@@ -44,7 +44,7 @@ export default function Email({ onNavigate, email, setEmail }) {
           <button
             type="button"
             className="phone-number-back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={() => onNavigate && onNavigate("home")}
             aria-label="Go back"
           >
             <ChevronLeft size={28} />
@@ -55,16 +55,7 @@ export default function Email({ onNavigate, email, setEmail }) {
             <h1>Email Address</h1>
           </div>
 
-          <button
-            type="button"
-            className="phone-number-avatar"
-            aria-label="Profile"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop"
-              alt="Profile"
-            />
-          </button>
+          <div style={{ width: 40 }} />
         </header>
 
         <main className="phone-number-content">

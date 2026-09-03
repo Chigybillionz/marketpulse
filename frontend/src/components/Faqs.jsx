@@ -143,7 +143,7 @@ export default function Faqs({ onNavigate, onBack }) {
             className="faqs-back"
             type="button"
             aria-label="Go back"
-            onClick={() => onBack ? onBack() : (onNavigate && onNavigate("profile"))}
+            onClick={() => onBack ? onBack() : (onNavigate && onNavigate("home"))}
           >
             <BackIcon />
           </button>
@@ -153,12 +153,7 @@ export default function Faqs({ onNavigate, onBack }) {
             <h1>FAQs</h1>
           </div>
 
-          <button className="faqs-avatar" type="button" aria-label="Profile">
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120"
-              alt="Profile"
-            />
-          </button>
+          <div style={{ width: 40 }} />
         </header>
 
         <div className="faqs-content">

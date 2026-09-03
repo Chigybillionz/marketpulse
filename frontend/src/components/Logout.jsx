@@ -37,7 +37,7 @@ function LogoutIcon() {
 }
 
 export default function Logout({ onNavigate }) {
-  const goBack = () => onNavigate && onNavigate("profile");
+  const goBack = () => onNavigate && onNavigate("home");
 
   return (
     <main className="logout-page" aria-label="Confirm logout">
@@ -57,12 +57,7 @@ export default function Logout({ onNavigate }) {
             <h1>Logout</h1>
           </div>
 
-          <button className="logout-avatar" type="button" aria-label="Profile">
-            <img
-              src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=120"
-              alt="Profile"
-            />
-          </button>
+          <div style={{ width: 40 }} />
         </header>
 
         <div className="logout-content">

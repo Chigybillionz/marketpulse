@@ -205,17 +205,18 @@ const CATEGORIES = [
   },
 ];
 
-export default function MarketCategory({ onNavigate }) {
+export default function MarketCategory({ onNavigate, profilePicture }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState("dry-goods");
   const [showNotification, setShowNotification] = useState(false);
+  const pic = profilePicture || localStorage.getItem('profilePicture');
 
   const handleUpdate = () => {
     setShowNotification(true);
     setTimeout(() => {
       setShowNotification(false);
       if (onNavigate) {
-        onNavigate("profile");
+        onNavigate("home");
       }
     }, 2000);
   };
@@ -236,7 +237,7 @@ export default function MarketCategory({ onNavigate }) {
           <button
             type="button"
             className="market-category-back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={() => onNavigate && onNavigate("home")}
             aria-label="Go back"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -249,16 +250,22 @@ export default function MarketCategory({ onNavigate }) {
             <h1>Market Category</h1>
           </div>
 
-          <button
-            type="button"
-            className="market-category-avatar"
-            aria-label="User profile"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120"
-              alt="User profile"
-            />
-          </button>
+          {pic ? (
+            <button
+              type="button"
+              className="market-category-avatar"
+              aria-label="User profile"
+              onClick={() => onNavigate && onNavigate("profile")}
+            >
+              <img
+                src={pic}
+                alt="User profile"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            </button>
+          ) : (
+            <div style={{ width: 40, height: 40 }} />
+          )}
         </header>
 
         <main className="market-category-content">

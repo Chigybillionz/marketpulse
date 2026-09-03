@@ -31,13 +31,7 @@ export default function AIConfirmation({ onNavigate }) {
             <h1 className="text-xl lg:text-2xl font-bold text-slate-800">
               AI Confirmation
             </h1>
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm">
-              <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" 
-                alt="User profile" 
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <div className="w-12 h-12"></div>
           </div>
 
           <div className="flex-1 flex flex-col justify-center">

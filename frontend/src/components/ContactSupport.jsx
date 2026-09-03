@@ -111,7 +111,7 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
             type="button"
             aria-label="Go back"
             onClick={() =>
-              onBack ? onBack() : onNavigate && onNavigate("profile")
+              onBack ? onBack() : onNavigate && onNavigate("home")
             }
           >
             <BackIcon />
@@ -122,16 +122,7 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
             <h1>Help &amp; Support</h1>
           </div>
 
-          <button
-            className="contact-support-avatar"
-            type="button"
-            aria-label="Profile"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120"
-              alt="Profile"
-            />
-          </button>
+          <div style={{ width: 40 }} />
         </header>
 
         <main className="contact-support-content">

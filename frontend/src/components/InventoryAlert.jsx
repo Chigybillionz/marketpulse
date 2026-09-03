@@ -49,7 +49,7 @@ export default function InventoryAlert({ onNavigate }) {
       setTimeout(() => {
         setShowNotification(false);
         if (onNavigate) {
-          onNavigate("profile");
+          onNavigate("home");
         }
       }, 2000);
     }, 1500);
@@ -62,7 +62,7 @@ export default function InventoryAlert({ onNavigate }) {
           <button
             type="button"
             className="inventory-alert-back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={() => onNavigate && onNavigate("home")}
             aria-label="Go back"
           >
             <svg
@@ -83,16 +83,7 @@ export default function InventoryAlert({ onNavigate }) {
             <h1>Inventory Alerts</h1>
           </div>
 
-          <button
-            type="button"
-            className="inventory-alert-avatar"
-            aria-label="Profile"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop"
-              alt="Profile"
-            />
-          </button>
+          <div style={{ width: 40 }} />
         </header>
 
         <main className="inventory-alert-content">

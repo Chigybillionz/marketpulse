@@ -53,7 +53,7 @@ export default function LanguageSetting({ onNavigate, businessName }) {
           <button
             type="button"
             className="language-back"
-            onClick={() => onNavigate && onNavigate("profile")}
+            onClick={() => onNavigate && onNavigate("home")}
             aria-label="Go back"
           >
             <svg
@@ -74,16 +74,7 @@ export default function LanguageSetting({ onNavigate, businessName }) {
             <h1>Language</h1>
           </div>
 
-          <button
-            type="button"
-            className="language-avatar"
-            aria-label="User profile"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=120"
-              alt="User profile"
-            />
-          </button>
+          <div style={{ width: 40 }} />
         </header>
 
         <main className="language-content">

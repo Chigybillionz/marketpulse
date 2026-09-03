@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Menu, UserCircle } from 'lucide-react';
 import MobileMenu from '../layout/MobileMenu';
 
-export default function Header({ businessName, onNavigate }) {
+export default function Header({ businessName, onNavigate, profilePicture }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pic = profilePicture || localStorage.getItem('profilePicture');
 
   return (
     <>
@@ -62,7 +63,7 @@ export default function Header({ businessName, onNavigate }) {
         {businessName || 'My Store'}
       </h1>
 
-      {/* Right icon — user circle */}
+      {/* Right icon — profile picture or fallback */}
       <button
         onClick={() => onNavigate('profile')}
         aria-label="Profile"
@@ -77,9 +78,19 @@ export default function Header({ businessName, onNavigate }) {
           cursor: 'pointer',
           padding: 0,
           flexShrink: 0,
+          borderRadius: '50%',
+          overflow: 'hidden',
         }}
       >
-        <UserCircle size={28} strokeWidth={1.5} color="#1a1a1a" />
+        {pic ? (
+          <img
+            src={pic}
+            alt="Profile"
+            style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
+          />
+        ) : (
+          <UserCircle size={28} strokeWidth={1.5} color="#1a1a1a" />
+        )}
       </button>
     </header>
 
