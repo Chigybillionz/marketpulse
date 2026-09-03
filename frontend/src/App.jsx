@@ -23,6 +23,7 @@ import MarketCategory from "./components/market_category";
 import LanguageSetting from "./components/language_setting";
 import ContactSupport from "./components/ContactSupport";
 import Faqs from "./components/Faqs";
+import DebtorProfile from "./components/DebtorProfile";
 import Logout from "./components/Logout";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsOfService from "./components/TermsOfService";
@@ -135,7 +136,11 @@ function App() {
 
   // Navigate by page id (keeps the existing onNavigate("id") API across the app).
   const handleNavigate = (page, state) => {
-    navigate(PATHS[page] ?? "/home", { state });
+    if (page.startsWith("credit/")) {
+      navigate(`/${page}`, { state });
+    } else {
+      navigate(PATHS[page] ?? "/home", { state });
+    }
   };
 
   // "Back" uses the real browser history, so arrows return to the actual
@@ -283,7 +288,13 @@ function App() {
       <Route
         path={PATHS.credit}
         element={
-          <Credit onNavigate={handleNavigate} businessName={businessName} />
+          <Credit onNavigate={handleNavigate} businessName={businessName} email={email} />
+        }
+      />
+      <Route
+        path="/credit/:id"
+        element={
+          <DebtorProfile onNavigate={handleNavigate} businessName={businessName} />
         }
       />
       <Route

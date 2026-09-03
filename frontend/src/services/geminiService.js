@@ -27,11 +27,24 @@ Extract and respond ONLY with valid JSON (no markdown, no extra text):
   "category": "Dry Goods"
 }
 
+If the transaction is a credit sale (e.g. "I gave Ibrahim 2 cartons of Indomie on credit, he will pay on Friday"), the JSON MUST look like this:
+{
+  "type": "CREDIT",
+  "amount": 5000,
+  "description": "2 cartons of Indomie",
+  "category": "Produce",
+  "creditDetails": {
+    "customerName": "Ibrahim",
+    "dueDate": "2023-10-12"
+  }
+}
+
 Rules:
-- type: must be "Income" or "Expense"
-- amount: IMPORTANT: You must return a strict number (e.g. 30000). If the user speaks the number in words (e.g. "thirty thousand", "five k", "two hundred"), you MUST convert it to the numeric digit equivalent. Do not include currency symbols or commas.
+- type: must be "Income", "Expense", or "CREDIT"
+- amount: IMPORTANT: You must return a strict number (e.g. 30000). Convert spoken words to digits.
 - description: what was bought/sold
 - category: one of [Dry Goods, Grains, Produce, Textiles, Electronics, Other]
+- creditDetails: ONLY include this if type is "CREDIT". Set customerName to the person's name, and calculate the dueDate in YYYY-MM-DD if they mention a day like "Friday" or "next week" (assuming today is ${new Date().toLocaleDateString()}).
 
 If you cannot extract clear information, respond with:
 {
@@ -39,7 +52,7 @@ If you cannot extract clear information, respond with:
   "amount": 0,
   "description": "Unable to process",
   "category": "Other"
-}`,
+}`
       },
     ]);
 

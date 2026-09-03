@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { createTransaction } from "../../services/transactionService";
 import { setupPin, verifyPin } from "../../services/authService";
+import { addCreditTransaction } from "../../services/debtorService";
 
 const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -113,36 +114,53 @@ export default function PulseTradePin({
     setPin((currentPin) => currentPin.slice(0, -1));
   };
 
+  const isCredit = transactionData?.type?.toUpperCase() === 'CREDIT';
+
   const saveTransaction = async () => {
     try {
-      const apiTx = await createTransaction({
-        type: isIncome ? 'Income' : 'Expense',
-        amount: amountNum,
-        category: transactionData.category || 'Other',
-        description: transactionData.description || 'Voice Input'
-      });
+      if (isCredit) {
+        // Save as debtor credit
+        const emailToUse = email || localStorage.getItem("email");
+        const cd = transactionData.creditDetails || {};
+        await addCreditTransaction(
+          emailToUse,
+          cd.customerName || "Unknown Customer",
+          cd.phoneNumber || "",
+          amountNum,
+          transactionData.description || "Voice Input",
+          cd.dueDate || null
+        );
+      } else {
+        // Normal income/expense
+        const apiTx = await createTransaction({
+          type: isIncome ? 'Income' : 'Expense',
+          amount: amountNum,
+          category: transactionData.category || 'Other',
+          description: transactionData.description || 'Voice Input'
+        });
 
-      if (setBalance) {
-        setBalance((prev) => isIncome ? prev + amountNum : prev - amountNum);
-      }
-      if (isIncome && setMoneyIn) {
-        setMoneyIn((prev) => prev + amountNum);
-      } else if (!isIncome && setMoneyOut) {
-        setMoneyOut((prev) => prev + amountNum);
-      }
-      if (setTransactionsList) {
-        const newTx = {
-          id: apiTx._id || Date.now(),
-          type: isIncome ? "credit" : "debit",
-          icon: isIncome ? "bag" : "bolt",
-          title: apiTx.description || transactionData.description || "Voice Input",
-          meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
-          amount: `${isIncome ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
-          isPositive: isIncome,
-          iconBg: isIncome ? "bg-green-100" : "bg-red-100",
-          iconColor: isIncome ? "text-green-800" : "text-red-600",
-        };
-        setTransactionsList((prev) => [newTx, ...prev]);
+        if (setBalance) {
+          setBalance((prev) => isIncome ? prev + amountNum : prev - amountNum);
+        }
+        if (isIncome && setMoneyIn) {
+          setMoneyIn((prev) => prev + amountNum);
+        } else if (!isIncome && setMoneyOut) {
+          setMoneyOut((prev) => prev + amountNum);
+        }
+        if (setTransactionsList) {
+          const newTx = {
+            id: apiTx._id || Date.now(),
+            type: isIncome ? "credit" : "debit",
+            icon: isIncome ? "bag" : "bolt",
+            title: apiTx.description || transactionData.description || "Voice Input",
+            meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
+            amount: `${isIncome ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
+            isPositive: isIncome,
+            iconBg: isIncome ? "bg-green-100" : "bg-red-100",
+            iconColor: isIncome ? "text-green-800" : "text-red-600",
+          };
+          setTransactionsList((prev) => [newTx, ...prev]);
+        }
       }
       onNavigate("home");
     } catch (error) {
