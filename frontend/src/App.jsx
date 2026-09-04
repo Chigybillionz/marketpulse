@@ -134,6 +134,52 @@ function App() {
     fetchTransactions();
   }, [location.pathname]);
 
+  // Inactivity Auto-Logout (2 minutes)
+  useEffect(() => {
+    let inactivityTimer;
+
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("businessName");
+      localStorage.removeItem("email");
+      localStorage.removeItem("hasPin");
+      localStorage.removeItem("profilePicture");
+      // Redirect to login if they time out
+      window.location.href = "/login";
+    };
+
+    const resetTimer = () => {
+      clearTimeout(inactivityTimer);
+      // Only set the auto-logout timer if a user is logged in
+      if (localStorage.getItem("token")) {
+        inactivityTimer = setTimeout(handleLogout, 2 * 60 * 1000); // 2 minutes
+      }
+    };
+
+    // Start timer on mount
+    resetTimer();
+
+    const activityEvents = [
+      "mousedown",
+      "mousemove",
+      "keydown",
+      "scroll",
+      "touchstart",
+    ];
+
+    // Reset timer whenever user interacts with the app
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    return () => {
+      clearTimeout(inactivityTimer);
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, [location.pathname]);
+
   // Navigate by page id (keeps the existing onNavigate("id") API across the app).
   const handleNavigate = (page, state) => {
     if (page.startsWith("credit/")) {
