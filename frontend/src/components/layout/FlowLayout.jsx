@@ -3,7 +3,7 @@ import { Mic2, TrendingUp, ShieldCheck } from "lucide-react";
 const DEFAULT_FEATURES = [
   { Icon: Mic2, label: "Log sales by voice — no typing" },
   { Icon: TrendingUp, label: "Weekly Pulse market insights" },
-  { Icon: ShieldCheck, label: "Bank-grade PIN & OTP security" },
+  { Icon: ShieldCheck, label: "Protect Your Business" },
 ];
 
 /**

@@ -46,11 +46,11 @@ Rules:
 - category: one of [Dry Goods, Grains, Produce, Textiles, Electronics, Other]
 - creditDetails: ONLY include this if type is "CREDIT". Set customerName to the person's name, and calculate the dueDate in YYYY-MM-DD if they mention a day like "Friday" or "next week" (assuming today is ${new Date().toLocaleDateString()}).
 
-If you cannot extract clear information, respond with:
+If the user does not mention a specific amount or value in the audio, or if you cannot extract clear information, you MUST respond with:
 {
-  "type": "Income",
+  "type": "UNKNOWN_AMOUNT",
   "amount": 0,
-  "description": "Unable to process",
+  "description": "No value mentioned",
   "category": "Other"
 }`
       },

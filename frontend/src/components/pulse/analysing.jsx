@@ -57,10 +57,10 @@ export default function Analysing({ onNavigate, businessName }) {
           // Fallback static analysis if no audio provided (simulated delay)
           await new Promise(resolve => setTimeout(resolve, ANALYSIS_DURATION_MS));
           transactionData = {
-            type: "Income",
-            amount: 15000,
-            description: "Sold 2 bags of garri",
-            category: "Dry Goods"
+            type: "UNKNOWN_AMOUNT",
+            amount: 0,
+            description: "No value mentioned",
+            category: "Other"
           };
         }
 
@@ -73,7 +73,7 @@ export default function Analysing({ onNavigate, businessName }) {
         if (isMounted) {
           onNavigate(ANALYSIS_NEXT_PAGE, { 
             transactionData: {
-                type: "Income",
+                type: "UNKNOWN_AMOUNT",
                 amount: 0,
                 description: `Analysis failed: ${error.message || error.toString()}`,
                 category: "Other"
