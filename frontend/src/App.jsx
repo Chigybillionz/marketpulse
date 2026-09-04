@@ -134,7 +134,7 @@ function App() {
     fetchTransactions();
   }, [location.pathname]);
 
-  // Inactivity Auto-Logout (2 minutes)
+  // Inactivity Auto-Logout (5 minutes)
   useEffect(() => {
     let inactivityTimer;
 
@@ -152,7 +152,7 @@ function App() {
       clearTimeout(inactivityTimer);
       // Only set the auto-logout timer if a user is logged in
       if (localStorage.getItem("token")) {
-        inactivityTimer = setTimeout(handleLogout, 2 * 60 * 1000); // 2 minutes
+        inactivityTimer = setTimeout(handleLogout, 5 * 60 * 1000); // 5 minutes
       }
     };
 
