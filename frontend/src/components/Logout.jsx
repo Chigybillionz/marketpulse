@@ -36,7 +36,10 @@ function LogoutIcon() {
   );
 }
 
+import { useState } from "react";
+
 export default function Logout({ onNavigate }) {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const goBack = () => onNavigate && onNavigate("home");
 
   return (
@@ -76,14 +79,16 @@ export default function Logout({ onNavigate }) {
               <button
                 className="logout-confirm"
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  setIsLoggingOut(true);
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
                   localStorage.removeItem("token");
                   localStorage.removeItem("businessName");
                   localStorage.removeItem("email");
                   window.location.href = "/";
                 }}
               >
-                Yes, Log Out
+                {isLoggingOut ? "Logging out..." : "Yes, Log Out"}
               </button>
               <button className="logout-cancel" type="button" onClick={goBack}>
                 No, Stay Logged In
@@ -93,5 +98,43 @@ export default function Logout({ onNavigate }) {
         </div>
       </section>
     </main>
+
+      {isLoggingOut && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: "#1B3D2F",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 24,
+          }}
+        >
+          <div
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              border: "4px solid rgba(255,255,255,0.2)",
+              borderTopColor: "white",
+              animation: "spin 1s linear infinite",
+            }}
+          />
+          <p
+            style={{
+              color: "white",
+              fontSize: 18,
+              fontWeight: 600,
+              letterSpacing: "-0.3px",
+            }}
+          >
+            Logging you out...
+          </p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
   );
 }
