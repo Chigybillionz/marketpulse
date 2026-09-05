@@ -16,12 +16,16 @@ export default function StoreProfile({
   setBusinessName,
   email,
   profilePicture,
-  setProfilePicture
+  setProfilePicture,
+  locationStr,
+  setLocationStr,
+  businessType,
+  setBusinessType
 }) {
   const [formData, setFormData] = useState({
     businessName: businessName || "My Store",
-    location: "Onyingbo Market, Lagos",
-    businessType: "Wholesale & Retail",
+    location: locationStr || "",
+    businessType: businessType || "Retail",
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -56,13 +60,25 @@ export default function StoreProfile({
     reader.readAsDataURL(file);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      if (setBusinessName) {
-        setBusinessName(formData.businessName);
-      }
+    try {
+      // Call backend API
+      const { updateProfile } = await import("../services/authService");
+      await updateProfile(email, {
+        businessName: formData.businessName,
+        location: formData.location,
+        businessType: formData.businessType
+      });
+
+      if (setBusinessName) setBusinessName(formData.businessName);
+      if (setLocationStr) setLocationStr(formData.location);
+      if (setBusinessType) setBusinessType(formData.businessType);
+      
+      localStorage.setItem("businessName", formData.businessName);
+      localStorage.setItem("location", formData.location);
+      localStorage.setItem("businessType", formData.businessType);
+
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
@@ -70,7 +86,12 @@ export default function StoreProfile({
           onNavigate("home");
         }
       }, 2000);
-    }, 1500);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Failed to update profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -128,8 +149,8 @@ export default function StoreProfile({
                 market admins.
               </p>
               <div className="store-profile-hero-tags">
-                <span>Wholesale & Retail</span>
-                <span>Onyingbo Market</span>
+                <span>{formData.businessType || "Retail"}</span>
+                <span>{formData.location || "No location set"}</span>
               </div>
             </div>
 
@@ -173,8 +194,8 @@ export default function StoreProfile({
             </article>
             <article className="store-profile-fact">
               <span>Location</span>
-              <strong>Onyingbo</strong>
-              <small>Lagos, Nigeria</small>
+              <strong>{formData.location ? formData.location.split(',')[0] : "Not set"}</strong>
+              <small>{formData.location ? formData.location.split(',').slice(1).join(',').trim() || "Local Market" : "Please set your location"}</small>
             </article>
             <article className="store-profile-fact">
               <span>Status</span>
@@ -211,6 +232,7 @@ export default function StoreProfile({
                     value={formData.location}
                     onChange={handleFieldChange("location")}
                     aria-label="Store location"
+                    placeholder="Type your location"
                   />
                   <MapPin size={19} />
                 </div>
@@ -224,10 +246,9 @@ export default function StoreProfile({
                     onChange={handleFieldChange("businessType")}
                     aria-label="Business type"
                   >
-                    <option>Wholesale & Retail</option>
-                    <option>Wholesale Only</option>
-                    <option>Retail Only</option>
-                    <option>Manufacturing</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Wholesale">Wholesale</option>
+                    <option value="Wholesale & Retail">Wholesale & Retail</option>
                   </select>
                   <ChevronDown size={19} />
                 </div>

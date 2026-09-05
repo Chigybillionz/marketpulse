@@ -78,6 +78,8 @@ function App() {
   const [businessName, setBusinessName] = useState(() => localStorage.getItem('businessName') || "");
   const [email, setEmail] = useState(() => localStorage.getItem('email') || "");
   const [profilePicture, setProfilePicture] = useState(() => localStorage.getItem('profilePicture') || "");
+  const [locationStr, setLocationStr] = useState(() => localStorage.getItem('location') || "");
+  const [businessType, setBusinessType] = useState(() => localStorage.getItem('businessType') || "Retail");
   const [isNewUser, setIsNewUser] = useState(true);
 
   // Financial States
@@ -147,6 +149,8 @@ function App() {
       localStorage.removeItem("email");
       localStorage.removeItem("hasPin");
       localStorage.removeItem("profilePicture");
+      localStorage.removeItem("location");
+      localStorage.removeItem("businessType");
       // Redirect to login if they time out
       window.location.href = "/login";
     };
@@ -231,6 +235,8 @@ function App() {
             setIsNewUser={setIsNewUser}
             setBusinessName={setBusinessName}
             setProfilePicture={setProfilePicture}
+            setLocationStr={setLocationStr}
+            setBusinessType={setBusinessType}
           />
         }
       />
@@ -383,6 +389,10 @@ function App() {
             email={email}
             profilePicture={profilePicture}
             setProfilePicture={setProfilePicture}
+            locationStr={locationStr}
+            setLocationStr={setLocationStr}
+            businessType={businessType}
+            setBusinessType={setBusinessType}
           />
         }
       />

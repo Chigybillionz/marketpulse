@@ -20,6 +20,15 @@ const WelcomeUserSchema = new mongoose.Schema({
   tradePin: {
     type: String
   },
+  location: {
+    type: String,
+    trim: true
+  },
+  businessType: {
+    type: String,
+    enum: ['Retail', 'Wholesale', 'Wholesale & Retail'],
+    default: 'Retail'
+  },
   profilePicture: {
     type: String,
     default: ""

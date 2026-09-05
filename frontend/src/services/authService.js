@@ -41,6 +41,16 @@ export const uploadProfilePicture = async (email, profilePicture) => {
 };
 
 /**
+ * Updates the user's business profile (businessName, location, businessType)
+ */
+export const updateProfile = async (email, profileData) => {
+  return apiClient('/welcome-auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify({ email, ...profileData }),
+  });
+};
+
+/**
  * Verifies a user's trade PIN against the stored hash
  */
 export const verifyPin = async (email, pin) => {

@@ -12,6 +12,8 @@ export default function Login({
   setIsNewUser,
   setBusinessName,
   setProfilePicture,
+  setLocationStr,
+  setBusinessType
 }) {
   const { language, setLanguage, t } = useLanguage();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
@@ -44,10 +46,14 @@ export default function Login({
           localStorage.setItem('businessName', res.user.businessName || "");
           localStorage.setItem('email', res.user.email || "");
           localStorage.setItem('profilePicture', res.user.profilePicture || "");
+          localStorage.setItem('location', res.user.location || "");
+          localStorage.setItem('businessType', res.user.businessType || "Retail");
           localStorage.setItem('hasPin', res.user.hasPin ? 'true' : 'false');
           if (setBusinessName) setBusinessName(res.user.businessName || "");
           if (setEmail) setEmail(res.user.email || "");
           if (setProfilePicture) setProfilePicture(res.user.profilePicture || "");
+          if (setLocationStr) setLocationStr(res.user.location || "");
+          if (setBusinessType) setBusinessType(res.user.businessType || "Retail");
         }
       }
 

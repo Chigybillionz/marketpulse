@@ -60,6 +60,29 @@ const setTradePin = async (email, pin) => {
 };
 
 /**
+ * Updates the user's profile details
+ */
+const updateProfile = async (email, profileData) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  if (profileData.businessName !== undefined) {
+    user.businessName = profileData.businessName;
+  }
+  if (profileData.location !== undefined) {
+    user.location = profileData.location;
+  }
+  if (profileData.businessType !== undefined) {
+    user.businessType = profileData.businessType;
+  }
+
+  await user.save();
+  return user;
+};
+
+/**
  * Verifies a trade PIN against the stored hash
  */
 const verifyTradePin = async (email, pin) => {
@@ -195,5 +218,6 @@ module.exports = {
   verifyResetPinCode,
   resetTradePin,
   resetPassword,
-  generateResetPasswordCode
+  generateResetPasswordCode,
+  updateProfile
 };

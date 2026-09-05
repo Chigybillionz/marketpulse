@@ -1,4 +1,4 @@
-const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile } = require('../services/WelcomeAuthService');
 
 const handleSignup = async (req, res) => {
   try {
@@ -159,6 +159,32 @@ const uploadProfilePicture = async (req, res) => {
   }
 };
 
+const handleUpdateProfile = async (req, res) => {
+  try {
+    const { email, businessName, location, businessType } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const updatedUser = await updateProfile(email, { businessName, location, businessType });
+    
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      user: {
+        id: updatedUser._id,
+        email: updatedUser.email,
+        businessName: updatedUser.businessName,
+        location: updatedUser.location,
+        businessType: updatedUser.businessType,
+        profilePicture: updatedUser.profilePicture
+      }
+    });
+  } catch (error) {
+    console.error('Update Profile Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 const sendResetCode = async (req, res) => {
   try {
     const { email } = req.body;
@@ -268,6 +294,7 @@ module.exports = {
   verifyResetCode,
   resetPin,
   resetUserPassword,
-  sendPasswordResetCode
+  sendPasswordResetCode,
+  handleUpdateProfile
 };
 
