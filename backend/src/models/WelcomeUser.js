@@ -23,6 +23,12 @@ const WelcomeUserSchema = new mongoose.Schema({
   profilePicture: {
     type: String,
     default: ""
+  },
+  resetPinCode: {
+    type: String
+  },
+  resetPinExpires: {
+    type: Date
   }
 }, { timestamps: true });
 

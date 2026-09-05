@@ -59,3 +59,32 @@ export const checkHasPin = async (email) => {
   });
 };
 
+/**
+ * Sends a 4-digit reset code to the user's email
+ */
+export const sendResetCode = async (email) => {
+  return apiClient('/welcome-auth/forgot-pin/send-code', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+};
+
+/**
+ * Verifies the 4-digit reset code
+ */
+export const verifyResetCode = async (email, code) => {
+  return apiClient('/welcome-auth/forgot-pin/verify-code', {
+    method: 'POST',
+    body: JSON.stringify({ email, code }),
+  });
+};
+
+/**
+ * Sets a new trade PIN using a verified reset code
+ */
+export const resetPin = async (email, code, newPin) => {
+  return apiClient('/welcome-auth/forgot-pin/reset-pin', {
+    method: 'POST',
+    body: JSON.stringify({ email, code, newPin }),
+  });
+};

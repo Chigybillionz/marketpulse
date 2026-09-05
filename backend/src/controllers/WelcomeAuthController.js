@@ -1,4 +1,4 @@
-const { signup, login, setTradePin, verifyTradePin, hasTradePin } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin } = require('../services/WelcomeAuthService');
 
 const handleSignup = async (req, res) => {
   try {
@@ -159,12 +159,73 @@ const uploadProfilePicture = async (req, res) => {
   }
 };
 
+const sendResetCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    
+    await generateResetPinCode(email);
+    res.status(200).json({ message: 'Reset code sent successfully' });
+  } catch (error) {
+    if (error.message === 'User not found') {
+      return res.status(404).json({ message: error.message });
+    }
+    console.error('Send Reset Code Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const verifyResetCode = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    if (!email || !code) {
+      return res.status(400).json({ message: 'Email and code are required' });
+    }
+
+    await verifyResetPinCode(email, code);
+    res.status(200).json({ message: 'Code verified successfully' });
+  } catch (error) {
+    if (error.message === 'User not found' || error.message === 'Invalid reset code' || error.message === 'Reset code has expired') {
+      return res.status(400).json({ message: error.message });
+    }
+    console.error('Verify Reset Code Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const resetPin = async (req, res) => {
+  try {
+    const { email, code, newPin } = req.body;
+    if (!email || !code || !newPin) {
+      return res.status(400).json({ message: 'Email, code, and new PIN are required' });
+    }
+
+    if (newPin.length !== 4) {
+      return res.status(400).json({ message: 'PIN must be 4 digits' });
+    }
+
+    await resetTradePin(email, code, newPin);
+    res.status(200).json({ message: 'PIN reset successfully' });
+  } catch (error) {
+    if (error.message === 'User not found' || error.message === 'Invalid reset code' || error.message === 'Reset code has expired') {
+      return res.status(400).json({ message: error.message });
+    }
+    console.error('Reset PIN Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   handleSignup,
   handleLogin,
   setupPin,
   verifyPin,
   checkHasPin,
-  uploadProfilePicture
+  uploadProfilePicture,
+  sendResetCode,
+  verifyResetCode,
+  resetPin
 };
 

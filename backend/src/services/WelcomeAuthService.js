@@ -1,6 +1,8 @@
 const WelcomeUser = require('../models/WelcomeUser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const otpGenerator = require('otp-generator');
+const EmailService = require('./EmailService');
 
 // Helper to generate JWT
 const generateToken = (id) => {
@@ -77,10 +79,79 @@ const hasTradePin = async (email) => {
   return !!user.tradePin;
 };
 
+/**
+ * Generates a 4-digit reset code and sends it via email
+ */
+const generateResetPinCode = async (email) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Generate a 4-digit numeric OTP
+  const code = otpGenerator.generate(4, {
+    upperCaseAlphabets: false,
+    specialChars: false,
+    lowerCaseAlphabets: false,
+    digits: true,
+  });
+
+  // Save to user model with a 10-minute expiration
+  user.resetPinCode = code;
+  user.resetPinExpires = new Date(Date.now() + 10 * 60 * 1000);
+  await user.save();
+
+  // Send the email
+  await EmailService.sendResetCodeEmail(email, code);
+
+  return true;
+};
+
+/**
+ * Verifies if the reset code is valid and not expired
+ */
+const verifyResetPinCode = async (email, code) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  if (!user.resetPinCode || user.resetPinCode !== code) {
+    throw new Error('Invalid reset code');
+  }
+
+  if (new Date() > user.resetPinExpires) {
+    throw new Error('Reset code has expired');
+  }
+
+  return true;
+};
+
+/**
+ * Overwrites the trade PIN using a verified reset code
+ */
+const resetTradePin = async (email, code, newPin) => {
+  // First verify the code is still valid
+  await verifyResetPinCode(email, code);
+
+  const user = await WelcomeUser.findOne({ email });
+
+  user.tradePin = newPin;
+  // Clear the reset fields
+  user.resetPinCode = undefined;
+  user.resetPinExpires = undefined;
+
+  await user.save();
+  return user;
+};
+
 module.exports = {
   signup,
   login,
   setTradePin,
   verifyTradePin,
-  hasTradePin
+  hasTradePin,
+  generateResetPinCode,
+  verifyResetPinCode,
+  resetTradePin
 };

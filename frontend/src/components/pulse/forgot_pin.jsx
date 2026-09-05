@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { sendResetCode, verifyResetCode, resetPin } from "../../services/authService";
 
 const CODE_LENGTH = 4;
 const PIN_LENGTH = 4;
@@ -99,6 +100,7 @@ export default function ForgotPin({ onNavigate, onBack, email }) {
   const [newPin, setNewPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const masked = maskEmail(email);
   const stepNumber = { verify: 1, code: 1, create: 2, confirm: 2, done: 3 }[step];
@@ -119,9 +121,20 @@ export default function ForgotPin({ onNavigate, onBack, email }) {
 
   useEffect(() => {
     if (step === "confirm" && confirmPin.length === PIN_LENGTH) {
-      const timer = setTimeout(() => {
+      const timer = setTimeout(async () => {
         if (confirmPin === newPin) {
-          setStep("done");
+          try {
+            setIsLoading(true);
+            await resetPin(email, code, newPin);
+            setStep("done");
+          } catch (err) {
+            setError(err.message || "Failed to reset PIN. Try again.");
+            setNewPin("");
+            setConfirmPin("");
+            setStep("create");
+          } finally {
+            setIsLoading(false);
+          }
         } else {
           setError("Those PINs don't match. Let's try again.");
           setNewPin("");
@@ -132,7 +145,34 @@ export default function ForgotPin({ onNavigate, onBack, email }) {
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [confirmPin, newPin, step]);
+  }, [confirmPin, newPin, step, email, code]);
+
+  const handleSendCode = async () => {
+    try {
+      setError("");
+      setIsLoading(true);
+      await sendResetCode(email);
+      setStep("code");
+    } catch (err) {
+      setError(err.message || "Failed to send reset code.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      setError("");
+      setIsLoading(true);
+      await verifyResetCode(email, code);
+      setStep("create");
+    } catch (err) {
+      setError(err.message || "Invalid code. Try again.");
+      setCode("");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleKey = (digit) => {
     setError("");
@@ -202,11 +242,13 @@ export default function ForgotPin({ onNavigate, onBack, email }) {
                 <button
                   className="forgot-pin-primary"
                   type="button"
-                  onClick={() => setStep("code")}
+                  onClick={handleSendCode}
+                  disabled={isLoading}
                 >
-                  <span>Send reset code</span>
+                  <span>{isLoading ? "Sending..." : "Send reset code"}</span>
                   <Icon name="arrow" />
                 </button>
+                {error && <p className="forgot-pin-error" style={{marginTop: '10px'}}>{error}</p>}
               </>
             )}
 
@@ -233,16 +275,18 @@ export default function ForgotPin({ onNavigate, onBack, email }) {
                 <button
                   className="forgot-pin-primary"
                   type="button"
-                  disabled={code.length !== CODE_LENGTH}
-                  onClick={() => setStep("create")}
+                  disabled={code.length !== CODE_LENGTH || isLoading}
+                  onClick={handleVerifyCode}
                 >
-                  <span>Verify code</span>
+                  <span>{isLoading ? "Verifying..." : "Verify code"}</span>
                   <Icon name="arrow" />
                 </button>
+                {error && <p className="forgot-pin-error" style={{marginTop: '10px'}}>{error}</p>}
                 <button
                   className="forgot-pin-resend"
                   type="button"
-                  onClick={() => setCode("")}
+                  onClick={handleSendCode}
+                  disabled={isLoading}
                 >
                   Resend code
                 </button>
