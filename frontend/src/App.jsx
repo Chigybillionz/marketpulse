@@ -33,6 +33,7 @@ import DataPortability from "./components/DataPortability";
 import Ledger from "./components/ledger";
 import AIConfirmation from "./components/ai_confirmation";
 import AppShell from "./components/layout/AppShell";
+import { LanguageProvider } from "./i18n/LanguageContext";
 import "./App.css";
 
 // Single source of truth: page id (used everywhere as onNavigate("id")) -> URL path.
@@ -202,6 +203,7 @@ function App() {
   };
 
   return (
+    <LanguageProvider>
     <Routes>
       <Route
         path={PATHS.landing}
@@ -464,6 +466,7 @@ function App() {
       <Route path={PATHS.logout} element={<Logout onNavigate={handleNavigate} />} />
       <Route path="*" element={<Navigate to={PATHS.login} replace />} />
     </Routes>
+    </LanguageProvider>
   );
 }
 

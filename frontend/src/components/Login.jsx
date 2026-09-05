@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../services/authService";
+import { useLanguage } from "../i18n/LanguageContext";
 import FlowLayout from "./layout/FlowLayout";
 import TermsOfService from "./TermsOfService";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -12,7 +13,7 @@ export default function Login({
   setBusinessName,
   setProfilePicture,
 }) {
-  const [language, setLanguage] = useState("English");
+  const { language, setLanguage, t } = useLanguage();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [password, setPassword] = useState("");
   const [showTerms, setShowTerms] = useState(false);
@@ -24,7 +25,7 @@ export default function Login({
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError(t("login_error_empty"));
       return;
     }
 
@@ -55,7 +56,7 @@ export default function Login({
       await new Promise((resolve) => setTimeout(resolve, 3000));
       onNavigate("home");
     } catch (err) {
-      setError(err.message || "Failed to log in. Please check your credentials.");
+      setError(err.message || t("login_error_failed"));
     } finally {
       setIsLoading(false);
       setIsTransitioning(false);
@@ -152,7 +153,7 @@ export default function Login({
                   overflow: "hidden",
                 }}
               >
-                {["English", "Yoruba", "Hausa", "Igbo"].map((lang) => (
+                {["English", "Hausa", "Yoruba", "Igbo"].map((lang) => (
                   <button
                     key={lang}
                     onClick={() => {
@@ -207,10 +208,10 @@ export default function Login({
             </div>
             <div style={{ textAlign: "center", padding: "0 32px", width: "100%" }}>
               <h1 style={{ fontSize: 27, fontWeight: 800, color: "#111827", letterSpacing: "-0.5px", marginBottom: 8, lineHeight: 1.2, textAlign: "center" }}>
-                Welcome Back
+                {t("login_welcome_back")}
               </h1>
               <p style={{ fontSize: 14.5, color: "#374151", lineHeight: 1.6, maxWidth: 240, margin: "0 auto", textAlign: "center" }}>
-                Log in to access your market trading account.
+                {t("login_subtitle")}
               </p>
             </div>
           </div>
@@ -219,7 +220,7 @@ export default function Login({
         <div style={{ flex: 1, backgroundColor: "white", padding: "28px 24px 24px" }}>
           <div style={{ marginBottom: 22 }}>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 8 }}>
-              Email Address
+              {t("login_email_label")}
             </label>
             <input
               type="email"
@@ -228,7 +229,7 @@ export default function Login({
                 setEmail(e.target.value);
                 setError(null);
               }}
-              placeholder="e.g., user@example.com"
+              placeholder={t("login_email_placeholder")}
               style={{
                 width: "100%",
                 boxSizing: "border-box",
@@ -248,7 +249,7 @@ export default function Login({
 
           <div style={{ marginBottom: 4 }}>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 8 }}>
-              Password
+              {t("login_password_label")}
             </label>
             <input
               type={showPassword ? "text" : "password"}
@@ -257,7 +258,7 @@ export default function Login({
                 setPassword(e.target.value);
                 setError(null);
               }}
-              placeholder="••••••••"
+              placeholder={t("login_password_placeholder")}
               style={{
                 width: "100%",
                 boxSizing: "border-box",
@@ -282,7 +283,7 @@ export default function Login({
               }}
             >
               <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>
-                {showPassword ? "Close Password" : "Open Password"}
+                {showPassword ? t("login_close_password") : t("login_open_password")}
               </span>
               <button
                 type="button"
@@ -336,7 +337,7 @@ export default function Login({
                 cursor: "pointer",
               }}
             >
-              Forgot Password?
+              {t("login_forgot_password")}
             </a>
           </div>
 
@@ -364,7 +365,7 @@ export default function Login({
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1f2937")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#111827")}
           >
-            Log In
+            {t("login_button")}
             <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
               <path d="M1 7h16M11 1l6 6-6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -389,7 +390,7 @@ export default function Login({
               cursor: "pointer",
             }}
           >
-            <span style={{ color: "#6B7280", fontWeight: 500 }}>Don't have an account?</span> Sign Up
+            <span style={{ color: "#6B7280", fontWeight: 500 }}>{t("login_no_account")}</span> {t("login_sign_up")}
           </a>
           <a
             href="#help"
@@ -407,14 +408,14 @@ export default function Login({
               cursor: "pointer",
             }}
           >
-            Need help accessing your account?
+            {t("login_need_help")}
           </a>
           <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
             <button type="button" onClick={() => setShowPrivacy(true)} style={{ fontSize: 12, color: "#9CA3AF", background: "none", border: "none", cursor: "pointer" }}>
-              Privacy Policy
+              {t("common_privacy")}
             </button>
             <button type="button" onClick={() => setShowTerms(true)} style={{ fontSize: 12, color: "#9CA3AF", background: "none", border: "none", cursor: "pointer" }}>
-              Terms of Service
+              {t("common_terms")}
             </button>
           </div>
         </div>
@@ -452,7 +453,7 @@ export default function Login({
               letterSpacing: "-0.3px",
             }}
           >
-            Setting up your account...
+            {t("login_transition")}
           </p>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>

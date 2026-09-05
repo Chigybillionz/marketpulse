@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { signup } from "../services/authService";
+import { useLanguage } from "../i18n/LanguageContext";
 import FlowLayout from "./layout/FlowLayout";
 import TermsOfService from "./TermsOfService";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -13,7 +14,7 @@ export default function Signup({
   setIsNewUser,
   setProfilePicture,
 }) {
-  const [language, setLanguage] = useState("English");
+  const { language, setLanguage, t } = useLanguage();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [password, setPassword] = useState("");
   const [showTerms, setShowTerms] = useState(false);
@@ -25,7 +26,7 @@ export default function Signup({
 
   const handleSignup = async () => {
     if (!businessName || !email || !password) {
-      setError("Please fill in all fields");
+      setError(t("signup_error_empty"));
       return;
     }
 
@@ -42,7 +43,7 @@ export default function Signup({
       await new Promise((resolve) => setTimeout(resolve, 3000));
       onNavigate("login");
     } catch (err) {
-      setError(err.message || "Failed to create account. Please try again.");
+      setError(err.message || t("signup_error_failed"));
     } finally {
       setIsLoading(false);
       setIsTransitioning(false);
@@ -139,7 +140,7 @@ export default function Signup({
                   overflow: "hidden",
                 }}
               >
-                {["English", "Yoruba", "Hausa", "Igbo"].map((lang) => (
+                {["English", "Hausa", "Yoruba", "Igbo"].map((lang) => (
                   <button
                     key={lang}
                     onClick={() => {
@@ -194,10 +195,10 @@ export default function Signup({
             </div>
             <div style={{ textAlign: "center", padding: "0 32px", width: "100%" }}>
               <h1 style={{ fontSize: 27, fontWeight: 800, color: "#111827", letterSpacing: "-0.5px", marginBottom: 8, lineHeight: 1.2, textAlign: "center" }}>
-                Create Account
+                {t("signup_create_account")}
               </h1>
               <p style={{ fontSize: 14.5, color: "#374151", lineHeight: 1.6, maxWidth: 240, margin: "0 auto", textAlign: "center" }}>
-                Join MarketPulse AI to manage your trades securely.
+                {t("signup_subtitle")}
               </p>
             </div>
           </div>
@@ -206,13 +207,13 @@ export default function Signup({
         <div style={{ flex: 1, backgroundColor: "white", padding: "28px 24px 24px" }}>
           <div style={{ marginBottom: 22 }}>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 8 }}>
-              Business Name
+              {t("signup_business_label")}
             </label>
             <input
               type="text"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="e.g., Mama Ngozi Provisions"
+              placeholder={t("signup_business_placeholder")}
               style={{
                 width: "100%",
                 boxSizing: "border-box",
@@ -232,7 +233,7 @@ export default function Signup({
 
           <div style={{ marginBottom: 22 }}>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 8 }}>
-              Email Address
+              {t("signup_email_label")}
             </label>
             <input
               type="email"
@@ -241,7 +242,7 @@ export default function Signup({
                 setEmail(e.target.value);
                 setError(null);
               }}
-              placeholder="e.g., user@example.com"
+              placeholder={t("signup_email_placeholder")}
               style={{
                 width: "100%",
                 boxSizing: "border-box",
@@ -261,7 +262,7 @@ export default function Signup({
 
           <div style={{ marginBottom: 4 }}>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 8 }}>
-              Password
+              {t("signup_password_label")}
             </label>
             <input
               type={showPassword ? "text" : "password"}
@@ -270,7 +271,7 @@ export default function Signup({
                 setPassword(e.target.value);
                 setError(null);
               }}
-              placeholder="••••••••"
+              placeholder={t("signup_password_placeholder")}
               style={{
                 width: "100%",
                 boxSizing: "border-box",
@@ -295,7 +296,7 @@ export default function Signup({
               }}
             >
               <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>
-                {showPassword ? "Close Password" : "Open Password"}
+                {showPassword ? t("signup_close_password") : t("signup_open_password")}
               </span>
               <button
                 type="button"
@@ -333,7 +334,7 @@ export default function Signup({
               </p>
             ) : (
               <p style={{ marginTop: 7, fontSize: 12, color: "#9CA3AF" }}>
-                Must be at least 8 characters long
+                {t("signup_password_hint")}
               </p>
             )}
           </div>
@@ -362,7 +363,7 @@ export default function Signup({
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1f2937")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#111827")}
           >
-            Create Account
+            {t("signup_button")}
             <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
               <path d="M1 7h16M11 1l6 6-6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -387,14 +388,14 @@ export default function Signup({
               cursor: "pointer",
             }}
           >
-            <span style={{ color: "#6B7280", fontWeight: 500 }}>Already have an account?</span> Log In
+            <span style={{ color: "#6B7280", fontWeight: 500 }}>{t("signup_has_account")}</span> {t("signup_log_in")}
           </a>
           <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
             <button type="button" onClick={() => setShowPrivacy(true)} style={{ fontSize: 12, color: "#9CA3AF", background: "none", border: "none", cursor: "pointer" }}>
-              Privacy Policy
+              {t("common_privacy")}
             </button>
             <button type="button" onClick={() => setShowTerms(true)} style={{ fontSize: 12, color: "#9CA3AF", background: "none", border: "none", cursor: "pointer" }}>
-              Terms of Service
+              {t("common_terms")}
             </button>
           </div>
         </div>
@@ -432,7 +433,7 @@ export default function Signup({
               letterSpacing: "-0.3px",
             }}
           >
-            Creating your account...
+            {t("signup_transition")}
           </p>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
