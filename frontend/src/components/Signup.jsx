@@ -295,7 +295,7 @@ export default function Signup({
               }}
             >
               <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>
-                Show Password
+                {showPassword ? "Close Password" : "Open Password"}
               </span>
               <button
                 type="button"

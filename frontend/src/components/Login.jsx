@@ -19,6 +19,7 @@ export default function Login({
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
 
   const handleLogin = async () => {
@@ -250,7 +251,7 @@ export default function Login({
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -272,6 +273,47 @@ export default function Login({
               onFocus={(e) => (e.target.style.borderBottomColor = "#1B3D2F")}
               onBlur={(e) => (e.target.style.borderBottomColor = "#D1D5DB")}
             />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginTop: 10,
+              }}
+            >
+              <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>
+                {showPassword ? "Close Password" : "Open Password"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  width: 44,
+                  height: 24,
+                  borderRadius: 12,
+                  border: "none",
+                  backgroundColor: showPassword ? "#1B3D2F" : "#D1D5DB",
+                  position: "relative",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s",
+                  padding: 0,
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 2,
+                    left: showPassword ? 22 : 2,
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    backgroundColor: "white",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                    transition: "left 0.2s",
+                  }}
+                />
+              </button>
+            </div>
             {error && (
               <p style={{ marginTop: 7, fontSize: 12, color: "#EF4444", fontWeight: 500 }}>
                 {error}
