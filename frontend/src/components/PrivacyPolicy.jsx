@@ -123,6 +123,7 @@ function Icon({ name }) {
 
 export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
   const [isAccepted, setIsAccepted] = useState(false);
+  const isLoggedIn = !!localStorage.getItem('token');
 
   // Works as a routed page (back -> real history) and as a modal (back -> onClose).
   const dismiss = () => {
@@ -228,18 +229,25 @@ export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
                   className={`privacy-right ${right.tone}`}
                   type="button"
                   key={right.id}
-                  onClick={() =>
-                    right.target && onNavigate && onNavigate(right.target)
-                  }
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      // User not logged in - navigate to login
+                      if (onNavigate) onNavigate('login');
+                    } else {
+                      // User logged in - navigate to the feature
+                      if (right.target && onNavigate) onNavigate(right.target);
+                    }
+                  }}
                 >
                   <span className="privacy-right-icon">
                     <Icon name={right.icon} />
                   </span>
                   <span className="privacy-right-copy">
                     <strong>{right.title}</strong>
-                    <small>{right.body}</small>
+                    <small>{isLoggedIn ? right.body : 'Login to access this feature'}</small>
                   </span>
                   <span className="privacy-right-chevron">
+                    {!isLoggedIn && <span style={{fontSize: '12px', color: '#666', marginRight: '8px'}}>🔒</span>}
                     <Icon name="chevron" />
                   </span>
                 </button>
