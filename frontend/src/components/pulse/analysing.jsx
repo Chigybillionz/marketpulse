@@ -125,13 +125,13 @@ export default function Analysing({ onNavigate, businessName }) {
               <circle className="analysing-ring-track" cx="120" cy="120" r="98" />
               <circle className="analysing-ring-progress" cx="120" cy="120" r="98" />
             </svg>
-            <span className="analysing-sparkles">
-              <SparklesIcon />
+            <span className="analysing-sparkles" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="/mylogo.png" alt="MarketPulse AI logo" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
             </span>
           </div>
 
           <h1 id="analysing-title">Analyzing your<br />speech...</h1>
-          <p>Gemini is sorting your trade details into your ledger.</p>
+          <p>MarketPulseAI is sorting your trade details into your ledger.</p>
 
           <div className="analysing-skeletons" aria-hidden="true">
             <span className="analysing-skeleton analysing-skeleton-wide">

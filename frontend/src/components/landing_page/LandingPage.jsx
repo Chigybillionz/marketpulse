@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Mic, BarChart2, Lock, Wallet, Play, ArrowRight, ArrowUp, ArrowDown, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MarketingNavbar from './MarketingNavbar';
+import { VoiceRecorder } from '../../services/voiceRecorder';
+import { transcribeAndAnalyze } from '../../services/geminiService';
 
 export default function LandingPage({ onNavigate }) {
   const navigate = useNavigate();
   const [showDemoVideo, setShowDemoVideo] = useState(false);
+  const [isDemoRecording, setIsDemoRecording] = useState(false);
+  const [isDemoProcessing, setIsDemoProcessing] = useState(false);
+  const [demoResult, setDemoResult] = useState(null);
+  const [demoError, setDemoError] = useState(null);
+  const recorderRef = useRef(null);
 
   const handleGetStarted = () => {
     // Navigate to the onboarding/login flow
@@ -21,6 +28,39 @@ export default function LandingPage({ onNavigate }) {
       onNavigate(path);
     } else {
       navigate(path === 'landing' ? '/' : `/${path}`);
+    }
+  };
+
+  const handleDemoRecord = async () => {
+    setDemoError(null);
+    setDemoResult(null);
+
+    if (isDemoRecording) {
+      // Stop recording and analyze
+      try {
+        setIsDemoProcessing(true);
+        const audioBlob = await recorderRef.current.stopRecording();
+        const base64 = await recorderRef.current.audioToBase64(audioBlob);
+        const result = await transcribeAndAnalyze(base64);
+        setDemoResult(result);
+      } catch (err) {
+        setDemoError('Could not analyze audio. Please try again.');
+        console.error('Demo recording error:', err);
+      } finally {
+        setIsDemoRecording(false);
+        setIsDemoProcessing(false);
+        recorderRef.current = null;
+      }
+    } else {
+      // Start recording
+      try {
+        recorderRef.current = new VoiceRecorder();
+        await recorderRef.current.startRecording();
+        setIsDemoRecording(true);
+      } catch (err) {
+        setDemoError('Microphone access denied. Please allow microphone access.');
+        console.error('Demo recording error:', err);
+      }
     }
   };
 
@@ -96,11 +136,61 @@ export default function LandingPage({ onNavigate }) {
                            </div>
                         </div>
 
-                        {/* Floating Action Button */}
-                        <div className="hidden sm:flex bg-green-500 p-4 rounded-2xl shadow-lg shadow-green-500/30 text-white items-center justify-center">
-                            <Mic size={24} />
-                        </div>
+                        {/* Demo Recording Button */}
+                        <button
+                          onClick={handleDemoRecord}
+                          disabled={isDemoProcessing}
+                          className={`hidden sm:flex p-4 rounded-2xl shadow-lg text-white items-center justify-center transition-all duration-300 ${
+                            isDemoRecording
+                              ? 'bg-red-500 shadow-red-500/30 animate-pulse'
+                              : isDemoProcessing
+                              ? 'bg-yellow-500 shadow-yellow-500/30'
+                              : 'bg-green-500 shadow-green-500/30 hover:bg-green-600'
+                          }`}
+                        >
+                          <Mic size={24} />
+                        </button>
                       </div>
+
+                      {/* Demo Recording Result */}
+                      {(demoResult || demoError) && (
+                        <div className="bg-white/95 backdrop-blur p-4 rounded-xl md:rounded-2xl shadow-xl border border-white/20 w-full mt-4 transition-all duration-300">
+                          {demoError ? (
+                            <p className="text-red-600 text-sm font-semibold text-center">{demoError}</p>
+                          ) : demoResult && (
+                            <div className="flex items-center gap-3">
+                              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                demoResult.type === 'Expense' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
+                              }`}>
+                                {demoResult.type === 'Expense' ? <ArrowDown size={20} /> : <ArrowUp size={20} />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-wider">{demoResult.description || 'Demo Recording'}</p>
+                                <p className={`text-lg md:text-2xl font-black ${
+                                  demoResult.type === 'Expense' ? 'text-red-600' : 'text-green-600'
+                                }`}>
+                                  {demoResult.type === 'Expense' ? '-' : '+'}₦{(demoResult.amount || 0).toLocaleString()}
+                                </p>
+                              </div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-gray-100 text-gray-500">
+                                {demoResult.type === 'CREDIT' ? 'Credit' : demoResult.type}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Demo Recording Status */}
+                      {isDemoRecording && (
+                        <div className="bg-red-500/90 backdrop-blur p-3 rounded-xl text-white text-sm font-semibold text-center mt-4 animate-pulse">
+                          🔴 Recording... Tap mic to stop and analyze
+                        </div>
+                      )}
+                      {isDemoProcessing && (
+                        <div className="bg-yellow-500/90 backdrop-blur p-3 rounded-xl text-white text-sm font-semibold text-center mt-4">
+                          ⏳ Analyzing your speech...
+                        </div>
+                      )}
                   </div>
               </div>
            </div>
@@ -126,15 +216,47 @@ export default function LandingPage({ onNavigate }) {
                  <p className="text-gray-500 leading-relaxed font-medium">
                    Just say "I sold 5 bags of rice for 100k" or "Paid 5k for transport." MarketPulse AI understands natural language, categorizes the entry, and updates your ledger instantly.
                  </p>
+                 {/* Demo Result displayed here */}
+                 {(demoResult || demoError) && (
+                   <div className="mt-6 bg-white/95 backdrop-blur p-4 rounded-xl border border-gray-100 shadow-sm max-w-sm">
+                     {demoError ? (
+                        <p className="text-red-600 text-sm font-semibold">{demoError}</p>
+                     ) : demoResult && (
+                        <div className="flex items-center gap-3">
+                           <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              demoResult.type === 'Expense' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
+                           }`}>
+                              {demoResult.type === 'Expense' ? <ArrowDown size={18} /> : <ArrowUp size={18} />}
+                           </div>
+                           <div className="flex-1 min-w-0">
+                              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider truncate">{demoResult.description || 'Demo Recording'}</p>
+                              <p className={`text-base font-black ${
+                                 demoResult.type === 'Expense' ? 'text-red-600' : 'text-green-600'
+                              }`}>
+                                 {demoResult.type === 'Expense' ? '-' : '+'}₦{(demoResult.amount || 0).toLocaleString()}
+                              </p>
+                           </div>
+                           <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-gray-100 text-gray-500">
+                               {demoResult.type === 'CREDIT' ? 'Credit' : demoResult.type}
+                           </span>
+                        </div>
+                     )}
+                   </div>
+                 )}
               </div>
-              <div className="w-full sm:w-48 aspect-square rounded-3xl bg-blue-50/50 border border-blue-100 flex items-center justify-center relative overflow-hidden flex-shrink-0 mt-6 sm:mt-0 self-center sm:self-start">
-                  <div className="w-16 h-16 rounded-full bg-[#064E3B] text-white flex items-center justify-center shadow-xl relative z-10 animate-bounce">
+              <div 
+                className={`w-full sm:w-48 aspect-square rounded-3xl ${isDemoProcessing ? 'bg-yellow-50/50 border-yellow-100' : isDemoRecording ? 'bg-red-50/50 border-red-100' : 'bg-blue-50/50 border-blue-100'} border flex items-center justify-center relative overflow-hidden flex-shrink-0 mt-6 sm:mt-0 self-center sm:self-start cursor-pointer hover:shadow-lg transition-all duration-300`}
+                onClick={handleDemoRecord}
+              >
+                  <div className={`w-16 h-16 rounded-full ${isDemoProcessing ? 'bg-yellow-500' : isDemoRecording ? 'bg-red-500' : 'bg-[#064E3B]'} text-white flex items-center justify-center shadow-xl relative z-10 ${isDemoProcessing ? 'animate-pulse' : isDemoRecording ? 'animate-pulse scale-110' : 'animate-bounce'} transition-all duration-300`}>
                       <Mic size={28} />
                   </div>
-                  <p className="absolute bottom-6 text-xs font-bold text-blue-900/60 z-10 tracking-widest uppercase">Listening...</p>
+                  <p className={`absolute bottom-6 text-[10px] font-bold ${isDemoProcessing ? 'text-yellow-900/60' : isDemoRecording ? 'text-red-900/60' : 'text-blue-900/60'} z-10 tracking-widest uppercase text-center w-full`}>
+                    {isDemoProcessing ? 'Analyzing...' : isDemoRecording ? 'Tap to Stop' : 'Tap to Try'}
+                  </p>
                   {/* Ripple effect circles */}
-                  <div className="absolute w-28 h-28 rounded-full border-2 border-blue-200/50 scale-150"></div>
-                  <div className="absolute w-40 h-40 rounded-full border-2 border-blue-200/30 scale-150"></div>
+                  <div className={`absolute w-28 h-28 rounded-full border-2 ${isDemoProcessing ? 'border-yellow-200/50' : isDemoRecording ? 'border-red-200/50' : 'border-blue-200/50'} scale-150 transition-colors duration-300`}></div>
+                  <div className={`absolute w-40 h-40 rounded-full border-2 ${isDemoProcessing ? 'border-yellow-200/30' : isDemoRecording ? 'border-red-200/30' : 'border-blue-200/30'} scale-150 transition-colors duration-300`}></div>
               </div>
             </div>
 
