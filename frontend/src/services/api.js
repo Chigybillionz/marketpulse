@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5001/api';
+const API_URL = import.meta.env.VITE_BACKEND_URL || 'https://marketpulse-jaxo.onrender.com/api';
 
 /**
  * A central wrapper around fetch that automatically includes the JWT token
