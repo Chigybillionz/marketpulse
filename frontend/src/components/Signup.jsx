@@ -19,6 +19,7 @@ export default function Signup({
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSignup = async () => {
@@ -36,11 +37,16 @@ export default function Signup({
       console.log("Signup successful!");
       
       setIsNewUser(true);
+      setIsTransitioning(true);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       onNavigate("login");
+    } catch (err) {
+      setError(err.message || "Failed to create account. Please try again.");
     } catch (err) {
       setError(err.message || "Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
+      setIsTransitioning(false);
     }
   };
 
@@ -353,6 +359,44 @@ export default function Signup({
           </div>
         </div>
       </div>
+
+      {isTransitioning && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: "#1B3D2F",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 24,
+          }}
+        >
+          <div
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              border: "4px solid rgba(255,255,255,0.2)",
+              borderTopColor: "white",
+              animation: "spin 1s linear infinite",
+            }}
+          />
+          <p
+            style={{
+              color: "white",
+              fontSize: 18,
+              fontWeight: 600,
+              letterSpacing: "-0.3px",
+            }}
+          >
+            Creating your account...
+          </p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
 
       {showTerms && (
         <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#fff", display: "flex", flexDirection: "column" }}>
