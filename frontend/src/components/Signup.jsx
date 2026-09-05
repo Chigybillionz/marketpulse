@@ -42,8 +42,6 @@ export default function Signup({
       onNavigate("login");
     } catch (err) {
       setError(err.message || "Failed to create account. Please try again.");
-    } catch (err) {
-      setError(err.message || "Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
       setIsTransitioning(false);
