@@ -191,9 +191,11 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
               aria-label="Contact channels"
             >
               <h2>Contact Support</h2>
-              <button
+              <a
+                href="https://wa.me/2347081104368"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="contact-support-channel whatsapp"
-                type="button"
               >
                 <span className="contact-support-channel-icon">W</span>
                 <span className="contact-support-channel-copy">
@@ -201,7 +203,7 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
                   <small>Instant chat with our team</small>
                 </span>
                 <ArrowIcon />
-              </button>
+              </a>
 
               <button className="contact-support-channel call" type="button">
                 <span className="contact-support-channel-icon">C</span>
