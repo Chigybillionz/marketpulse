@@ -88,3 +88,33 @@ export const resetPin = async (email, code, newPin) => {
     body: JSON.stringify({ email, code, newPin }),
   });
 };
+
+/**
+ * Sends a 4-digit reset code to the user's email (for password reset)
+ */
+export const sendPasswordResetCode = async (email) => {
+  return apiClient('/welcome-auth/forgot-password/send-code', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+};
+
+/**
+ * Verifies the 4-digit password reset code
+ */
+export const verifyPasswordResetCode = async (email, code) => {
+  return apiClient('/welcome-auth/forgot-password/verify-code', {
+    method: 'POST',
+    body: JSON.stringify({ email, code }),
+  });
+};
+
+/**
+ * Resets the account password using a verified code
+ */
+export const resetPassword = async (email, code, newPassword) => {
+  return apiClient('/welcome-auth/forgot-password/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ email, code, newPassword }),
+  });
+};

@@ -145,6 +145,46 @@ const resetTradePin = async (email, code, newPin) => {
   return user;
 };
 
+/**
+ * Overwrites the account password using a verified reset code
+ */
+const resetPassword = async (email, code, newPassword) => {
+  await verifyResetPinCode(email, code);
+
+  const user = await WelcomeUser.findOne({ email });
+  user.password = newPassword;
+  user.resetPinCode = undefined;
+  user.resetPinExpires = undefined;
+
+  await user.save();
+  return user;
+};
+
+/**
+ * Generates a 4-digit reset code for password reset and sends it via email
+ */
+const generateResetPasswordCode = async (email) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const code = otpGenerator.generate(4, {
+    upperCaseAlphabets: false,
+    specialChars: false,
+    lowerCaseAlphabets: false,
+    digits: true,
+  });
+
+  user.resetPinCode = code;
+  user.resetPinExpires = new Date(Date.now() + 10 * 60 * 1000);
+  await user.save();
+
+  await EmailService.sendPasswordResetCodeEmail(email, code);
+
+  return true;
+};
+
 module.exports = {
   signup,
   login,
@@ -153,5 +193,7 @@ module.exports = {
   hasTradePin,
   generateResetPinCode,
   verifyResetPinCode,
-  resetTradePin
+  resetTradePin,
+  resetPassword,
+  generateResetPasswordCode
 };

@@ -275,6 +275,25 @@ export default function Login({
             )}
           </div>
 
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+            <a
+              href="#forgot-password"
+              onClick={(event) => {
+                event.preventDefault();
+                onNavigate && onNavigate("forgot_password");
+              }}
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#1B3D2F",
+                textDecoration: "none",
+                cursor: "pointer",
+              }}
+            >
+              Forgot Password?
+            </a>
+          </div>
+
           <button
             type="button"
             onClick={handleLogin}

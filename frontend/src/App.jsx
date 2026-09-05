@@ -11,6 +11,7 @@ import Homepage from "./components/home/homepage";
 import Listeng from "./components/pulse/listeng";
 import PulseTradePin from "./components/pulse/trade_pin";
 import ForgotPin from "./components/pulse/forgot_pin";
+import ForgotPassword from "./components/ForgotPassword";
 import Analysing from "./components/pulse/analysing";
 import History from "./components/history";
 import Credit from "./components/credit";
@@ -49,6 +50,7 @@ const PATHS = {
   ai_confirmation: "/ai-confirmation",
   pulse_trade_pin: "/trade-pin",
   forgot_pin: "/forgot-pin",
+  forgot_password: "/forgot-password",
   history: "/history",
   credit: "/credit",
   weekly_pulse: "/weekly-pulse",
@@ -316,6 +318,15 @@ function App() {
           <ForgotPin
             onNavigate={handleNavigate}
             onBack={() => handleBack("pulse_trade_pin")}
+            email={email}
+          />
+        }
+      />
+      <Route
+        path={PATHS.forgot_password}
+        element={
+          <ForgotPassword
+            onNavigate={handleNavigate}
             email={email}
           />
         }

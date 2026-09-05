@@ -1,4 +1,4 @@
-const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode } = require('../services/WelcomeAuthService');
 
 const handleSignup = async (req, res) => {
   try {
@@ -217,6 +217,46 @@ const resetPin = async (req, res) => {
   }
 };
 
+const resetUserPassword = async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ message: 'Email, code, and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    await resetPassword(email, code, newPassword);
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    if (error.message === 'User not found' || error.message === 'Invalid reset code' || error.message === 'Reset code has expired') {
+      return res.status(400).json({ message: error.message });
+    }
+    console.error('Reset Password Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const sendPasswordResetCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    
+    await generateResetPasswordCode(email);
+    res.status(200).json({ message: 'Password reset code sent successfully' });
+  } catch (error) {
+    if (error.message === 'User not found') {
+      return res.status(404).json({ message: error.message });
+    }
+    console.error('Send Password Reset Code Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   handleSignup,
   handleLogin,
@@ -226,6 +266,8 @@ module.exports = {
   uploadProfilePicture,
   sendResetCode,
   verifyResetCode,
-  resetPin
+  resetPin,
+  resetUserPassword,
+  sendPasswordResetCode
 };
 

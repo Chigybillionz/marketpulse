@@ -81,6 +81,38 @@ const sendResetCodeEmail = async (toEmail, code) => {
   }
 };
 
+const sendPasswordResetCodeEmail = async (toEmail, code) => {
+  try {
+    const transport = getTransporter();
+
+    const info = await transport.sendMail({
+      from: getMailFrom(),
+      to: toEmail,
+      subject: 'Your Password Reset Code',
+      text: `You requested a password reset. Your code is ${code}. It expires in 10 minutes.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+          <h2 style="color: #052e16;">MarketPulse AI</h2>
+          <p>Hi there,</p>
+          <p>You requested a password reset. Here is your 4-digit reset code:</p>
+          <div style="margin: 20px 0; padding: 15px; background-color: #f8fafc; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #1e293b;">
+            ${code}
+          </div>
+          <p style="color: #64748b; font-size: 14px;">This code will expire in 10 minutes. If you did not request this reset, please ignore this email.</p>
+        </div>
+      `,
+    });
+
+    console.log('Password reset email successfully sent: %s', info.messageId);
+
+    return true;
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    throw new Error('Failed to send email');
+  }
+};
+
 module.exports = {
   sendResetCodeEmail,
+  sendPasswordResetCodeEmail,
 };
