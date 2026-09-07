@@ -1,12 +1,11 @@
-import React from 'react';
 import { ArrowRight } from 'lucide-react';
 
 export default function FinalCTA({ onNavigate }) {
   const handleGetStarted = () => {
     if (onNavigate) {
       onNavigate("signup");
-    } else {
-      navigate("/signup");
+    } else if (window.navigate) {
+      window.navigate("/signup");
     }
   };
 
@@ -31,9 +30,11 @@ export default function FinalCTA({ onNavigate }) {
         <div className="absolute top-0 right-0 w-64 h-64 bg-green-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
-        <div className="relative z-10">
+        <div className="relative z-10" data-reveal-stagger data-reveal-step="110">
           {/* Kicker */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-green-200 text-xs font-bold uppercase tracking-wider mb-8">
+          <div
+            data-reveal="cta-entrance"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-green-200 text-xs font-bold uppercase tracking-wider mb-8">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -44,19 +45,25 @@ export default function FinalCTA({ onNavigate }) {
             Start Your Free Trial
           </div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 md:mb-8 tracking-tight">
+          <h2
+            data-reveal="cta-entrance"
+            className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 md:mb-8 tracking-tight">
             Join the Future of
             <br />
             Market Trading Today
           </h2>
 
-          <p className="text-green-100 max-w-2xl mx-auto mb-10 md:mb-12 text-base md:text-lg font-medium leading-relaxed">
+          <p
+            data-reveal="cta-entrance"
+            className="text-green-100 max-w-2xl mx-auto mb-10 md:mb-12 text-base md:text-lg font-medium leading-relaxed">
             Stop stressing over lost receipts and confused ledgers. Let your voice do
             the bookkeeping while you focus on growing your business.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div
+            data-reveal="cta-entrance"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={handleGetStarted}
               className="bg-white text-[#064E3B] px-8 py-4 md:px-10 md:py-5 rounded-2xl font-bold text-base md:text-lg flex items-center gap-3 mx-auto hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl group-hover:animate-pulse-hover"
@@ -76,7 +83,9 @@ export default function FinalCTA({ onNavigate }) {
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-8 mt-10 md:mt-12">
+          <div
+            data-reveal="cta-entrance"
+            className="flex flex-wrap items-center justify-center gap-8 mt-10 md:mt-12">
             <div className="flex items-center gap-2 text-green-200/80 text-sm">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path

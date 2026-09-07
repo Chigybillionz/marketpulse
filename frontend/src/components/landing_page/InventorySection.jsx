@@ -1,7 +1,26 @@
-import React from 'react';
+/**
+ * InventorySection — operational, product-led rhythm (Phase 2).
+ *
+ * Stock cards enter in an operational cadence, the stock-level bars
+ * fill horizontally via scaleX (no width animation), and the alert
+ * banner enters last. All timing hangs off one in-view flag and runs
+ * exactly once.
+ */
+
 import { Package, AlertTriangle, CheckCircle, ArrowRight } from 'lucide-react';
+import useInView from './useInView';
+
+const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+const staged = (visible, delay) => ({
+  opacity: visible ? 1 : 0,
+  transform: visible ? 'none' : 'translateY(18px)',
+  transition: visible ? `opacity 600ms ${MP_EASE} ${delay}ms, transform 600ms ${MP_EASE} ${delay}ms` : 'none',
+});
 
 export default function InventorySection() {
+  const [sectionRef, sectionInView] = useInView({ threshold: 0.15 });
+
   const inventoryItems = [
     {
       name: 'Garri (50kg bags)',
@@ -41,72 +60,80 @@ export default function InventorySection() {
 
   return (
     <section
+      ref={sectionRef}
       data-reveal="fade-up"
       className="bg-white py-16 md:py-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold uppercase tracking-wider mb-6">
+        <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20">
+          <div
+            data-reveal="data-entrance"
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-700"
+          >
             <Package size={14} />
             Inventory
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+          <h2
+            data-reveal="data-entrance"
+            data-reveal-delay="80"
+            className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
+          >
             Never Run Out of
             <br />
             <span className="text-[#064E3B]">Best-Selling Stock</span>
           </h2>
-          <p className="text-base md:text-lg text-gray-600 font-medium">
+          <p
+            data-reveal="data-entrance"
+            data-reveal-delay="160"
+            className="text-base font-medium text-gray-600 md:text-lg"
+          >
             Track your inventory levels, set smart reorder points, and get alerts
             before you run out of your top-selling products.
           </p>
         </div>
 
         {/* Inventory Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
+        <div className="mb-12 grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
           {inventoryItems.map((item, index) => (
             <div
               key={item.name}
-              className={`bg-[#F9FAFB] rounded-2xl p-5 border border-gray-100 hover:shadow-md transition-all duration-300 ${
+              className={`rounded-2xl border border-gray-100 bg-[#F9FAFB] p-5 transition-shadow duration-300 hover:shadow-md ${
                 item.status === 'low' ? 'border-orange-200 bg-orange-50/30' : ''
               }`}
-              style={{
-                animation: 'fadeInUp 0.5s ease-out forwards',
-                animationDelay: `${index * 100}ms`,
-                opacity: 0,
-              }}
+              style={staged(sectionInView, 100 + index * 110)}
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
                   <Package size={20} className={item.status === 'low' ? 'text-orange-500' : 'text-green-600'} />
                 </div>
                 {item.status === 'low' && (
-                  <div className="flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">
+                  <div className="flex items-center gap-1 rounded-full bg-orange-100 px-2 py-1 text-xs font-bold text-orange-700">
                     <AlertTriangle size={12} />
                     Reorder Now
                   </div>
                 )}
               </div>
 
-              <h3 className="font-bold text-gray-900 text-sm md:text-base mb-1">{item.name}</h3>
-              <p className="text-xs text-gray-500 mb-4">{item.category}</p>
+              <h3 className="mb-1 text-sm font-bold text-gray-900 md:text-base">{item.name}</h3>
+              <p className="mb-4 text-xs text-gray-500">{item.category}</p>
 
-              {/* Stock bar */}
+              {/* Stock bar — fills horizontally, once, in view */}
               <div className="mb-3">
-                <div className="flex items-center justify-between text-sm mb-1">
+                <div className="mb-1 flex items-center justify-between text-sm">
                   <span className="font-semibold text-gray-700">{item.stock} units</span>
                   <span className="text-xs text-gray-500">Min: {item.threshold}</span>
                 </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 overflow-hidden rounded-full bg-gray-200">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${
+                    className={`h-full rounded-full ${
                       item.status === 'low' ? 'bg-orange-400' : 'bg-green-400'
                     }`}
                     style={{
                       width: `${Math.min((item.stock / item.threshold) * 100, 100)}%`,
-                      animation: 'growBar 0.8s ease-out forwards',
-                      animationDelay: `${index * 100 + 200}ms`,
-                      opacity: 0,
+                      transform: sectionInView ? 'scaleX(1)' : 'scaleX(0)',
+                      transformOrigin: 'left',
+                      transition: `transform 800ms ${MP_EASE} ${300 + index * 110}ms`,
                     }}
                   />
                 </div>
@@ -114,7 +141,7 @@ export default function InventorySection() {
 
               <div className="flex items-center justify-between text-xs text-gray-500">
                 <span>Est. Value: ₦{(item.value / 1000).toFixed(0)}k</span>
-                <span className={item.status === 'low' ? 'text-orange-600 font-semibold' : 'text-green-600'}>
+                <span className={item.status === 'low' ? 'font-semibold text-orange-600' : 'text-green-600'}>
                   {item.status === 'low' ? 'Below threshold' : 'Well stocked'}
                 </span>
               </div>
@@ -125,24 +152,21 @@ export default function InventorySection() {
         {/* Urgent alert */}
         {urgentItems.length > 0 && (
           <div
-            className="bg-orange-50 border border-orange-200 rounded-2xl p-5 md:p-6 mb-12 flex items-center justify-between"
-            style={{
-              animation: 'fadeInUp 0.5s ease-out 0.6s forwards',
-              opacity: 0,
-            }}
+            className="mb-12 flex flex-col gap-4 rounded-2xl border border-orange-200 bg-orange-50 p-5 sm:flex-row sm:items-center sm:justify-between md:p-6"
+            style={staged(sectionInView, 580)}
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-100">
                 <AlertTriangle size={20} className="text-orange-600" />
               </div>
               <div>
                 <h3 className="font-bold text-orange-900">Inventory Alert</h3>
-                <p className="text-sm text-orange-700 mt-0.5">
+                <p className="mt-0.5 text-sm text-orange-700">
                   {urgentItems.length} product{urgentItems.length > 1 ? 's' : ''} below minimum stock level
                 </p>
               </div>
             </div>
-            <button className="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors flex items-center gap-2">
+            <button className="flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-orange-600">
               <ArrowRight size={16} />
               View Alerts
             </button>
@@ -150,21 +174,17 @@ export default function InventorySection() {
         )}
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid gap-6 md:grid-cols-3">
           <div
-            className="bg-[#F9FAFB] rounded-2xl p-6 border border-gray-100 flex items-start gap-4"
-            style={{
-              animation: 'fadeInUp 0.5s ease-out 0.8s forwards',
-              opacity: 0,
-              transition: 'all 0.5s ease-out',
-            }}
+            className="flex items-start gap-4 rounded-2xl border border-gray-100 bg-[#F9FAFB] p-6"
+            style={staged(sectionInView, 700)}
           >
-            <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-green-100">
               <Package size={24} className="text-green-600" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">Smart Reorder Points</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="mb-2 font-bold text-gray-900">Smart Reorder Points</h3>
+              <p className="text-sm leading-relaxed text-gray-600">
                 Set minimum stock levels for each product. MarketPulse tracks usage
                 patterns and suggests optimal reorder quantities.
               </p>
@@ -172,19 +192,15 @@ export default function InventorySection() {
           </div>
 
           <div
-            className="bg-[#F9FAFB] rounded-2xl p-6 border border-gray-100 flex items-start gap-4"
-            style={{
-              animation: 'fadeInUp 0.5s ease-out 1s forwards',
-              opacity: 0,
-              transition: 'all 0.5s ease-out',
-            }}
+            className="flex items-start gap-4 rounded-2xl border border-gray-100 bg-[#F9FAFB] p-6"
+            style={staged(sectionInView, 820)}
           >
-            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-blue-100">
               <CheckCircle size={24} className="text-blue-600" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">Low Stock Alerts</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="mb-2 font-bold text-gray-900">Low Stock Alerts</h3>
+              <p className="text-sm leading-relaxed text-gray-600">
                 Get notified when inventory drops below threshold. Never miss a
                 sales opportunity because you're out of stock.
               </p>
@@ -192,50 +208,23 @@ export default function InventorySection() {
           </div>
 
           <div
-            className="bg-[#F9FAFB] rounded-2xl p-6 border border-gray-100 flex items-start gap-4 md:col-span-2"
-            style={{
-              animation: 'fadeInUp 0.5s ease-out 1.2s forwards',
-              opacity: 0,
-              transition: 'all 0.5s ease-out',
-            }}
+            className="flex items-start gap-4 rounded-2xl border border-gray-100 bg-[#F9FAFB] p-6 md:col-span-2 md:col-end-4 lg:col-span-1 lg:col-end-auto"
+            style={staged(sectionInView, 940)}
           >
-            <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-purple-100">
+              <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">Inventory Value Tracking</h3>
-              <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">
+              <h3 className="mb-2 font-bold text-gray-900">Inventory Value Tracking</h3>
+              <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
                 See the total value of your inventory at a glance. Track cost vs.
                 market value, and identify slow-moving products that tie up your capital.
               </p>
             </div>
           </div>
         </div>
-
-        {/* Add animation styles */}
-        <style>{`
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          @keyframes growBar {
-            0% {
-              width: 0;
-              opacity: 0;
-            }
-            100% {
-              opacity: 1;
-            }
-          }
-        `}</style>
       </div>
     </section>
   );

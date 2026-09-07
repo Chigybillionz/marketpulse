@@ -25,6 +25,7 @@ app.use('/api/welcome-auth', welcomeAuthRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/debtors', require('./routes/DebtorRoutes'));
+app.use('/api/ai', require('./routes/AIRoutes'));
 
 // Database Connection
 const PORT = process.env.PORT || 5000;

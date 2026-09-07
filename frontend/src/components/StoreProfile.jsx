@@ -64,8 +64,13 @@ export default function StoreProfile({
     setIsSaving(true);
     try {
       // Call backend API
+      const userEmail = email || localStorage.getItem('email');
+      if (!userEmail) {
+        throw new Error("No user email found. Please log in again.");
+      }
+      
       const { updateProfile } = await import("../services/authService");
-      await updateProfile(email, {
+      await updateProfile(userEmail, {
         businessName: formData.businessName,
         location: formData.location,
         businessType: formData.businessType
@@ -88,7 +93,7 @@ export default function StoreProfile({
       }, 2000);
     } catch (error) {
       console.error("Failed to update profile:", error);
-      alert("Failed to update profile. Please try again.");
+      alert(`Failed to update profile: ${error.message || "Please try again."}`);
     } finally {
       setIsSaving(false);
     }

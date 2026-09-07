@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MarketingNavbar from './MarketingNavbar';
@@ -12,6 +12,14 @@ export default function PricingPage({ onNavigate }) {
       onNavigate("signup");
     } else {
       navigate("/signup");
+    }
+  };
+
+  const handleNavClick = (path) => {
+    if (onNavigate) {
+      onNavigate(path);
+    } else {
+      navigate(path === 'landing' ? '/' : `/${path}`);
     }
   };
 

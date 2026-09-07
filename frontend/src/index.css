@@ -31,3 +31,99 @@ button {
 #root {
   min-height: 100svh;
 }
+
+/* ────────────────────────────────────────────────────────────────
+   MarketPulse landing motion system (Phase 2)
+   - Scroll reveals are CSS-driven: [data-reveal] elements start
+     hidden and transition in when JS adds `.is-revealed`.
+   - Delays come from the --reveal-delay custom property set by
+     landingAnimations.js (per element or staggered group).
+   - Only opacity/transform animate — GPU friendly, no layout shifts.
+   ──────────────────────────────────────────────────────────────── */
+
+.mp-motion {
+  --mp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mp-motion [data-reveal] {
+  opacity: 0;
+  transition:
+    opacity 620ms var(--mp-ease) var(--reveal-delay, 0ms),
+    transform 620ms var(--mp-ease) var(--reveal-delay, 0ms);
+}
+
+/* Section-specific rhythms (slower = calmer) */
+.mp-motion [data-reveal="fade-up"],
+.mp-motion [data-reveal="data-entrance"],
+.mp-motion [data-reveal="cta-entrance"] { transform: translateY(22px); }
+.mp-motion [data-reveal="hero-entrance"] { transform: translateY(26px); }
+.mp-motion [data-reveal="story-reveal"] {
+  transform: translateY(16px);
+  transition-duration: 780ms, 780ms;
+}
+.mp-motion [data-reveal="voice-entrance"] { transform: translateY(14px) scale(0.985); }
+.mp-motion [data-reveal="product-reveal"] {
+  transform: translateY(30px) scale(0.965);
+  transition-duration: 720ms, 720ms;
+}
+.mp-motion [data-reveal="scale-in"] { transform: scale(0.94); }
+.mp-motion [data-reveal="slide-in-left"] { transform: translateX(-22px); }
+.mp-motion [data-reveal="slide-in-right"] { transform: translateX(22px); }
+.mp-motion [data-reveal="fade-in"] { transform: none; }
+
+.mp-motion [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Visible keyboard focus across the landing experience */
+.mp-motion :focus-visible {
+  outline: 2px solid #064E3B;
+  outline-offset: 2px;
+}
+
+/* Shared keyframes (mp- prefix avoids collisions with app CSS) */
+@keyframes mp-rise-in {
+  from { opacity: 0; transform: translateY(22px) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes mp-result-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes mp-float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+@keyframes mp-atmo-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -16px, 0) scale(1.05); }
+}
+@keyframes mp-wave-bar {
+  from { transform: scaleY(0.25); }
+  to { transform: scaleY(1); }
+}
+@keyframes mp-ring-pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes mp-progress {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(240%); }
+}
+
+/* Reduced motion: reveal everything instantly, stop loops.
+   The static layout is the final animated state, so nothing is lost. */
+@media (prefers-reduced-motion: reduce) {
+  .mp-motion [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .mp-motion *,
+  .mp-motion *::before,
+  .mp-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

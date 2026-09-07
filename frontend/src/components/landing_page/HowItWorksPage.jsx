@@ -1,4 +1,3 @@
-import React from 'react';
 import { Mic, Bot, LineChart, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MarketingNavbar from './MarketingNavbar';
@@ -11,6 +10,14 @@ export default function HowItWorksPage({ onNavigate }) {
       onNavigate("signup");
     } else {
       navigate("/signup");
+    }
+  };
+
+  const handleNavClick = (path) => {
+    if (onNavigate) {
+      onNavigate(path);
+    } else {
+      navigate(path === 'landing' ? '/' : `/${path}`);
     }
   };
 

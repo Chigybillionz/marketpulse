@@ -1,26 +1,46 @@
-import React, { useState, useRef } from 'react';
-import { Mic, ArrowRight, ArrowUp, ArrowDown, Wallet, Sparkles, Headphones } from 'lucide-react';
+/**
+ * VoiceAISection — interactive voice demo (Phase 2 visual upgrade).
+ *
+ * The functional flow is untouched: real VoiceRecorder capture and the
+ * real `transcribeAndAnalyze` Gemini call. Only the presentation is
+ * cinematic — an animated waveform while listening, a staged
+ * PROCESSING → ANALYZING presentation while the single real API call
+ * runs, and an elegant result reveal.
+ */
+
+import { useEffect, useRef, useState } from 'react';
+import { Mic, ArrowRight, ArrowUp, ArrowDown, Wallet } from 'lucide-react';
 import { VoiceRecorder } from '../../services/voiceRecorder';
 import { transcribeAndAnalyze } from '../../services/geminiService';
+import { VoiceWaveform } from './motionPrimitives';
+
+const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function VoiceAISection({ onNavigate }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false); // presentation stage of the real call
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const recorderRef = useRef(null);
   const timeIntervalRef = useRef(null);
+  const analyzeTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      clearInterval(timeIntervalRef.current);
+      clearTimeout(analyzeTimerRef.current);
+    };
+  }, []);
 
   const handleGetStarted = () => {
     if (onNavigate) {
-      onNavigate("signup");
-    } else {
-      navigate("/signup");
+      onNavigate('signup');
+    } else if (window.navigate) {
+      window.navigate('/signup');
     }
   };
-
-  const navigate = window.navigate;
 
   const startRecording = async () => {
     setError(null);
@@ -49,16 +69,37 @@ export default function VoiceAISection({ onNavigate }) {
 
     try {
       setIsProcessing(true);
+
+      // Present the single real API call in two visible stages:
+      // transcription first, then AI analysis.
+      analyzeTimerRef.current = setTimeout(() => setIsAnalyzing(true), 1400);
+
       const audioBlob = await recorderRef.current.stopRecording();
       const base64 = await recorderRef.current.audioToBase64(audioBlob);
-      const result = await transcribeAndAnalyze(base64);
-      setResult(result);
+      const analysis = await transcribeAndAnalyze(base64);
+      setResult(analysis);
     } catch (err) {
-      setError('Could not analyze audio. Please try again.');
+      let errorMsg = 'Could not analyze audio. Please try again.';
+      if (err.message) {
+        if (err.message.includes('401') || err.message.includes('credentials') || err.message.includes('API key') || err.message.includes('API_KEY')) {
+          errorMsg = 'API Error: Invalid or missing API key on the server.';
+        } else if (err.message.includes('network') || err.message.includes('fetch')) {
+          errorMsg = 'Network failure. Please check your connection.';
+        } else if (err.message.includes('JSON')) {
+          errorMsg = 'The AI returned a malformed response.';
+        } else if (err.message.includes('timeout')) {
+          errorMsg = 'The request timed out. Please try again.';
+        } else {
+          errorMsg = err.message;
+        }
+      }
+      setError(errorMsg);
       console.error('Demo recording error:', err);
     } finally {
+      clearTimeout(analyzeTimerRef.current);
       setIsRecording(false);
       setIsProcessing(false);
+      setIsAnalyzing(false);
       recorderRef.current = null;
     }
   };
@@ -74,6 +115,7 @@ export default function VoiceAISection({ onNavigate }) {
   const resetDemo = () => {
     setIsRecording(false);
     setIsProcessing(false);
+    setIsAnalyzing(false);
     setResult(null);
     setError(null);
     setRecordingTime(0);
@@ -87,38 +129,55 @@ export default function VoiceAISection({ onNavigate }) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const micLabel = isRecording
+    ? 'Stop recording and analyze'
+    : isProcessing
+    ? 'Analyzing audio'
+    : 'Start voice recording demo';
+
   return (
-    <section
-      data-reveal="fade-up"
-      className="bg-white py-16 md:py-24"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+    <section className="bg-white py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider mb-6">
+        <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20">
+          <div
+            data-reveal="data-entrance"
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green-700"
+          >
             <Mic size={14} />
             Voice AI
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+          <h2
+            data-reveal="data-entrance"
+            data-reveal-delay="80"
+            className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
+          >
             Just Speak.
             <br />
             <span className="text-[#064E3B]">We Handle the Rest.</span>
           </h2>
-          <p className="text-base md:text-lg text-gray-600 font-medium max-w-2xl mx-auto">
+          <p
+            data-reveal="data-entrance"
+            data-reveal-delay="160"
+            className="mx-auto max-w-2xl text-base font-medium text-gray-600 md:text-lg"
+          >
             MarketPulse's voice AI understands natural Nigerian English, Pidgin, and market lingo.
             Say something like "I sold 3 bags of rice for 150k" and watch it become a structured transaction instantly.
           </p>
         </div>
 
         {/* Interactive Voice Demo */}
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="grid items-center gap-8 md:grid-cols-2 lg:gap-12">
           {/* Left - Demo UI */}
           <div className="relative">
             {/* Demo Card */}
-            <div className="bg-[#F9FAFB] rounded-3xl p-6 md:p-8 border border-gray-100 shadow-lg relative overflow-hidden">
+            <div
+              data-reveal="voice-entrance"
+              className="relative overflow-hidden rounded-3xl border border-gray-100 bg-[#F9FAFB] p-6 shadow-lg md:p-8"
+            >
               {/* Background decorative gradient */}
-              <div className="absolute -top-20 -right-20 w-64 h-64 bg-green-100/30 rounded-full blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-blue-100/30 rounded-full blur-3xl" />
+              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-green-100/30 blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-blue-100/30 blur-3xl" />
 
               <div className="relative z-10">
                 {/* Microphone Button */}
@@ -126,51 +185,65 @@ export default function VoiceAISection({ onNavigate }) {
                   <button
                     onClick={toggleRecording}
                     disabled={isProcessing}
-                    className={`relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    aria-label={micLabel}
+                    aria-pressed={isRecording}
+                    className={`relative flex h-24 w-24 items-center justify-center rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-80 md:h-28 md:w-28 ${
                       isRecording
-                        ? 'bg-red-500 shadow-red-500/40 scale-110'
+                        ? 'scale-110 bg-red-500 shadow-red-500/40'
                         : isProcessing
-                        ? 'bg-yellow-500 shadow-yellow-500/40'
+                        ? 'bg-amber-500 shadow-amber-500/40'
                         : result
                         ? 'bg-green-500 shadow-green-500/40'
-                        : 'bg-[#064E3B] shadow-green-900/30 hover:shadow-xl hover:shadow-green-900/40 hover:scale-105'
+                        : 'bg-[#064E3B] shadow-green-900/30 hover:scale-105 hover:shadow-xl hover:shadow-green-900/40'
                     }`}
                   >
                     {/* Outer pulse rings when recording */}
                     {isRecording && (
                       <>
-                        <div className="absolute inset-0 rounded-full border-2 border-red-200 animate-ping opacity-75" />
-                        <div className="absolute inset-4 rounded-full border-2 border-red-300 animate-ping opacity-50" style={{ animationDelay: '100ms' }} />
-                        <div className="absolute inset-8 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{ animationDelay: '200ms' }} />
+                        <div className="absolute inset-0 rounded-full border-2 border-red-200 opacity-75 animate-ping" />
+                        <div
+                          className="absolute inset-4 rounded-full border-2 border-red-300 opacity-50 animate-ping"
+                          style={{ animationDelay: '100ms' }}
+                        />
+                        <div
+                          className="absolute inset-8 rounded-full border-2 border-red-400 opacity-30 animate-ping"
+                          style={{ animationDelay: '200ms' }}
+                        />
                       </>
                     )}
 
                     {isProcessing ? (
-                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-full border-4 border-white border-t-transparent animate-spin" />
+                      <div className="h-12 w-12 animate-spin rounded-full border-4 border-white border-t-transparent md:h-14 md:w-14" />
                     ) : isRecording ? (
-                      <svg className="w-10 h-10 md:w-12 md:h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="10" y="4" width="4" height="12" rx="1" />
-                        <rect x="16" y="4" width="4" height="12" rx="1" />
-                      </svg>
+                      <VoiceWaveform
+                        active
+                        bars={7}
+                        barClassName="bg-white"
+                        className="h-10 w-16 md:w-20"
+                      />
                     ) : result ? (
-                      <ArrowUp size={28} className="md:w-10 md:h-10" />
+                      <ArrowUp size={28} className="md:h-10 md:w-10" />
                     ) : (
-                      <Mic size={28} className="md:w-10 md:h-10" />
+                      <Mic size={28} className="md:h-10 md:w-10" />
                     )}
                   </button>
 
-                  {/* Status text */}
-                  <div className="mt-6 text-center">
+                  {/* Status text — announced to screen readers */}
+                  <div role="status" aria-live="polite" className="mt-6 min-h-[1.5rem] text-center">
                     {isRecording && (
-                      <div className="flex items-center gap-2 justify-center">
-                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                        <span className="text-sm font-semibold text-gray-700">Recording...</span>
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                        <span className="text-sm font-semibold text-gray-700">Recording…</span>
                       </div>
                     )}
                     {isProcessing && (
-                      <div className="flex items-center gap-2 justify-center">
-                        <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-                        <span className="text-sm font-semibold text-gray-700">Analyzing...</span>
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
+                        <span className="text-sm font-semibold text-gray-700">
+                          {isAnalyzing
+                            ? 'AI extracting amount, category & type…'
+                            : 'Transcribing your audio…'}
+                        </span>
                       </div>
                     )}
                     {!isRecording && !isProcessing && !result && (
@@ -185,22 +258,33 @@ export default function VoiceAISection({ onNavigate }) {
                     )}
                   </div>
 
-                  {/* Recording timer */}
+                  {/* Recording waveform + timer */}
                   {isRecording && (
-                    <div className="mt-4 px-4 py-2 bg-red-50 rounded-full border border-red-100">
-                      <span className="text-xs font-mono font-bold text-red-600">
-                        {formatTime(recordingTime)}
-                      </span>
+                    <div className="mt-5 flex flex-col items-center gap-3">
+                      <VoiceWaveform
+                        active
+                        bars={16}
+                        barClassName="bg-red-400"
+                        className="h-8 w-44"
+                      />
+                      <div className="rounded-full border border-red-100 bg-red-50 px-4 py-2">
+                        <span className="font-mono text-xs font-bold text-red-600">
+                          {formatTime(recordingTime)}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
 
                 {/* Result Display */}
                 {result && (
-                  <div className="mt-6 bg-white rounded-2xl p-4 md:p-5 border border-gray-100 shadow-sm animate-in slide-in-from-bottom-4">
+                  <div
+                    className="mt-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm md:p-5"
+                    style={{ animation: `mp-result-in 500ms ${MP_EASE} both` }}
+                  >
                     <div className="flex items-start gap-4">
                       <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${
                           result.type === 'Expense'
                             ? 'bg-red-100 text-red-600'
                             : result.type === 'CREDIT'
@@ -216,15 +300,15 @@ export default function VoiceAISection({ onNavigate }) {
                           <ArrowUp size={24} />
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">
+                      <div className="min-w-0 flex-1">
+                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-gray-500">
                           {result.type === 'CREDIT' ? 'Credit Sale' : result.type === 'Expense' ? 'Expense' : 'Income'}
                         </p>
-                        <p className="text-base font-bold text-gray-900 truncate">
+                        <p className="truncate text-base font-bold text-gray-900">
                           {result.description}
                         </p>
                         <p
-                          className={`text-2xl md:text-3xl font-extrabold mt-2 ${
+                          className={`mt-2 text-2xl font-extrabold md:text-3xl ${
                             result.type === 'Expense'
                               ? 'text-red-600'
                               : result.type === 'CREDIT'
@@ -236,7 +320,7 @@ export default function VoiceAISection({ onNavigate }) {
                           ₦{(result.amount || 0).toLocaleString()}
                         </p>
                         {result.category && (
-                          <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
+                          <span className="mt-2 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
                             {result.category}
                           </span>
                         )}
@@ -247,13 +331,11 @@ export default function VoiceAISection({ onNavigate }) {
 
                 {/* Error Display */}
                 {error && (
-                  <div className="mt-6 bg-red-50 rounded-2xl p-4 md:p-5 border border-red-100">
-                    <p className="text-sm font-semibold text-red-600 text-center">
-                      {error}
-                    </p>
+                  <div className="mt-6 rounded-2xl border border-red-100 bg-red-50 p-4 md:p-5">
+                    <p className="text-center text-sm font-semibold text-red-600">{error}</p>
                     <button
                       onClick={resetDemo}
-                      className="mt-3 text-xs font-semibold text-red-700 hover:text-red-800 underline"
+                      className="mt-3 text-xs font-semibold text-red-700 underline hover:text-red-800"
                     >
                       Try again
                     </button>
@@ -263,7 +345,7 @@ export default function VoiceAISection({ onNavigate }) {
                 {/* Try it hint */}
                 {!result && !isRecording && !isProcessing && !error && (
                   <div className="mt-6 text-center">
-                    <p className="text-xs text-gray-400 font-medium">
+                    <p className="text-xs font-medium text-gray-400">
                       Try saying: <span className="text-gray-600">"I sold 5 bags of garri for 100k"</span>
                     </p>
                   </div>
@@ -274,19 +356,19 @@ export default function VoiceAISection({ onNavigate }) {
 
           {/* Right - How it works */}
           <div className="space-y-6">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h3 data-reveal="data-entrance" className="text-2xl font-bold text-gray-900 md:text-3xl">
               How Voice AI Works
             </h3>
 
-            <div className="space-y-6">
+            <div data-reveal-stagger data-reveal-step="120" className="space-y-6">
               {/* Step 1 */}
-              <div className="flex gap-4 items-start">
-                <div className="w-10 h-10 rounded-full bg-[#064E3B] text-white flex items-center justify-center flex-shrink-0 mt-1">
+              <div data-reveal="data-entrance" className="flex items-start gap-4">
+                <div className="mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#064E3B] text-white">
                   <span className="text-sm font-bold">1</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 mb-2">Speak Naturally</h4>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <h4 className="mb-2 font-bold text-gray-900">Speak Naturally</h4>
+                  <p className="text-sm leading-relaxed text-gray-600">
                     Tap the microphone and say your transaction in plain language.
                     Use your native market lingo — no special format required.
                   </p>
@@ -294,13 +376,13 @@ export default function VoiceAISection({ onNavigate }) {
               </div>
 
               {/* Step 2 */}
-              <div className="flex gap-4 items-start">
-                <div className="w-10 h-10 rounded-full bg-[#064E3B] text-white flex items-center justify-center flex-shrink-0 mt-1">
+              <div data-reveal="data-entrance" className="flex items-start gap-4">
+                <div className="mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#064E3B] text-white">
                   <span className="text-sm font-bold">2</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 mb-2">AI Understands Context</h4>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <h4 className="mb-2 font-bold text-gray-900">AI Understands Context</h4>
+                  <p className="text-sm leading-relaxed text-gray-600">
                     Our AI extracts the amount, item, category, and even credit details
                     from your natural speech.
                   </p>
@@ -308,13 +390,13 @@ export default function VoiceAISection({ onNavigate }) {
               </div>
 
               {/* Step 3 */}
-              <div className="flex gap-4 items-start">
-                <div className="w-10 h-10 rounded-full bg-[#064E3B] text-white flex items-center justify-center flex-shrink-0 mt-1">
+              <div data-reveal="data-entrance" className="flex items-start gap-4">
+                <div className="mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#064E3B] text-white">
                   <span className="text-sm font-bold">3</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 mb-2">Instant Structured Data</h4>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <h4 className="mb-2 font-bold text-gray-900">Instant Structured Data</h4>
+                  <p className="text-sm leading-relaxed text-gray-600">
                     Your transaction is logged, categorized, and ready for reporting.
                     No typing, no spreadsheets.
                   </p>
@@ -323,8 +405,11 @@ export default function VoiceAISection({ onNavigate }) {
             </div>
 
             {/* Supported examples */}
-            <div className="bg-[#F9FAFB] rounded-2xl p-5 border border-gray-100 mt-8">
-              <h4 className="font-bold text-gray-900 mb-3">Try saying:</h4>
+            <div
+              data-reveal="data-entrance"
+              className="mt-8 rounded-2xl border border-gray-100 bg-[#F9FAFB] p-5"
+            >
+              <h4 className="mb-3 font-bold text-gray-900">Try saying:</h4>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <span className="text-gray-400">•</span>
@@ -347,8 +432,9 @@ export default function VoiceAISection({ onNavigate }) {
 
             {/* CTA */}
             <button
+              data-reveal="data-entrance"
               onClick={handleGetStarted}
-              className="w-full bg-[#064E3B] text-white px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-[#043d2e] transition-colors shadow-lg shadow-green-900/20 hover:shadow-xl hover:shadow-green-900/30"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#064E3B] px-6 py-4 font-bold text-white shadow-lg shadow-green-900/20 transition-all duration-300 hover:bg-[#043d2e] hover:shadow-xl hover:shadow-green-900/30"
             >
               Start Using Voice AI
               <ArrowRight size={18} strokeWidth={2.5} />

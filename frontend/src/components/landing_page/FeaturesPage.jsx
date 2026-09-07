@@ -1,5 +1,4 @@
-import React from 'react';
-import { Mic, BarChart2, Lock, Wallet, ArrowRight } from 'lucide-react';
+import { Mic, BarChart2, Lock, Wallet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MarketingNavbar from './MarketingNavbar';
 

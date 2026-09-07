@@ -1,53 +1,38 @@
-import React, { useState } from 'react';
-import { BarChart2, TrendingUp, TrendingDown, Lightbulb, Calendar, ArrowRight } from 'lucide-react';
-import { useEffect } from 'react';
+/**
+ * IntelligenceSection — analytical, chart-led rhythm (Phase 2).
+ *
+ * All reveal timing is driven by one in-view flag (useInView), so the
+ * staged entrance, counters and chart bars all fire together the first
+ * time the section enters the viewport — and never re-run.
+ * Chart bars animate with transform: scaleY (no layout thrash).
+ */
 
-// Animated counter component
-function AnimatedCounter({ value, suffix = '', duration = 1500 }) {
-  const [count, setCount] = useState(0);
+import { TrendingUp, TrendingDown, Lightbulb, Calendar, ArrowRight } from 'lucide-react';
+import useInView from './useInView';
+import { AnimatedCounter } from './motionPrimitives';
 
-  useEffect(() => {
-    const startTime = Date.now();
-    const startValue = 0;
-    const endValue = value;
+const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(startValue + (endValue - startValue) * eased);
-      setCount(current);
+const staged = (visible, delay) => ({
+  opacity: visible ? 1 : 0,
+  transform: visible ? 'none' : 'translateY(18px)',
+  transition: visible ? `opacity 600ms ${MP_EASE} ${delay}ms, transform 600ms ${MP_EASE} ${delay}ms` : 'none',
+});
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    requestAnimationFrame(animate);
-  }, [value, duration]);
-
-  return (
-    <span className="tabular-nums">
-      {count.toLocaleString()}
-      {suffix}
-    </span>
-  );
-}
-
-// Mini chart component
-function MiniChart({ data, colorClass, height = 60 }) {
+// Mini chart component — bars grow from the bottom via scaleY.
+function MiniChart({ data, colorClass, active }) {
   const max = Math.max(...data);
   return (
-    <div className="flex items-end gap-1 h-16 md:h-20">
+    <div className="flex h-16 items-end gap-1 md:h-20" aria-hidden="true">
       {data.map((value, i) => (
         <div
           key={i}
-          className={`w-full rounded-t transition-all duration-700 ${colorClass}`}
+          className={`w-full rounded-t ${colorClass}`}
           style={{
             height: `${(value / max) * 100}%`,
-            animation: `growBar 0.5s ease-out ${i * 50}ms forwards`,
+            transform: active ? 'scaleY(1)' : 'scaleY(0)',
             transformOrigin: 'bottom',
+            transition: `transform 700ms ${MP_EASE} ${300 + i * 60}ms`,
           }}
         />
       ))}
@@ -56,128 +41,101 @@ function MiniChart({ data, colorClass, height = 60 }) {
 }
 
 export default function IntelligenceSection() {
-  const [animationStarted, setAnimationStarted] = useState(false);
-
-  // Trigger animations when section comes into view
-  useEffect(() => {
-    const handleIntersect = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setAnimationStarted(true);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(handleIntersect, {
-      threshold: 0.3,
-    });
-
-    const section = document.querySelector('[data-intelligence-section]');
-    if (section) {
-      observer.observe(section);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  const [sectionRef, sectionInView] = useInView({ threshold: 0.15 });
 
   const revenueData = [320000, 380000, 350000, 420000, 480000, 520000, 580000];
-  const expenseData = [280000, 250000, 290000, 260000, 240000, 220000, 200000];
-  const profitData = [40000, 130000, 60000, 160000, 240000, 300000, 380000];
 
   return (
     <section
+      ref={sectionRef}
       data-reveal="fade-up"
-      data-intelligence-section
       className="bg-[#F9FAFB] py-16 md:py-24"
     >
-      <style>{`
-        @keyframes growBar {
-          0% { transform: scaleY(0.3); opacity: 0; }
-          100% { transform: scaleY(1); opacity: 1; }
-        }
-      `}</style>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-6">
+        <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20">
+          <div
+            data-reveal="data-entrance"
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-700"
+          >
             <Lightbulb size={14} />
             AI Intelligence
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+          <h2
+            data-reveal="data-entrance"
+            data-reveal-delay="80"
+            className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
+          >
             Real-time Insights,
             <br />
             <span className="text-[#064E3B]">Actionable Intelligence</span>
           </h2>
-          <p className="text-base md:text-lg text-gray-600 font-medium">
+          <p
+            data-reveal="data-entrance"
+            data-reveal-delay="160"
+            className="text-base font-medium text-gray-600 md:text-lg"
+          >
             Know exactly what's selling, where your money is going, and what tomorrow looks like
             for your business.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Left - Insights cards */}
           <div className="space-y-6">
             {/* Top performing product */}
             <div
-              className={`bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
-                animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-              style={{ transition: 'all 0.6s ease-out' }}
+              className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg md:p-8"
+              style={staged(sectionInView, 100)}
             >
-              <div className="flex items-start justify-between mb-6">
+              <div className="mb-6 flex items-start justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 mb-2">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-500">
                     <TrendingUp size={16} className="text-green-600" />
                     Top Product
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900">
+                  <h3 className="text-xl font-bold text-gray-900 md:text-2xl">
                     Garri (50g packs)
                   </h3>
                 </div>
-                <div className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+                <div className="rounded-full bg-green-100 px-3 py-1.5 text-xs font-bold text-green-700">
                   +15.2%
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 my-6">
+              <div className="my-6 grid grid-cols-2 gap-6">
                 <div>
-                  <p className="text-sm text-gray-500 font-medium">Units Sold Today</p>
-                  <p className={`text-2xl md:text-3xl font-extrabold mt-1 ${animationStarted ? '' : 'opacity-0'}`}>
+                  <p className="text-sm font-medium text-gray-500">Units Sold Today</p>
+                  <p className="mt-1 text-2xl font-extrabold md:text-3xl">
                     <AnimatedCounter value={284} suffix=" units" />
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 font-medium">Revenue Today</p>
-                  <p className="text-2xl md:text-3xl font-extrabold mt-1 text-green-600">
+                  <p className="text-sm font-medium text-gray-500">Revenue Today</p>
+                  <p className="mt-1 text-2xl font-extrabold text-green-600 md:text-3xl">
                     ₦142,000
                   </p>
                 </div>
               </div>
 
               <div className="border-t border-gray-100 pt-4">
-                <p className="text-xs text-gray-400 font-medium mb-2">7-Day Trend</p>
-                <MiniChart
-                  data={revenueData}
-                  colorClass="bg-gradient-to-t from-green-400 to-green-500"
-                />
+                <p className="mb-2 text-xs font-medium text-gray-400">7-Day Trend</p>
+                <MiniChart data={revenueData} colorClass="bg-gradient-to-t from-green-400 to-green-500" active={sectionInView} />
               </div>
             </div>
 
             {/* Expense breakdown */}
             <div
-              className={`bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
-                animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-              style={{ transition: 'all 0.6s ease-out', transitionDelay: '100ms' }}
+              className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg md:p-8"
+              style={staged(sectionInView, 220)}
             >
-              <div className="flex items-start justify-between mb-6">
+              <div className="mb-6 flex items-start justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 mb-2">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-500">
                     <TrendingDown size={16} className="text-red-500" />
                     Top Expenses
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900">
+                  <h3 className="text-xl font-bold text-gray-900 md:text-2xl">
                     This Week
                   </h3>
                 </div>
@@ -193,13 +151,11 @@ export default function IntelligenceSection() {
                 ].map((item, index) => (
                   <div
                     key={item.category}
-                    className={`flex items-center justify-between py-3 border-b border-gray-50 last:border-0 ${
-                      animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                    }`}
-                    style={{ transition: 'all 0.4s ease-out', transitionDelay: `${index * 50}ms` }}
+                    className="flex items-center justify-between border-b border-gray-50 py-3 last:border-0"
+                    style={staged(sectionInView, 320 + index * 60)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${item.color}`} />
+                      <div className={`h-2 w-2 rounded-full ${item.color}`} />
                       <span className="text-sm font-medium text-gray-700">{item.category}</span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -212,7 +168,7 @@ export default function IntelligenceSection() {
                 ))}
               </div>
 
-              <div className="mt-6 pt-4 border-t border-gray-100">
+              <div className="mt-6 border-t border-gray-100 pt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-700">Total Expenses</span>
                   <span className="text-lg font-extrabold text-red-600">
@@ -225,75 +181,71 @@ export default function IntelligenceSection() {
 
           {/* Right - Weekly pulse preview */}
           <div
-            className={`bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
-              animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-            style={{ transition: 'all 0.6s ease-out', transitionDelay: '200ms' }}
+            className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-lg md:p-8"
+            style={staged(sectionInView, 320)}
           >
-            <div className="flex items-start justify-between mb-6">
+            <div className="mb-6 flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 mb-2">
+                <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-500">
                   <Calendar size={16} className="text-blue-600" />
                   Weekly Summary
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900">
+                <h3 className="text-xl font-bold text-gray-900 md:text-2xl">
                   Week 3, 2026
                 </h3>
               </div>
-              <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold">
+              <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
                 +17.6%
               </div>
             </div>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-[#F9FAFB] rounded-2xl p-4">
-                <p className="text-xs text-gray-500 font-medium mb-2">Total Revenue</p>
+            <div className="mb-6 grid grid-cols-2 gap-4">
+              <div className="rounded-2xl bg-[#F9FAFB] p-4">
+                <p className="mb-2 text-xs font-medium text-gray-500">Total Revenue</p>
                 <p className="text-xl font-extrabold text-gray-900">
-                  <AnimatedCounter value={2840000} suffix="" />
+                  <AnimatedCounter value={2840000} prefix="₦" />
                 </p>
-                <p className="text-xs text-green-600 font-semibold mt-1">+12% vs last week</p>
+                <p className="mt-1 text-xs font-semibold text-green-600">+12% vs last week</p>
               </div>
-              <div className="bg-[#F9FAFB] rounded-2xl p-4">
-                <p className="text-xs text-gray-500 font-medium mb-2">Net Profit</p>
+              <div className="rounded-2xl bg-[#F9FAFB] p-4">
+                <p className="mb-2 text-xs font-medium text-gray-500">Net Profit</p>
                 <p className="text-xl font-extrabold text-gray-900">
-                  <AnimatedCounter value={680000} suffix="" />
+                  <AnimatedCounter value={680000} prefix="₦" />
                 </p>
-                <p className="text-xs text-green-600 font-semibold mt-1">+23% vs last week</p>
+                <p className="mt-1 text-xs font-semibold text-green-600">+23% vs last week</p>
               </div>
-              <div className="bg-[#F9FAFB] rounded-2xl p-4">
-                <p className="text-xs text-gray-500 font-medium mb-2">Transactions</p>
+              <div className="rounded-2xl bg-[#F9FAFB] p-4">
+                <p className="mb-2 text-xs font-medium text-gray-500">Transactions</p>
                 <p className="text-xl font-extrabold text-gray-900">
-                  <AnimatedCounter value={127} suffix="" />
+                  <AnimatedCounter value={127} />
                 </p>
-                <p className="text-xs text-gray-500 font-semibold mt-1">82 income, 45 expense</p>
+                <p className="mt-1 text-xs font-semibold text-gray-500">82 income, 45 expense</p>
               </div>
-              <div className="bg-[#F9FAFB] rounded-2xl p-4">
-                <p className="text-xs text-gray-500 font-medium mb-2">Avg. Transaction</p>
-                <p className="text-xl font-extrabold text-gray-900">
-                  ₦22,362
-                </p>
-                <p className="text-xs text-green-600 font-semibold mt-1">+8% vs last week</p>
+              <div className="rounded-2xl bg-[#F9FAFB] p-4">
+                <p className="mb-2 text-xs font-medium text-gray-500">Avg. Transaction</p>
+                <p className="text-xl font-extrabold text-gray-900">₦22,362</p>
+                <p className="mt-1 text-xs font-semibold text-green-600">+8% vs last week</p>
               </div>
             </div>
 
             {/* Trend chart */}
-            <div className="bg-[#F9FAFB] rounded-2xl p-4 md:p-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="rounded-2xl bg-[#F9FAFB] p-4 md:p-6">
+              <div className="mb-4 flex items-center justify-between">
                 <span className="text-sm font-semibold text-gray-700">Daily Profit Trend</span>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1">
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
                     <span className="text-xs text-gray-500">Revenue</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
                     <span className="text-xs text-gray-500">Expenses</span>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3" aria-hidden="true">
                 {[
                   { day: 'Mon', revenue: 320, expense: 280 },
                   { day: 'Tue', revenue: 380, expense: 250 },
@@ -304,26 +256,28 @@ export default function IntelligenceSection() {
                   { day: 'Sun', revenue: 580, expense: 200 },
                 ].map((day, index) => (
                   <div key={day.day} className="flex items-center gap-3">
-                    <span className="text-xs font-semibold text-gray-500 w-8">{day.day}</span>
-                    <div className="flex-1 flex items-end gap-1">
+                    <span className="w-8 text-xs font-semibold text-gray-500">{day.day}</span>
+                    <div className="flex h-7 flex-1 items-end gap-1">
                       <div
-                        className="flex-1 bg-green-400/70 rounded-t transition-all duration-500"
+                        className="flex-1 rounded-t bg-green-400/70"
                         style={{
                           height: `${(day.revenue / 580) * 100}%`,
-                          animation: `growBar 0.4s ease-out ${index * 100 + 300}ms forwards`,
+                          transform: sectionInView ? 'scaleY(1)' : 'scaleY(0)',
                           transformOrigin: 'bottom',
+                          transition: `transform 600ms ${MP_EASE} ${400 + index * 90}ms`,
                         }}
                       />
                       <div
-                        className="flex-1 bg-red-400/70 rounded-t transition-all duration-500"
+                        className="flex-1 rounded-t bg-red-400/70"
                         style={{
                           height: `${(day.expense / 290) * 100}%`,
-                          animation: `growBar 0.4s ease-out ${index * 100 + 400}ms forwards`,
+                          transform: sectionInView ? 'scaleY(1)' : 'scaleY(0)',
                           transformOrigin: 'bottom',
+                          transition: `transform 600ms ${MP_EASE} ${470 + index * 90}ms`,
                         }}
                       />
                     </div>
-                    <span className="text-xs font-bold text-green-600 w-16 text-right">
+                    <span className="w-16 text-right text-xs font-bold text-green-600">
                       ₦{((day.revenue - day.expense) / 1000).toFixed(1)}k
                     </span>
                   </div>
@@ -333,7 +287,7 @@ export default function IntelligenceSection() {
 
             {/* Action button */}
             <button
-              className="mt-6 w-full bg-[#064E3B] text-white px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-[#043d2e] transition-colors shadow-lg shadow-green-900/20 hover:shadow-xl"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#064E3B] px-6 py-4 font-bold text-white shadow-lg shadow-green-900/20 transition-colors hover:bg-[#043d2e]"
             >
               View Full Analytics
               <ArrowRight size={18} strokeWidth={2.5} />

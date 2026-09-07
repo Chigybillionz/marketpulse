@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import MarketingNavbar from './MarketingNavbar';
 import HeroSection from './HeroSection';
 import MarketStorySection from './MarketStorySection';
@@ -12,13 +12,12 @@ import Footer from './Footer';
 import { initScrollReveal } from './landingAnimations';
 
 export default function LandingPage({ onNavigate }) {
-  // Initialize scroll reveal animations on mount
-  useEffect(() => {
-    initScrollReveal();
-  }, []);
+  // Initialize scroll reveal animations before first paint (avoids a
+  // flash of visible content), and disconnect the observer on unmount.
+  useLayoutEffect(() => initScrollReveal(), []);
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 w-full overflow-x-hidden">
+    <div className="mp-motion min-h-screen w-full overflow-x-hidden bg-[#F9FAFB] font-sans text-gray-900">
       {/* Navbar */}
       <MarketingNavbar onNavigate={onNavigate} activeTab="landing" />
 
@@ -48,7 +47,6 @@ export default function LandingPage({ onNavigate }) {
 
       {/* Footer */}
       <Footer onNavigate={onNavigate} />
-
     </div>
   );
 }
