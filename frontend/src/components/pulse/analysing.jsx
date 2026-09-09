@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { transcribeAndAnalyze } from '../../services/geminiService';
+import { useLanguage } from '../../i18n/LanguageContext';
 import NavigationBar from '../home/NavigationBar';
 const ANALYSIS_DURATION_MS = 3500;
 const ANALYSIS_NEXT_PAGE = 'ai_confirmation';
@@ -40,28 +41,49 @@ function SparklesIcon() {
 
 export default function Analysing({ onNavigate, businessName }) {
   const location = useLocation();
+  const { t } = useLanguage();
+  const [analysisStatus, setAnalysisStatus] = useState('analyzing'); // 'analyzing' | 'success' | 'error' | 'quota_error'
+  const [quotaRetrySec, setQuotaRetrySec] = useState(null);
+
+  // Guard against duplicate analysis runs. React StrictMode (dev) mounts,
+  // unmounts and remounts effects once, which previously fired TWO
+  // analyze-voice requests per recording — doubling Gemini quota usage.
+  const analyzedAudioRef = useRef(null);
 
   useEffect(() => {
     if (!onNavigate) return undefined;
 
     let isMounted = true;
+    const timeoutId = setTimeout(() => {
+      if (isMounted && analysisStatus === 'analyzing') {
+        setAnalysisStatus('error');
+      }
+    }, ANALYSIS_DURATION_MS + 5000); // Timeout after analysis duration + buffer
 
     const analyzeAudio = async () => {
+      const audioBase64 = location.state?.audioBase64;
+
+      // Skip if this exact audio was already analyzed (StrictMode re-run).
+      if (audioBase64 && analyzedAudioRef.current === audioBase64) return;
+      if (audioBase64) analyzedAudioRef.current = audioBase64;
+
       try {
-        const audioBase64 = location.state?.audioBase64;
         let transactionData = null;
 
         if (audioBase64) {
+          setAnalysisStatus('analyzing');
           transactionData = await transcribeAndAnalyze(audioBase64);
+          setAnalysisStatus('success');
         } else {
           // Fallback static analysis if no audio provided (simulated delay)
           await new Promise(resolve => setTimeout(resolve, ANALYSIS_DURATION_MS));
           transactionData = {
-            type: "UNKNOWN_AMOUNT",
+            type: "Income",
             amount: 0,
-            description: "No value mentioned",
+            description: "Voice recording not available",
             category: "Other"
           };
+          setAnalysisStatus('success');
         }
 
         if (isMounted) {
@@ -69,16 +91,41 @@ export default function Analysing({ onNavigate, businessName }) {
         }
       } catch (error) {
         console.error("Analysis failed:", error);
-        // Fallback on error
+        const errorMessage = error.message || error.toString();
+
+        // Backend sends retryAfterSec when quota is exhausted.
+        const retryMatch = /retry in about (\\d+)s/i.exec(errorMessage);
+        const retrySec = error.retryAfterSec || (retryMatch ? parseInt(retryMatch[1], 10) : null);
+
+        // Check if it's a quota error
+        if (
+          errorMessage.includes('429') ||
+          errorMessage.includes('quota') ||
+          errorMessage.includes('Too Many Requests') ||
+          errorMessage.includes('cooling down')
+        ) {
+          setAnalysisStatus('quota_error');
+          setQuotaRetrySec(retrySec);
+        } else {
+          setAnalysisStatus('error');
+        }
+
+        // Still navigate to next page with fallback data
         if (isMounted) {
-          onNavigate(ANALYSIS_NEXT_PAGE, { 
-            transactionData: {
-                type: "UNKNOWN_AMOUNT",
-                amount: 0,
-                description: `Analysis failed: ${error.message || error.toString()}`,
-                category: "Other"
+          // Wait a moment to show the error state
+          setTimeout(() => {
+            if (isMounted) {
+              onNavigate(ANALYSIS_NEXT_PAGE, { 
+                transactionData: {
+                    type: "UNKNOWN_AMOUNT",
+                    amount: 0,
+                    description: "AI analysis unavailable - please enter manually",
+                    category: "Other",
+                    aiError: errorMessage.substring(0, 100)
+                }
+              });
             }
-          });
+          }, 2000);
         }
       }
     };
@@ -87,6 +134,7 @@ export default function Analysing({ onNavigate, businessName }) {
 
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
     };
   }, [onNavigate, location.state]);
 
@@ -130,15 +178,48 @@ export default function Analysing({ onNavigate, businessName }) {
             </span>
           </div>
 
-          <h1 id="analysing-title">Analyzing your<br />speech...</h1>
-          <p>MarketPulseAI is sorting your trade details into your ledger.</p>
+          {analysisStatus === 'analyzing' && (
+            <>
+              <h1 id="analysing-title">{t('analysing_title')}</h1>
+              <p>{t('analysing_copy')}</p>
 
-          <div className="analysing-skeletons" aria-hidden="true">
-            <span className="analysing-skeleton analysing-skeleton-wide">
-              <span className="analysing-progress-fill" />
-            </span>
-            <span className="analysing-skeleton analysing-skeleton-short" />
-          </div>
+              <div className="analysing-skeletons" aria-hidden="true">
+                <span className="analysing-skeleton analysing-skeleton-wide">
+                  <span className="analysing-progress-fill" />
+                </span>
+                <span className="analysing-skeleton analysing-skeleton-short" />
+              </div>
+            </>
+          )}
+
+          {analysisStatus === 'error' && (
+            <>
+              <h1 id="analysing-title" style={{ color: '#dc2626' }}>{t('analysing_error')}</h1>
+              <p>{t('analysing_error_copy')}</p>
+              <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '8px' }}>
+                {t('analysing_manual_copy')}
+              </p>
+            </>
+          )}
+
+          {analysisStatus === 'quota_error' && (
+            <>
+              <h1 id="analysing-title" style={{ color: '#f59e0b' }}>{t('analysing_busy')}</h1>
+              <p>{t('analysing_busy_copy')}</p>
+              <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '8px' }}>
+                {quotaRetrySec
+                  ? t('analysing_busy_retry', { seconds: quotaRetrySec })
+                  : 'Please try again in a few moments, or your transaction will be saved for manual entry.'}
+              </p>
+            </>
+          )}
+
+          {analysisStatus === 'success' && (
+            <>
+              <h1 id="analysing-title" style={{ color: '#059669' }}>{t('analysing_complete')}</h1>
+              <p>{t('analysing_complete_copy')}</p>
+            </>
+          )}
         </section>
 
         <div className="analysing-bottom-preview" aria-hidden="true" />
