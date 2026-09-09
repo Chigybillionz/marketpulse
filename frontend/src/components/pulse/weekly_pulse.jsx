@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../home/Header";
 import AppShell from "../layout/AppShell";
 import NavigationBar from "../home/NavigationBar";
-import { getWeeklySummary } from "../../services/geminiService";
+import { getSummary } from "../../services/geminiService";
 
 const base64ToBlobUrl = (base64, mimeType) => {
   const byteChars = atob(base64);
@@ -17,11 +17,46 @@ const estimateDuration = (script) => {
   return Math.max(15, Math.round((words / 150) * 60));
 };
 
-export default function WeeklyPulse({ onNavigate, businessName }) {
+const PERIOD_TABS = [
+  { key: "daily", label: "Daily" },
+  { key: "weekly", label: "Weekly" },
+  { key: "monthly", label: "Monthly" },
+];
+
+const PERIOD_META = {
+  daily: { label: "Daily", suffix: "today" },
+  weekly: { label: "Weekly", suffix: "this week" },
+  monthly: { label: "Monthly", suffix: "this month" },
+};
+
+// Friendly date-range shown under the tabs so the user always knows exactly
+// what the current summary covers (e.g. "Today • Wednesday, 9 September").
+const getPeriodRangeLabel = (period) => {
+  const now = new Date();
+  if (period === "daily") {
+    return `Today • ${now.toLocaleDateString("en-NG", { weekday: "long", day: "numeric", month: "long" })}`;
+  }
+  if (period === "monthly") {
+    return now.toLocaleDateString("en-NG", { month: "long", year: "numeric" });
+  }
+  // Weekly: Monday – Sunday of the current week.
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((now.getDay() || 7) - 1));
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const fmt = (d) =>
+    d.toLocaleDateString("en-NG", { weekday: "short", day: "numeric", month: "short" });
+  return `This Week • ${fmt(monday)} – ${fmt(sunday)}`;
+};
+
+export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = "weekly" }) {
   const audioRef = useRef(null);
   const audioUrlRef = useRef(null);
   const speechTimerRef = useRef(null);
   const speechOffsetRef = useRef(0);
+
+  const [period, setPeriod] = useState(PERIOD_META[initialPeriod] ? initialPeriod : "weekly");
+  const periodMeta = PERIOD_META[period] || PERIOD_META.weekly;
 
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [errorMsg, setErrorMsg] = useState("");
@@ -67,7 +102,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
     setStatus("loading");
     setErrorMsg("");
     try {
-      const data = await getWeeklySummary();
+      const data = await getSummary(period);
       setScript(data.script || "");
       setStats(data.stats || null);
 
@@ -82,10 +117,10 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
       }
       setStatus("ready");
     } catch (error) {
-      setErrorMsg(error.message || "Could not load your weekly summary.");
+      setErrorMsg(error.message || "Could not load your summary.");
       setStatus("error");
     }
-  }, [stopEverything]);
+  }, [stopEverything, period]);
 
   useEffect(() => {
     loadSummary();
@@ -215,7 +250,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
     if (ttsUsed && audioUrlRef.current) {
       const link = document.createElement("a");
       link.href = audioUrlRef.current;
-      link.download = `MarketPulse-Weekly-Summary-${stats?.weekKey || new Date().toISOString().slice(0, 10)}.wav`;
+      link.download = `MarketPulse-${periodMeta.label}-Summary-${stats?.periodKey || stats?.weekKey || new Date().toISOString().slice(0, 10)}.wav`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -229,7 +264,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `MarketPulse-Weekly-Summary-${stats?.weekKey || new Date().toISOString().slice(0, 10)}.txt`;
+    link.download = `MarketPulse-${periodMeta.label}-Summary-${stats?.periodKey || stats?.weekKey || new Date().toISOString().slice(0, 10)}.txt`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -254,15 +289,15 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
       : status === "error"
         ? errorMsg
         : ttsUsed
-          ? `AI Generated • Tap play to listen`
-          : `AI Generated • Voice preview`;
+          ? `MarketPulse AI Generated • Tap play to listen`
+          : `MarketPulse AI Generated • Voice preview`;
 
   return (
     <AppShell
       active="pulse"
       onNavigate={onNavigate}
       businessName={businessName}
-      title="Weekly Pulse"
+      title={`${periodMeta.label} Pulse`}
       subtitle="Real-time performance audio-summary and insights."
     >
       <div
@@ -286,11 +321,71 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 96, scrollbarWidth: "none", msOverflowStyle: "none" }}>
           <section style={{ padding: "8px 20px 16px", textAlign: "left" }}>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: "#030712", margin: 0, letterSpacing: "-0.5px", lineHeight: 1 }}>
-              Weekly Pulse
+              {periodMeta.label} Pulse
             </h1>
             <p style={{ fontSize: 13.5, fontWeight: 500, color: "#9ca3af", margin: "8px 0 0 0" }}>
               Real-time performance audio-summary and insights.
             </p>
+          </section>
+
+          {/* Period tabs: Daily | Weekly | Monthly */}
+          <section style={{ padding: "0 20px", marginTop: 16 }}>
+            <div
+              role="tablist"
+              aria-label="Summary period"
+              style={{
+                display: "flex",
+                gap: 4,
+                padding: 4,
+                backgroundColor: "#e9efe9",
+                borderRadius: 14,
+                boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)",
+              }}
+            >
+              {PERIOD_TABS.map((tab) => {
+                const active = period === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setPeriod(tab.key)}
+                    style={{
+                      flex: 1,
+                      border: "none",
+                      background: active ? "#052e16" : "transparent",
+                      color: active ? "#ffffff" : "#4b5563",
+                      fontWeight: 800,
+                      fontSize: 13,
+                      letterSpacing: "0.02em",
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Current period range indicator */}
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
+              <span
+                style={{
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  color: "#065f46",
+                  backgroundColor: "#d1fae5",
+                  borderRadius: 999,
+                  padding: "5px 14px",
+                  letterSpacing: "0.01em",
+                }}
+              >
+                {getPeriodRangeLabel(period)}
+              </span>
+            </div>
           </section>
 
           <section style={{ padding: "0 20px", marginTop: 8 }}>
@@ -312,7 +407,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
                 <button
                   onClick={togglePlay}
                   disabled={status !== "ready"}
-                  aria-label={isPlaying ? "Pause weekly summary" : "Play weekly summary"}
+                  aria-label={isPlaying ? `Pause ${periodMeta.label.toLowerCase()} summary` : `Play ${periodMeta.label.toLowerCase()} summary`}
                   style={{
                     width: 56,
                     height: 56,
@@ -353,7 +448,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
 
                 <div style={{ textAlign: "left", minWidth: 0 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: 0, lineHeight: 1.3 }}>
-                    Listen to Weekly Summary
+                    Listen to {periodMeta.label} Summary
                   </h3>
                   <span
                     style={{
@@ -495,8 +590,8 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
                 </div>
                 <h4 style={{ fontSize: 15.5, fontWeight: 800, color: "#111827", margin: 0, lineHeight: 1.3 }}>
                   {stats?.topMoving
-                    ? `Top Moving Item: ${stats.topMoving.description} (₦${Math.round(stats.topMoving.total).toLocaleString()} this week)`
-                    : "Top Moving Item: Spaghetti (+20%)"}
+                    ? `Top Moving Item: ${stats.topMoving.description} (₦${Math.round(stats.topMoving.total).toLocaleString()} ${periodMeta.suffix})`
+                    : "No standout item yet — keep recording your sales and expenses."}
                 </h4>
               </div>
             </div>
@@ -538,8 +633,8 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
               <p style={{ fontSize: 13, fontWeight: 500, color: "rgba(167, 243, 208, 0.9)", margin: "4px 0 0 0", lineHeight: 1.6, zIndex: 10 }}>
                 {stats && stats.transactionCount > 0
                   ? stats.net >= 0
-                    ? `You took in ₦${Math.round(stats.moneyIn).toLocaleString()} and spent ₦${Math.round(stats.moneyOut).toLocaleString()} this week, keeping ₦${Math.round(stats.net).toLocaleString()}. Consider setting aside a share of that surplus before restocking.`
-                    : `Spending outpaced income this week by ₦${Math.abs(Math.round(stats.net)).toLocaleString()}. Review your biggest expenses before placing your next order.`
+                    ? `You took in ₦${Math.round(stats.moneyIn).toLocaleString()} and spent ₦${Math.round(stats.moneyOut).toLocaleString()} ${periodMeta.suffix}, keeping ₦${Math.round(stats.net).toLocaleString()}. Consider setting aside a share of that surplus before restocking.`
+                    : `Spending outpaced income ${periodMeta.suffix} by ₦${Math.abs(Math.round(stats.net)).toLocaleString()}. Review your biggest expenses before placing your next order.`
                   : "Record your sales and expenses every day so MarketPulse can give you smart, personalized advice here."}
               </p>
             </div>
@@ -574,7 +669,7 @@ export default function WeeklyPulse({ onNavigate, businessName }) {
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
-              <span>{ttsUsed ? "Download Weekly Summary (Audio)" : "Download Summary Transcript"}</span>
+              <span>{ttsUsed ? `Download ${periodMeta.label} Summary (Audio)` : "Download Summary Transcript"}</span>
             </button>
           </section>
         </div>

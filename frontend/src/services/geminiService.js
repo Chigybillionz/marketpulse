@@ -1,13 +1,19 @@
 import apiClient from './api';
 
 /**
- * Fetches the weekly pulse audio summary for the logged-in user.
+ * Fetches the pulse audio summary for the logged-in user for a period.
+ * period: "daily" | "weekly" | "monthly" (defaults to "weekly").
  * Returns { script, audioBase64, mimeType, ttsUsed, stats }.
  * audioBase64 is null when server-side TTS is unavailable — the caller
  * should fall back to the browser's speechSynthesis with `script`.
  */
+export const getSummary = (period = "weekly") => {
+  return apiClient(`/ai/summary?period=${period}`, { method: "GET" });
+};
+
+/** Backward-compatible alias for the weekly summary. */
 export const getWeeklySummary = async () => {
-  return apiClient('/ai/weekly-summary', { method: 'GET' });
+  return getSummary("weekly");
 };
 
 export const transcribeAndAnalyze = async (

@@ -1,5 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { getWeeklySummary } = require("../services/WeeklySummaryService");
+const { getSummary } = require("../services/WeeklySummaryService");
 const Transaction = require("../models/Transaction");
 const WelcomeUser = require("../models/WelcomeUser");
 
@@ -84,12 +84,17 @@ If the user does not mention a specific amount or value in the audio, or if you 
 };
 
 /**
- * GET /api/ai/weekly-summary
- * Protected: builds a weekly audio summary (script + TTS audio) from the
- * logged-in user's transactions.
+ * GET /api/ai/summary?period=daily|weekly|monthly
+ * GET /api/ai/weekly-summary (legacy alias, defaults to weekly)
+ * Protected: builds an audio summary (script + TTS audio) from the
+ * logged-in user's transactions for the requested period.
  */
-const getWeeklySummaryAudio = async (req, res) => {
+const getSummaryAudio = async (req, res) => {
   try {
+    const period = ["daily", "weekly", "monthly"].includes(req.query.period)
+      ? req.query.period
+      : "weekly";
+
     const transactions = await Transaction.find({ user: req.user.id })
       .sort({ date: -1 })
       .limit(300)
@@ -98,15 +103,15 @@ const getWeeklySummaryAudio = async (req, res) => {
     const user = await WelcomeUser.findById(req.user.id).lean();
     const businessName = user?.businessName || "your business";
 
-    const summary = await getWeeklySummary(req.user.id, transactions, businessName);
+    const summary = await getSummary(req.user.id, transactions, businessName, period);
     return res.status(200).json(summary);
   } catch (error) {
-    console.error("Error in weekly summary controller:", error);
-    return res.status(500).json({ error: error.message || "Failed to build weekly summary" });
+    console.error("Error in summary controller:", error);
+    return res.status(500).json({ error: error.message || "Failed to build summary" });
   }
 };
 
 module.exports = {
   transcribeAndAnalyze,
-  getWeeklySummaryAudio
+  getSummaryAudio
 };

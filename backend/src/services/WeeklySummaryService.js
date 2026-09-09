@@ -4,10 +4,50 @@ const genAI = new GoogleGenerativeAI(
   process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || ""
 );
 
-// In-memory cache: one audio per user per week (week is derived from data, so
-// identical data for the same user + week returns the cached audio instantly).
-const summaryCache = new Map(); // userId -> { weekKey, script, audioBase64, mimeType, createdAt }
+// In-memory cache: one audio per user per period (period is derived from data,
+// so identical data for the same user + period returns the cached audio instantly).
+const summaryCache = new Map(); // `${userId}:${period}` -> { periodKey, script, audioBase64, mimeType, createdAt }
 const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24h hard expiry
+
+/* ------------------------------- periods ------------------------------- */
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Each supported summary period: how far back to look, the display label and
+// natural phrasing used in the spoken script, and a key identifying the
+// current bucket (used for caching and file names).
+const PERIODS = {
+  daily: {
+    windowMs: 1 * DAY_MS,
+    label: "Daily",
+    noun: "today",
+    scope: "Today",
+    signoff: "See you tomorrow.",
+    periodKey: (now) => {
+      const d = new Date(now);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    },
+  },
+  weekly: {
+    windowMs: 7 * DAY_MS,
+    label: "Weekly",
+    noun: "this week",
+    scope: "This week",
+    signoff: "See you next week.",
+    periodKey: getWeekKey,
+  },
+  monthly: {
+    windowMs: 30 * DAY_MS,
+    label: "Monthly",
+    noun: "this month",
+    scope: "This month",
+    signoff: "See you next month.",
+    periodKey: (now) => {
+      const d = new Date(now);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    },
+  },
+};
 
 /* ----------------------------- helpers ----------------------------- */
 
@@ -31,18 +71,24 @@ function spokenNaira(n) {
 
 /**
  * Aggregates transactions into the stats used by both the script and the UI.
- * Accepts raw Mongo docs or plain objects with {type, amount, description, category, date}.
+ * `period` is one of "daily" | "weekly" | "monthly" and controls how far
+ * back to look. Accepts raw Mongo docs or plain objects with
+ * {type, amount, description, category, date}.
  */
-function computeWeeklyStats(transactions, businessName = "your business") {
+function computeWeeklyStats(transactions, businessName = "your business", period = "weekly") {
+  const config = PERIODS[period] || PERIODS.weekly;
   const now = new Date();
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const windowStart = new Date(now.getTime() - config.windowMs);
 
   const recent = (transactions || []).filter((t) => {
     const d = new Date(t.date || t.createdAt || Date.now());
-    return d >= weekAgo && d <= now;
+    return d >= windowStart && d <= now;
   });
 
-  const scope = recent.length > 0 ? recent : transactions || [];
+  // Strictly period-scoped: a daily summary only covers today, weekly only
+  // this week, monthly only this month. When there is no data in the window,
+  // stats are zeroed and the scripts/UI fall back to an encouraging message.
+  const scope = recent;
 
   let moneyIn = 0;
   let moneyOut = 0;
@@ -78,7 +124,9 @@ function computeWeeklyStats(transactions, businessName = "your business") {
 
   return {
     businessName,
-    weekKey: getWeekKey(now),
+    period,
+    periodKey: config.periodKey(now),
+    weekKey: getWeekKey(now), // legacy alias, kept for backward compatibility
     isSample: recent.length === 0,
     transactionCount: scope.length,
     moneyIn,
@@ -96,6 +144,7 @@ function computeWeeklyStats(transactions, businessName = "your business") {
 
 async function generateScript(stats) {
   const { businessName, moneyIn, moneyOut, net, transactionCount, topMoving, topCategories } = stats;
+  const config = PERIODS[stats.period] || PERIODS.weekly;
 
   if (!process.env.GEMINI_API_KEY && !process.env.AGENTROUTER_API_KEY) {
     throw new Error("API key not configured on server");
@@ -106,21 +155,22 @@ async function generateScript(stats) {
   });
 
   const prompt = `You are the voice of "MarketPulse", a friendly financial co-pilot for Nigerian market traders.
-Write a short spoken weekly business summary script for the trader.
+Write a short spoken ${config.label.toLowerCase()} business summary script for the trader.
 
 Business: ${businessName}
-Week: ${stats.weekKey}
-${stats.isSample ? "NOTE: There is very little real data this week, so keep it encouraging and general." : ""}
+Period: ${stats.periodKey}
+${stats.isSample ? `NOTE: No transactions were recorded ${config.noun} yet. Acknowledge this warmly, encourage the trader to keep recording sales, and do NOT dwell on zero figures.` : ""}
 Transactions recorded: ${transactionCount}
 Money in: ${naira(moneyIn)} across ${stats.incomeCount} income entries
 Money out: ${naira(moneyOut)} across ${stats.expenseCount} expense entries
 Net position: ${naira(net)}
-${topMoving ? `Top moving item: ${topMoving.description} with about ${naira(topMoving.total)} in activity` : "No single standout item this week"}
+${topMoving ? `Top moving item: ${topMoving.description} with about ${naira(topMoving.total)} in activity` : `No single standout item ${config.noun}`}
 ${topCategories.length ? `Main categories: ${topCategories.map((c) => `${c.name} (${naira(c.total)})`).join(", ")}` : ""}
 
 Rules:
 - 120 to 180 words, plain conversational English a trader would enjoy hearing.
 - Start with a warm one-line greeting that includes the business name.
+- Refer to the period naturally (e.g. "${config.noun}").
 - Mention money in, money out and the net position using words like "naira" (say figures naturally, never use symbols or digits with commas).
 - Mention the top moving item if there is one.
 - End with ONE short practical tip (stocking, pricing or saving). No sign-off, no music cues, no stage directions, no markdown.
@@ -134,15 +184,21 @@ Rules:
 
 // Fallback script if the text model is unavailable - the app must still speak.
 function buildFallbackScript(stats) {
-  const { businessName, moneyIn, moneyOut, net, topMoving } = stats;
+  const { businessName, moneyIn, moneyOut, net, topMoving, transactionCount } = stats;
+  const config = PERIODS[stats.period] || PERIODS.weekly;
+
+  if (transactionCount === 0) {
+    return `Hello ${businessName}, here is your ${config.label.toLowerCase()} pulse. No sales or expenses were recorded ${config.noun} yet. The best way to grow is to record every transaction, big or small, as it happens. ${config.signoff}`;
+  }
+
   const direction =
     net >= 0
-      ? `You are up ${spokenNaira(Math.abs(net))} for the week. Great job keeping more than you spend.`
-      : `You spent ${spokenNaira(Math.abs(net))} more than you took in this week, so it is worth reviewing your biggest expenses.`;
+      ? `You are up ${spokenNaira(Math.abs(net))} ${config.noun}. Great job keeping more than you spend.`
+      : `You spent ${spokenNaira(Math.abs(net))} more than you took in ${config.noun}, so it is worth reviewing your biggest expenses.`;
   const topLine = topMoving
     ? `Your top moving item was ${topMoving.description}, bringing about ${spokenNaira(topMoving.total)} in activity.`
     : `Keep recording every sale so MarketPulse can spot your best performers.`;
-  return `Hello ${businessName}, here is your weekly pulse. This week you took in ${spokenNaira(moneyIn)} and spent ${spokenNaira(moneyOut)}. ${direction} ${topLine} Small, steady records lead to big, steady profits. See you next week.`;
+  return `Hello ${businessName}, here is your ${config.label.toLowerCase()} pulse. ${config.scope} you took in ${spokenNaira(moneyIn)} and spent ${spokenNaira(moneyOut)}. ${direction} ${topLine} Small, steady records lead to big, steady profits. ${config.signoff}`;
 }
 
 /** Wraps raw 16-bit mono PCM in a RIFF/WAV container so browsers can play it. */
@@ -224,18 +280,21 @@ async function generateTtsAudio(script) {
 /* ------------------------------ public API ------------------------------ */
 
 /**
- * Gets (or creates) the weekly audio summary for a user.
+ * Gets (or creates) the audio summary for a user for the requested period
+ * ("daily" | "weekly" | "monthly").
  * Returns { script, audioBase64, mimeType, stats, ttsUsed }.
  * When TTS is unavailable, audioBase64 is null and the frontend falls back
  * to the browser's built-in speech synthesis using the returned script.
  */
-async function getWeeklySummary(userId, transactions, businessName) {
-  const stats = computeWeeklyStats(transactions, businessName);
+async function getSummary(userId, transactions, businessName, period = "weekly") {
+  const safePeriod = PERIODS[period] ? period : "weekly";
+  const stats = computeWeeklyStats(transactions, businessName, safePeriod);
 
-  const cached = summaryCache.get(userId);
+  const cacheKey = `${userId}:${safePeriod}`;
+  const cached = summaryCache.get(cacheKey);
   const cacheValid =
     cached &&
-    cached.weekKey === stats.weekKey &&
+    cached.periodKey === stats.periodKey &&
     cached.txCount === stats.transactionCount &&
     Date.now() - cached.createdAt < CACHE_MAX_AGE_MS;
 
@@ -248,7 +307,7 @@ async function getWeeklySummary(userId, transactions, businessName) {
   try {
     script = await generateScript(stats);
   } catch (error) {
-    console.error("Weekly script generation failed, using fallback:", error.message);
+    console.error(`${safePeriod} summary script generation failed, using fallback:`, error.message);
     script = buildFallbackScript(stats);
   }
 
@@ -261,11 +320,12 @@ async function getWeeklySummary(userId, transactions, businessName) {
     audioBase64: tts ? tts.audioBase64 : null,
     mimeType: tts ? tts.mimeType : null,
     ttsUsed: Boolean(tts),
+    period: safePeriod,
     durationHintSec: null, // frontend reads real duration from the audio element
   };
 
-  summaryCache.set(userId, {
-    weekKey: stats.weekKey,
+  summaryCache.set(cacheKey, {
+    periodKey: stats.periodKey,
     txCount: stats.transactionCount,
     createdAt: Date.now(),
     stats,
@@ -275,7 +335,13 @@ async function getWeeklySummary(userId, transactions, businessName) {
   return { ...payload, stats, cached: false };
 }
 
+/** Backward-compatible alias: weekly summary. */
+async function getWeeklySummary(userId, transactions, businessName) {
+  return getSummary(userId, transactions, businessName, "weekly");
+}
+
 module.exports = {
+  getSummary,
   getWeeklySummary,
   computeWeeklyStats,
   getWeekKey,

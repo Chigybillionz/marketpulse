@@ -5,7 +5,7 @@ export default function MarketPulse({ onNavigate }) {
   const [pressed, setPressed] = useState(false);
 
   const handleClick = () => {
-    if (onNavigate) onNavigate('weekly_pulse');
+    if (onNavigate) onNavigate('weekly_pulse', { period: 'daily' });
   };
 
   return (
@@ -13,7 +13,7 @@ export default function MarketPulse({ onNavigate }) {
       <div
         role="button"
         tabIndex={0}
-        aria-label="Daily Pulse: Strong Buy. Open your Weekly Pulse insights."
+        aria-label="Daily Pulse: Strong Buy. Open your MarketPulse insights."
         onClick={handleClick}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -154,7 +154,7 @@ export default function MarketPulse({ onNavigate }) {
                 letterSpacing: '0.02em',
               }}
             >
-              Tap to view your weekly insights
+              Tap to view your insights
             </span>
             <svg
               width="14"

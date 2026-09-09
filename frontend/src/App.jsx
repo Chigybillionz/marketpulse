@@ -365,7 +365,11 @@ function App() {
       <Route
         path={PATHS.weekly_pulse}
         element={
-          <WeeklyPulse onNavigate={handleNavigate} businessName={businessName} />
+          <WeeklyPulse
+            onNavigate={handleNavigate}
+            businessName={businessName}
+            initialPeriod={location.state?.period}
+          />
         }
       />
       <Route
