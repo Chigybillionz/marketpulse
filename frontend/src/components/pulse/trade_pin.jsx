@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { createTransaction } from "../../services/transactionService";
 import { setupPin, verifyPin } from "../../services/authService";
 import { addCreditTransaction } from "../../services/debtorService";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -31,7 +32,7 @@ function DeleteIcon() {
   return (
     <svg className="w-full h-full" viewBox="0 0 32 24" aria-hidden="true">
       <path d="M11 4h15c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H11l-7-8 7-8Z" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinejoin="round" />
-      <path d="m16 8 7 8M23 8l-7 8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <path d="m16 8 7 8M23 8l-7 8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -65,6 +66,16 @@ export default function PulseTradePin({
   setMoneyOut,
   setTransactionsList,
 }) {
+  const { t } = useLanguage();
+  const location = useLocation();
+
+  // ── Change-PIN mode ────────────────────────────────────────────────
+  // Entered from Profile → "Change Trade PIN" (location.state.pinMode ===
+  // "change"). In this mode NO transaction data or amount is shown — the
+  // user only manages their PIN:
+  //   verify (current PIN) → create (new PIN) → confirm → done.
+  const isChangeMode = location.state?.pinMode === "change";
+
   const [pin, setPin] = useState("");
   const [createdPin, setCreatedPin] = useState("");
   const [error, setError] = useState("");
@@ -72,9 +83,8 @@ export default function PulseTradePin({
   const [isLoading, setIsLoading] = useState(false);
 
   // Determine mode: "create" | "confirm" | "verify"
-  const [mode, setMode] = useState("verify"); // default, will be resolved by useEffect
+  const [mode, setMode] = useState(isChangeMode ? "verify" : "verify");
 
-  const location = useLocation();
   const transactionData = location.state?.transactionData || {
     type: "credit",
     amount: 15000,
@@ -84,14 +94,20 @@ export default function PulseTradePin({
   const amountNum = transactionData.amount !== undefined && transactionData.amount !== null ? Number(transactionData.amount) : 15000;
   const isIncome = transactionData.type?.toLowerCase() === 'income' || transactionData.type?.toLowerCase() === 'credit';
 
-  // On mount, check if user has a PIN
+  // On mount, check if user has a PIN (normal transaction flow only —
+  // change mode always starts by verifying the current PIN).
   useEffect(() => {
+    if (isChangeMode) {
+      setMode("verify");
+      return;
+    }
     const hasPin = localStorage.getItem('hasPin');
     if (hasPin === 'true') {
       setMode("verify");
     } else {
       setMode("create");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const canConfirm = pin.length === 4;
@@ -179,17 +195,15 @@ export default function PulseTradePin({
         setCreatedPin(pin);
         setPin("");
         setMode("confirm");
-        setIsLoading(false);
         return;
       }
 
       if (mode === "confirm") {
         // Check if confirmation matches
         if (pin !== createdPin) {
-          triggerShake("PINs don't match. Try again.");
+          triggerShake(t("pin_error_mismatch"));
           setCreatedPin("");
           setMode("create");
-          setIsLoading(false);
           return;
         }
 
@@ -197,6 +211,12 @@ export default function PulseTradePin({
         const userEmail = email || localStorage.getItem('email');
         await setupPin(userEmail, pin);
         localStorage.setItem('hasPin', 'true');
+
+        // Change mode: PIN updated, nothing to record → back to profile.
+        if (isChangeMode) {
+          onNavigate("profile");
+          return;
+        }
 
         // PIN set successfully, now save the transaction
         await saveTransaction();
@@ -208,40 +228,87 @@ export default function PulseTradePin({
         const userEmail = email || localStorage.getItem('email');
         try {
           await verifyPin(userEmail, pin);
+
+          // Change mode: current PIN accepted → move on to the new PIN.
+          if (isChangeMode) {
+            setCreatedPin("");
+            setPin("");
+            setMode("create");
+            return;
+          }
+
           // PIN is valid — save the transaction
           await saveTransaction();
         } catch (err) {
-          triggerShake("Invalid PIN. Please try again.");
-          setIsLoading(false);
+          triggerShake(t("pin_error_invalid"));
         }
         return;
       }
     } catch (err) {
       console.error("PIN Error:", err);
-      triggerShake(err.message || "Something went wrong.");
+      triggerShake(err.message || t("pin_error_generic"));
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Dynamic title/subtitle based on mode
-  const heroTitle = {
-    create: "Create a 4-digit Trade PIN to secure your transactions.",
-    confirm: "Re-enter your PIN to confirm.",
-    verify: "Confirm this transaction with your 4-digit Trade PIN.",
-  };
+  // ── Localized copy per mode ────────────────────────────────────────
+  const heroTitle = isChangeMode
+    ? mode === "verify"
+      ? t("pin_hero_change")
+      : mode === "create"
+        ? t("pin_hero_create")
+        : t("pin_hero_confirm")
+    : {
+        create: t("pin_hero_create"),
+        confirm: t("pin_hero_confirm"),
+        verify: t("pin_hero_verify"),
+      }[mode];
 
-  const keypadTitle = {
-    create: "Create your Trade PIN",
-    confirm: "Confirm your Trade PIN",
-    verify: "Enter your Trade PIN",
-  };
+  const kicker = isChangeMode && mode === "verify"
+    ? t("pin_kicker_change")
+    : {
+        create: t("pin_kicker_create"),
+        confirm: t("pin_kicker_confirm"),
+        verify: t("pin_kicker_verify"),
+      }[mode];
 
-  const keypadSubtitle = {
-    create: `Set a PIN to secure your ${isIncome ? 'sale' : 'expense'} of`,
-    confirm: `Re-enter the same PIN to confirm`,
-    verify: `Enter your 4-digit PIN to confirm this ${isIncome ? 'sale' : 'expense'} of`,
-  };
+  const keypadTitle = isChangeMode && mode === "verify"
+    ? t("pin_keypad_change")
+    : {
+        create: t("pin_keypad_create"),
+        confirm: t("pin_keypad_confirm"),
+        verify: t("pin_keypad_verify"),
+      }[mode];
+
+  // Right-panel prompt. Amount is ONLY shown in the normal (transaction)
+  // flow — never in change mode, since there is nothing being recorded.
+  const kind = isIncome ? t("pin_kind_sale") : t("pin_kind_expense");
+  const amountStr = `\u20A6${amountNum.toLocaleString()}`;
+  const rightPanelText = isChangeMode
+    ? mode === "verify"
+      ? t("pin_sub_change")
+      : mode === "create"
+        ? t("pin_hero_create")
+        : t("pin_hero_confirm")
+    : {
+        create: t("pin_sub_create", { kind, amount: amountStr }),
+        confirm: t("pin_sub_confirm"),
+        verify: t("pin_sub_verify", { kind, amount: amountStr }),
+      }[mode];
+
+  const buttonLabel = isLoading
+    ? t("pin_processing")
+    : mode === "create"
+      ? t("pin_next")
+      : mode === "confirm"
+        ? t("pin_set_confirm")
+        : isChangeMode
+          ? t("pin_verify_continue")
+          : t("pin_confirm");
+
+  const showAmountCard = !isChangeMode;
+  const showAmountInline = !isChangeMode && mode !== "confirm";
 
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 lg:p-12 font-sans">
@@ -251,8 +318,8 @@ export default function PulseTradePin({
         <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-20 pointer-events-none lg:pointer-events-auto">
           <button
             type="button"
-            aria-label="Back"
-            onClick={() => (onBack ? onBack() : onNavigate("ai_confirmation"))}
+            aria-label={t("common_back")}
+            onClick={() => (onBack ? onBack() : onNavigate(isChangeMode ? "profile" : "ai_confirmation"))}
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm border border-slate-200 text-slate-800 pointer-events-auto hover:bg-white transition-colors"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -265,7 +332,7 @@ export default function PulseTradePin({
             <span className="w-6 h-6 text-slate-700">
               <StoreIcon />
             </span>
-            <span className="font-bold text-slate-800 text-sm">{businessName || "My Store"}</span>
+            <span className="font-bold text-slate-800 text-sm">{businessName || t("common_my_store")}</span>
           </div>
         </header>
 
@@ -280,13 +347,13 @@ export default function PulseTradePin({
           </div>
 
           <span className="text-green-300/80 text-xs font-bold tracking-widest uppercase mb-3 block">
-            {mode === "create" ? "PIN Setup" : mode === "confirm" ? "Confirm PIN" : "Approval required"}
+            {kicker}
           </span>
           <h2 className="text-3xl lg:text-4xl font-serif font-bold leading-tight mb-6">
-            {heroTitle[mode]}
+            {heroTitle}
           </h2>
           <p className="text-green-100/70 text-base leading-relaxed mb-12">
-            Your PIN protects sales, expenses, and credit entries before they reach your secure ledger.
+            {t("pin_protects")}
           </p>
 
           {/* Warning for create mode */}
@@ -296,19 +363,22 @@ export default function PulseTradePin({
                 <WarningIcon />
               </span>
               <p className="text-yellow-100/90 text-sm font-semibold leading-relaxed">
-                Remember your PIN — it cannot be recovered. You'll need it for every transaction. Keep it safe!
+                {t("pin_remember")}
               </p>
             </div>
           )}
 
-          <div className="bg-white/10 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
-            <span className="block text-green-200/80 text-xs font-bold tracking-widest uppercase mb-2">
-              Transaction amount
-            </span>
-            <strong className="text-4xl font-serif font-bold text-white">
-              &#8358;{amountNum.toLocaleString()}
-            </strong>
-          </div>
+          {/* Transaction amount card — hidden in change mode */}
+          {showAmountCard && (
+            <div className="bg-white/10 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+              <span className="block text-green-200/80 text-xs font-bold tracking-widest uppercase mb-2">
+                {t("pin_transaction_amount")}
+              </span>
+              <strong className="text-4xl font-serif font-bold text-white">
+                {amountStr}
+              </strong>
+            </div>
+          )}
         </div>
 
         {/* Right Side: Keypad Panel */}
@@ -316,27 +386,18 @@ export default function PulseTradePin({
           <div className="max-w-sm mx-auto w-full lg:mt-8">
             <div className="mb-10 text-center lg:text-left">
               <p className="text-slate-600 text-lg lg:text-xl">
-                {mode === "confirm" ? (
-                  <>Re-enter your PIN to confirm.</>
-                ) : (
-                  <>
-                    {keypadSubtitle[mode]}{" "}
-                    {mode !== "confirm" && (
-                      <strong className="text-slate-900 font-bold">&#8358;{amountNum.toLocaleString()}</strong>
-                    )}
-                    .
-                  </>
-                )}
+                {rightPanelText}
+                {!isChangeMode && showAmountInline && "."}
               </p>
             </div>
 
             <div className={`bg-slate-50 border rounded-3xl p-6 mb-8 shadow-inner transition-all ${error ? 'border-red-300 bg-red-50/30' : 'border-slate-100'} ${shake ? 'animate-shake' : ''}`}>
               <div className="text-center mb-6">
                 <h2 className="text-xs font-bold text-slate-400 tracking-widest uppercase">
-                  {keypadTitle[mode]}
+                  {keypadTitle}
                 </h2>
               </div>
-              <div className="flex justify-center gap-6" aria-label="Trade PIN digits entered">
+              <div className="flex justify-center gap-6" aria-label={keypadTitle}>
                 {[0, 1, 2, 3].map((index) => (
                   <div
                     key={index}
@@ -370,7 +431,7 @@ export default function PulseTradePin({
                     : "bg-blue-50 text-blue-700 border border-blue-200"
                 }`}>
                   <span className={`w-2 h-2 rounded-full ${mode === "create" ? "bg-green-500" : "bg-blue-500"}`}></span>
-                  {mode === "create" ? "Step 1: Create PIN" : "Step 2: Confirm PIN"}
+                  {mode === "create" ? t("pin_step_1") : t("pin_step_2")}
                 </span>
               </div>
             )}
@@ -401,7 +462,7 @@ export default function PulseTradePin({
                 type="button"
                 onClick={removeDigit}
                 disabled={isLoading}
-                aria-label="Delete last digit"
+                aria-label={t("pin_delete_digit")}
                 className="h-16 lg:h-20 rounded-2xl bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-slate-100 shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center justify-center text-slate-500 active:scale-95 transition-all disabled:opacity-50"
               >
                 <div className="w-8 h-6">
@@ -419,7 +480,7 @@ export default function PulseTradePin({
                 }}
                 className="text-slate-500 font-semibold hover:text-slate-800 transition-colors"
               >
-                Forgot PIN?
+                {t("pin_forgot")}
               </a>
               <button
                 type="button"
@@ -433,9 +494,7 @@ export default function PulseTradePin({
                     : "bg-slate-200 text-slate-400 shadow-none cursor-not-allowed"
                 }`}
               >
-                <span>
-                  {isLoading ? "Processing..." : mode === "create" ? "Next" : mode === "confirm" ? "Set PIN & Confirm" : "Confirm"}
-                </span>
+                <span>{buttonLabel}</span>
                 <div className="w-6 h-6">
                   <ArrowRightIcon />
                 </div>

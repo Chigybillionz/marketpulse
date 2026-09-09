@@ -159,7 +159,7 @@ export default function Login({
                   overflow: "hidden",
                 }}
               >
-                {["English", "Hausa", "Yoruba", "Igbo"].map((lang) => (
+                {["English", "Pidgin", "Hausa", "Yoruba", "Igbo"].map((lang) => (
                   <button
                     key={lang}
                     onClick={() => {

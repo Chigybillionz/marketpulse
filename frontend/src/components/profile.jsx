@@ -1,73 +1,75 @@
 import { useState, useEffect } from "react";
 import { uploadProfilePicture } from "../services/authService";
 import AppShell from "./layout/AppShell";
+import { useLanguage } from "../i18n/LanguageContext";
 
-function getSections(businessName, email) {
+function getSections(businessName, email, t, currentLanguageLabel) {
   return [
     {
-      title: "Business Details",
+      title: t("profile_business_details"),
       items: [
         {
           icon: "store",
-          label: "Store Profile",
-          sub: businessName || "My Store",
+          label: t("profile_store_profile"),
+          sub: businessName || t("common_my_store"),
           target: "storeProfile",
         },
         {
           icon: "category",
-          label: "Market Category",
+          label: t("profile_market_category"),
           sub: "Wholesale Dry Goods",
           target: "market_category",
         },
         {
           icon: "bell",
-          label: "Inventory Alerts",
-          sub: "Enabled at 10% stock",
+          label: t("profile_inventory_alerts"),
+          sub: t("profile_enabled_10"),
           target: "inventoryAlert",
         },
       ],
     },
     {
-      title: "Account Settings",
+      title: t("profile_account_settings"),
       items: [
         {
           icon: "bell",
-          label: "Email Address",
-          sub: email || "Not set",
+          label: t("profile_email_address"),
+          sub: email || t("profile_not_set"),
           target: "email",
         },
         {
           icon: "language",
-          label: "Language",
-          sub: "English / Pidgin",
+          label: t("profile_language"),
+          sub: currentLanguageLabel,
           target: "language_setting",
         },
       ],
     },
     {
-      title: "Security",
+      title: t("profile_security"),
       items: [
         {
           icon: "lock",
-          label: "Change Trade PIN",
-          sub: "Update your 4-digit approval code",
+          label: t("profile_change_pin"),
+          sub: t("profile_change_pin_sub"),
           target: "pulse_trade_pin",
+          isChangePin: true,
         },
       ],
     },
     {
-      title: "Help & Support",
+      title: t("profile_help_support"),
       items: [
         {
           icon: "support",
-          label: "Contact Support",
+          label: t("profile_contact_support"),
           target: "contact_support",
         },
-        { icon: "faq", label: "FAQs", target: "faqs" },
+        { icon: "faq", label: t("profile_faqs"), target: "faqs" },
         {
           icon: "shield",
-          label: "Privacy Policy",
-          sub: "How we protect your data",
+          label: t("profile_privacy_policy"),
+          sub: t("profile_how_we_protect"),
           target: "privacy_policy",
         },
       ],
@@ -191,7 +193,8 @@ function SettingItem({ item, onClick }) {
 }
 
 export default function Profile({ onNavigate, businessName, email, profilePicture }) {
-  const sections = getSections(businessName, email);
+  const { t, language } = useLanguage();
+  const sections = getSections(businessName, email, t, language);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [pendingAvatarBase64, setPendingAvatarBase64] = useState(null);
   const [businessAvatarUrl, setBusinessAvatarUrl] = useState(profilePicture || null);
@@ -223,12 +226,12 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
           <header className="profile-nav">
             <button
               type="button"
-              aria-label="Go back"
+              aria-label={t("common_back")}
               onClick={() => onNavigate && onNavigate("home")}
             >
               <Icon name="back" />
             </button>
-            <h1>Profile &amp; Settings</h1>
+            <h1>{t("profile_title")}</h1>
             <button type="button" aria-label="Settings">
               <Icon name="gear" />
             </button>
@@ -436,8 +439,8 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
               </div>
             )}
 
-            <h2>{businessName || "My Store"}</h2>
-            <p>{businessName || "My Store"}</p>
+            <h2>{businessName || t("common_my_store")}</h2>
+            <p>{businessName || t("common_my_store")}</p>
             <div className="profile-location">
               <Icon name="location" />
               Onyingbo Market, Lagos
@@ -468,7 +471,13 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                       key={item.label}
                       onClick={() => {
                         if (item.target && onNavigate) {
-                          onNavigate(item.target);
+                          // "Change Trade PIN" opens the PIN screen in change
+                          // mode (PIN-only UI, no transaction/amount display).
+                          if (item.isChangePin) {
+                            onNavigate(item.target, { pinMode: "change" });
+                          } else {
+                            onNavigate(item.target);
+                          }
                         }
                       }}
                     />
@@ -484,11 +493,11 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
             onClick={() => onNavigate && onNavigate("logout")}
           >
             <Icon name="logout" />
-            Logout
+            {t("profile_logout")}
           </button>
 
           <p className="profile-version">
-            Version 2.4.0 • Built for Nigerian Markets
+            {t("profile_version")}
           </p>
         </section>
       </main>

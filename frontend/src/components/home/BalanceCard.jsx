@@ -1,6 +1,8 @@
 import { TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function BalanceCard({ balance, moneyIn, moneyOut }) {
+  const { t } = useLanguage();
   const fmt = (n) => {
     if (n >= 1_000_000) return `₦${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}m`;
     if (n >= 1_000)     return `₦${Math.round(n / 1_000)}k`;
@@ -42,7 +44,7 @@ export default function BalanceCard({ balance, moneyIn, moneyOut }) {
           }}
         >
           <span style={{ fontSize: 10, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            Money In
+            {t('home_money_in')}
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
             {fmt(moneyIn)}
@@ -71,7 +73,7 @@ export default function BalanceCard({ balance, moneyIn, moneyOut }) {
           }}
         >
           <span style={{ fontSize: 10, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            Money Out
+            {t('home_money_out')}
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#d32f2f', letterSpacing: '-0.5px', lineHeight: 1 }}>
             {fmt(moneyOut)}
@@ -100,7 +102,7 @@ export default function BalanceCard({ balance, moneyIn, moneyOut }) {
           }}
         >
           <span style={{ fontSize: 10, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            Balance
+            {t('home_balance')}
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
             {fmt(balance || 142500)}

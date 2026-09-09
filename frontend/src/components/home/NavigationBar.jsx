@@ -1,3 +1,13 @@
+import { useLanguage } from "../../i18n/LanguageContext";
+
+const NAV_LABEL_KEYS = {
+  home: "nav_home",
+  pulse: "nav_pulse",
+  history: "nav_history",
+  credit: "nav_credit",
+  profile: "nav_profile",
+};
+
 function NavIcon({ name }) {
   const paths = {
     home: <path d="M5 12.4 14 5l9 7.4V24h-6v-7h-6v7H5V12.4Z" />,
@@ -29,6 +39,7 @@ function NavIcon({ name }) {
 }
 
 export default function NavigationBar({ onNavigate, currentPage }) {
+  const { t } = useLanguage();
   // Normalize currentPage so 'listeng' matches 'pulse'
   const activePage = currentPage === 'listeng' ? 'pulse' : currentPage;
   
@@ -48,7 +59,7 @@ export default function NavigationBar({ onNavigate, currentPage }) {
           <span className="nav-icon">
             <NavIcon name={item} />
           </span>
-          <span>{item[0].toUpperCase() + item.slice(1)}</span>
+          <span>{t(NAV_LABEL_KEYS[item])}</span>
         </button>
       ))}
     </nav>

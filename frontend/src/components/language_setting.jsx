@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
+import { useLanguage, LANGUAGE_IDS } from "../i18n/LanguageContext";
 
 const LANGUAGES = [
   {
@@ -30,10 +31,19 @@ const LANGUAGES = [
 ];
 
 export default function LanguageSetting({ onNavigate, businessName }) {
-  const [selectedId, setSelectedId] = useState("en");
+  const { language, setLanguage, t } = useLanguage();
+
+  // Preselect the currently active language.
+  const activeEntry = LANGUAGES.find((l) => LANGUAGE_IDS[l.id] === language);
+  const [selectedId, setSelectedId] = useState(activeEntry?.id || "en");
   const [showNotification, setShowNotification] = useState(false);
 
   const handleSave = () => {
+    const chosen = LANGUAGES.find((lang) => lang.id === selectedId);
+    if (chosen) {
+      // Switching the context re-renders the whole app in the new language.
+      setLanguage(LANGUAGE_IDS[chosen.id]);
+    }
     setShowNotification(true);
     setTimeout(() => {
       setShowNotification(false);
@@ -45,6 +55,7 @@ export default function LanguageSetting({ onNavigate, businessName }) {
 
   const selectedLanguage =
     LANGUAGES.find((lang) => lang.id === selectedId) || LANGUAGES[0];
+  const storeName = businessName || t("common_my_store");
 
   return (
     <div className="language-page">
@@ -54,7 +65,7 @@ export default function LanguageSetting({ onNavigate, businessName }) {
             type="button"
             className="language-back"
             onClick={() => onNavigate && onNavigate("home")}
-            aria-label="Go back"
+            aria-label={t("common_back")}
           >
             <svg
               viewBox="0 0 24 24"
@@ -70,8 +81,8 @@ export default function LanguageSetting({ onNavigate, businessName }) {
           </button>
 
           <div className="language-titleblock">
-            <p>Trading preferences</p>
-            <h1>Language</h1>
+            <p>{t("lang_settings_kicker")}</p>
+            <h1>{t("lang_settings_title")}</h1>
           </div>
 
           <div style={{ width: 40 }} />
@@ -80,30 +91,28 @@ export default function LanguageSetting({ onNavigate, businessName }) {
         <main className="language-content">
           <aside className="language-preview">
             <div className="language-preview-hero">
-              <span className="language-kicker">Localized support</span>
+              <span className="language-kicker">{t("lang_settings_localized_support")}</span>
               <h2>{selectedLanguage.label}</h2>
               <p>
-                {businessName || "My Store"} can trade in the language that
-                feels most natural for your team.
+                {t("lang_settings_preview_copy", { store: storeName })}
               </p>
 
               <div className="language-preview-card">
-                <span>Currently selected</span>
+                <span>{t("lang_settings_selected")}</span>
                 <strong>{selectedLanguage.subLabel}</strong>
               </div>
             </div>
 
             <div className="language-note">
               <p>
-                Picking a familiar language keeps notifications and trading
-                actions easier to understand.
+                {t("lang_settings_note")}
               </p>
             </div>
           </aside>
 
           <section className="language-panel">
             <p className="language-intro">
-              Choose your preferred language for trading and notifications.
+              {t("lang_settings_intro")}
             </p>
 
             <div className="language-card-list">
@@ -134,10 +143,9 @@ export default function LanguageSetting({ onNavigate, businessName }) {
             </div>
 
             <div className="language-support">
-              <h3>Localized Support</h3>
+              <h3>{t("lang_settings_localized_support")}</h3>
               <p>
-                {businessName || "My Store"} now supports local languages to
-                help you trade with more confidence and clarity.
+                {t("lang_settings_support_copy", { store: storeName })}
               </p>
             </div>
           </section>
@@ -148,14 +156,14 @@ export default function LanguageSetting({ onNavigate, businessName }) {
             type="button"
             onClick={handleSave}
           >
-            Set Language
+            {t("lang_settings_save")}
           </button>
         </footer>
       </div>
 
       <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
         <CheckCircle2 size={24} />
-        <span>Language updated successfully!</span>
+        <span>{t("lang_settings_saved")}</span>
       </div>
     </div>
   );

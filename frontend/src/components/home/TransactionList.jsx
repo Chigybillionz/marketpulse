@@ -1,6 +1,8 @@
 import { ShoppingBag, CreditCard, Zap } from 'lucide-react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function TransactionList({ transactionsList, onNavigate }) {
+  const { t } = useLanguage();
   const getIcon = (type) => {
     switch (type) {
       case 'bag':     return <ShoppingBag size={18} strokeWidth={2} />;
@@ -30,7 +32,7 @@ export default function TransactionList({ transactionsList, onNavigate }) {
         }}
       >
         <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1a1a1a', margin: 0, letterSpacing: '-0.3px' }}>
-          Recent Activity
+          {t('home_recent_transactions')}
         </h3>
         <button
           onClick={() => onNavigate('history')}
@@ -44,7 +46,7 @@ export default function TransactionList({ transactionsList, onNavigate }) {
             padding: 0,
           }}
         >
-          View All
+          {t('home_view_all')}
         </button>
       </div>
 

@@ -1,11 +1,12 @@
 import { Home, Mic2, History, CreditCard, User } from "lucide-react";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const NAV_ITEMS = [
-  { key: "home", label: "Home", target: "home", Icon: Home },
-  { key: "pulse", label: "Pulse", target: "listeng", Icon: Mic2 },
-  { key: "history", label: "History", target: "history", Icon: History },
-  { key: "credit", label: "Credit", target: "credit", Icon: CreditCard },
-  { key: "profile", label: "Profile", target: "profile", Icon: User },
+  { key: "home", labelKey: "nav_home", target: "home", Icon: Home },
+  { key: "pulse", labelKey: "nav_pulse", target: "listeng", Icon: Mic2 },
+  { key: "history", labelKey: "nav_history", target: "history", Icon: History },
+  { key: "credit", labelKey: "nav_credit", target: "credit", Icon: CreditCard },
+  { key: "profile", labelKey: "nav_profile", target: "profile", Icon: User },
 ];
 
 /**
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
  * Rendered inside AppShell and hidden on mobile via CSS.
  */
 export default function Sidebar({ active, onNavigate, businessName }) {
+  const { t } = useLanguage();
   const initials = businessName
     ? businessName
         .split(" ")
@@ -42,7 +44,7 @@ export default function Sidebar({ active, onNavigate, businessName }) {
             onClick={() => onNavigate && onNavigate(target)}
           >
             <Icon size={21} strokeWidth={2} />
-            {label}
+            {t(labelKey)}
           </button>
         ))}
       </nav>
@@ -51,7 +53,7 @@ export default function Sidebar({ active, onNavigate, businessName }) {
 
       <div className="mp-side-foot">
         <span className="mp-side-avatar">{initials}</span>
-        <span>{businessName || "My Store"}</span>
+        <span>{businessName || t("common_my_store")}</span>
       </div>
     </aside>
   );

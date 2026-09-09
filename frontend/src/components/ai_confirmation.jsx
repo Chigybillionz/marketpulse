@@ -1,7 +1,9 @@
 import { useLocation } from 'react-router-dom';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export default function AIConfirmation({ onNavigate }) {
   const location = useLocation();
+  const { t } = useLanguage();
   const transactionData = location.state?.transactionData || {
     type: 'Income',
     amount: 15000,
@@ -20,21 +22,21 @@ export default function AIConfirmation({ onNavigate }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-4">No amount detected</h2>
+          <h2 className="text-2xl font-bold text-slate-800 mb-4">{t('confirm_no_amount_title')}</h2>
           <p className="text-slate-600 mb-8 leading-relaxed">
-            Please, I couldn't hear any value or amount mentioned. Please record again and make sure to include the transaction amount.
+            {t('confirm_no_amount_copy')}
           </p>
           <button
             onClick={() => onNavigate('listeng')}
             className="w-full bg-[#052e16] hover:bg-[#022c22] text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg active:scale-95"
           >
-            Record Again
+            {t('confirm_record_again')}
           </button>
           <button
             onClick={() => onNavigate('home')}
             className="w-full mt-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 px-6 rounded-xl transition-all active:scale-95"
           >
-            Cancel
+            {t('confirm_cancel')}
           </button>
         </div>
       </div>
@@ -59,7 +61,7 @@ export default function AIConfirmation({ onNavigate }) {
               </svg>
             </button>
             <h1 className="text-xl lg:text-2xl font-bold text-slate-800">
-              AI Confirmation
+              {t('confirm_title')}
             </h1>
             <div className="w-12 h-12"></div>
           </div>
@@ -78,10 +80,10 @@ export default function AIConfirmation({ onNavigate }) {
               </div>
               <div>
                 <h4 className="text-base font-bold text-blue-900 mb-1">
-                  Trade PIN Required
+                  {t('confirm_pin_required')}
                 </h4>
                 <p className="text-blue-700/80 text-sm leading-relaxed">
-                  To commit this transaction to your secure ledger, you must verify your Trade PIN in the next step.
+                  {t('confirm_pin_copy')}
                 </p>
               </div>
             </div>
@@ -128,7 +130,7 @@ export default function AIConfirmation({ onNavigate }) {
 
             <div className="mb-10">
               <span className="text-xs font-bold text-slate-400 tracking-widest uppercase block mb-2">
-                Transaction Value
+                {t('pin_transaction_amount')}
               </span>
               <h3 className="text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
                 ₦{Number(transactionData.amount).toLocaleString()}
@@ -140,7 +142,7 @@ export default function AIConfirmation({ onNavigate }) {
             <div className="grid grid-cols-2 gap-8 mb-12">
               <div>
                 <span className="text-xs font-bold text-slate-400 tracking-widest uppercase block mb-2">
-                  Description
+                  {t('confirm_description')}
                 </span>
                 <span className="text-lg font-bold text-slate-800 leading-tight">
                   {transactionData.description}
@@ -148,7 +150,7 @@ export default function AIConfirmation({ onNavigate }) {
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-400 tracking-widest uppercase block mb-2">
-                  Category
+                  {t('confirm_category')}
                 </span>
                 <span className="text-lg font-bold text-slate-800 leading-tight">
                   {transactionData.category}
@@ -161,7 +163,7 @@ export default function AIConfirmation({ onNavigate }) {
             onClick={() => onNavigate('pulse_trade_pin', { transactionData })}
             className="w-full bg-[#052e16] hover:bg-[#022c22] text-white font-bold py-5 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-green-900/20 active:scale-[0.98] z-20 relative"
           >
-            <span className="text-lg tracking-wide">Confirm & Save</span>
+            <span className="text-lg tracking-wide">{t('confirm_button')}</span>
             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
