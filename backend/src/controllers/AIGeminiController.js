@@ -1,4 +1,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { getWeeklySummary } = require("../services/WeeklySummaryService");
+const Transaction = require("../models/Transaction");
+const WelcomeUser = require("../models/WelcomeUser");
 
 // Initialize with the environment variable from backend
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || "");
@@ -80,6 +83,30 @@ If the user does not mention a specific amount or value in the audio, or if you 
   }
 };
 
+/**
+ * GET /api/ai/weekly-summary
+ * Protected: builds a weekly audio summary (script + TTS audio) from the
+ * logged-in user's transactions.
+ */
+const getWeeklySummaryAudio = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.user.id })
+      .sort({ date: -1 })
+      .limit(300)
+      .lean();
+
+    const user = await WelcomeUser.findById(req.user.id).lean();
+    const businessName = user?.businessName || "your business";
+
+    const summary = await getWeeklySummary(req.user.id, transactions, businessName);
+    return res.status(200).json(summary);
+  } catch (error) {
+    console.error("Error in weekly summary controller:", error);
+    return res.status(500).json({ error: error.message || "Failed to build weekly summary" });
+  }
+};
+
 module.exports = {
-  transcribeAndAnalyze
+  transcribeAndAnalyze,
+  getWeeklySummaryAudio
 };

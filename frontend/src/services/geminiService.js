@@ -1,3 +1,15 @@
+import apiClient from './api';
+
+/**
+ * Fetches the weekly pulse audio summary for the logged-in user.
+ * Returns { script, audioBase64, mimeType, ttsUsed, stats }.
+ * audioBase64 is null when server-side TTS is unavailable — the caller
+ * should fall back to the browser's speechSynthesis with `script`.
+ */
+export const getWeeklySummary = async () => {
+  return apiClient('/ai/weekly-summary', { method: 'GET' });
+};
+
 export const transcribeAndAnalyze = async (
   audioBase64,
   mimeType = "audio/webm",

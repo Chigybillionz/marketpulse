@@ -1,15 +1,57 @@
+import { useState } from 'react';
+
 export default function MarketPulse({ onNavigate }) {
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+
+  const handleClick = () => {
+    if (onNavigate) onNavigate('weekly_pulse');
+  };
+
   return (
     <section style={{ padding: '4px 20px 12px 20px' }}>
       <div
-        onClick={() => onNavigate('weekly_pulse')}
+        role="button"
+        tabIndex={0}
+        aria-label="Daily Pulse: Strong Buy. Open your Weekly Pulse insights."
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+          }
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => {
+          setHovered(false);
+          setPressed(false);
+        }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
+        onTouchStart={() => setPressed(true)}
+        onTouchEnd={() => setPressed(false)}
         style={{
           position: 'relative',
           borderRadius: 24,
           overflow: 'hidden',
           cursor: 'pointer',
           background: 'linear-gradient(135deg, #0d3d22 0%, #072915 100%)',
-          minHeight: 160,
+          minHeight: 176,
+          border: '1px solid rgba(74, 222, 128, 0.35)',
+          boxShadow: hovered
+            ? '0 12px 28px rgba(5, 46, 22, 0.35)'
+            : '0 6px 18px rgba(5, 46, 22, 0.18)',
+          transform: pressed ? 'scale(0.98)' : hovered ? 'translateY(-2px)' : 'none',
+          transition: 'transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+          outline: 'none',
+          userSelect: 'none',
+          WebkitTapHighlightColor: 'transparent',
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = 'rgba(74, 222, 128, 0.9)';
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = 'rgba(74, 222, 128, 0.35)';
         }}
       >
         {/* Candlestick chart background */}
@@ -50,7 +92,7 @@ export default function MarketPulse({ onNavigate }) {
         />
 
         {/* Content */}
-        <div style={{ position: 'relative', zIndex: 2, padding: '24px 20px' }}>
+        <div style={{ position: 'relative', zIndex: 2, padding: '20px 20px 16px' }}>
           {/* MARKET OPEN pill */}
           <div
             style={{
@@ -60,7 +102,7 @@ export default function MarketPulse({ onNavigate }) {
               border: '1px solid rgba(74,222,128,0.4)',
               borderRadius: 50,
               padding: '6px 14px',
-              marginBottom: 14,
+              marginBottom: 12,
             }}
           >
             <span
@@ -89,6 +131,49 @@ export default function MarketPulse({ onNavigate }) {
           >
             Daily Pulse: Strong Buy
           </h3>
+
+          {/* Tap hint row */}
+          <div
+            style={{
+              marginTop: 12,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'rgba(255, 255, 255, 0.12)',
+              backdropFilter: 'blur(4px)',
+              borderRadius: 999,
+              padding: '7px 14px',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+            }}
+          >
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#d1fae5',
+                letterSpacing: '0.02em',
+              }}
+            >
+              Tap to view your weekly insights
+            </span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#d1fae5"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                transition: 'transform 0.2s ease',
+                transform: hovered ? 'translateX(3px)' : 'none',
+              }}
+              aria-hidden="true"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </div>
         </div>
       </div>
     </section>
