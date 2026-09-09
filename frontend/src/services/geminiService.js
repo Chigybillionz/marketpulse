@@ -20,26 +20,11 @@ export const transcribeAndAnalyze = async (
   audioBase64,
   mimeType = "audio/webm",
 ) => {
-  try {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
-    const response = await fetch(`${backendUrl}/ai/analyze-voice`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ audioBase64, mimeType }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error transcribing audio via backend:", error);
-    throw error;
-  }
+  // Use the centralized apiClient which handles auth tokens and API URL
+  return apiClient('/ai/analyze-voice', {
+    method: 'POST',
+    body: JSON.stringify({ audioBase64, mimeType }),
+  });
 };
 
 export const generateTextResponse = async (prompt) => {

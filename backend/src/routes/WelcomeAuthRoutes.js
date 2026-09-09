@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { handleSignup, handleLogin, setupPin, verifyPin, checkHasPin, uploadProfilePicture, sendResetCode, verifyResetCode, resetPin, resetUserPassword, sendPasswordResetCode, handleUpdateProfile } = require('../controllers/WelcomeAuthController');
+const { handleSignup, handleLogin, setupPin, verifyPin, checkHasPin, uploadProfilePicture, sendResetCode, verifyResetCode, resetPin, resetUserPassword, sendPasswordResetCode, handleUpdateProfile, handleUpdateCategory, handleUpdateEmail } = require('../controllers/WelcomeAuthController');
 
 // Welcome Page Auth Routes
 router.post('/signup', handleSignup);
@@ -10,6 +10,8 @@ router.post('/verify-pin', verifyPin);
 router.get('/has-pin/:email', checkHasPin);
 router.put('/profile-picture', uploadProfilePicture);
 router.put('/profile', handleUpdateProfile);
+router.put('/category', handleUpdateCategory);
+router.put('/email', handleUpdateEmail);
 
 // Forgot PIN Routes
 router.post('/forgot-pin/send-code', sendResetCode);

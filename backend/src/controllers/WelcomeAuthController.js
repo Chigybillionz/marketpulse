@@ -185,6 +185,59 @@ const handleUpdateProfile = async (req, res) => {
   }
 };
 
+const handleUpdateCategory = async (req, res) => {
+  try {
+    const { email, category } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    if (!category) {
+      return res.status(400).json({ message: 'Category is required' });
+    }
+
+    const updatedUser = await updateCategory(email, category);
+    
+    res.status(200).json({
+      message: 'Category updated successfully',
+      user: {
+        id: updatedUser._id,
+        email: updatedUser.email,
+        category: updatedUser.category
+      }
+    });
+  } catch (error) {
+    console.error('Update Category Error:', error);
+    res.status(500).json({ message: error.message || 'Internal server error' });
+  }
+};
+
+const handleUpdateEmail = async (req, res) => {
+  try {
+    const { email, newEmail } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    if (!newEmail) {
+      return res.status(400).json({ message: 'New email is required' });
+    }
+
+    const updatedUser = await updateEmail(email, newEmail);
+    
+    res.status(200).json({
+      message: 'Email updated successfully',
+      user: {
+        id: updatedUser._id,
+        email: updatedUser.email,
+        emailChangeCount: updatedUser.emailChangeCount,
+        emailChangeResetDate: updatedUser.emailChangeResetDate
+      }
+    });
+  } catch (error) {
+    console.error('Update Email Error:', error);
+    res.status(500).json({ message: error.message || 'Internal server error' });
+  }
+};
+
 const sendResetCode = async (req, res) => {
   try {
     const { email } = req.body;
@@ -295,6 +348,8 @@ module.exports = {
   resetPin,
   resetUserPassword,
   sendPasswordResetCode,
-  handleUpdateProfile
+  handleUpdateProfile,
+  handleUpdateCategory,
+  handleUpdateEmail
 };
 

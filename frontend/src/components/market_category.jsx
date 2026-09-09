@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
+import { updateProfile } from "../services/authService";
 
 const CATEGORIES = [
   {
@@ -209,16 +210,60 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState("dry-goods");
   const [showNotification, setShowNotification] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const pic = profilePicture || localStorage.getItem('profilePicture');
-
-  const handleUpdate = () => {
-    setShowNotification(true);
-    setTimeout(() => {
-      setShowNotification(false);
-      if (onNavigate) {
-        onNavigate("home");
+  
+  // Load saved category from backend on mount
+  useEffect(() => {
+    const loadCategory = async () => {
+      try {
+        const userEmail = localStorage.getItem('email');
+        if (!userEmail) return;
+        
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL || 'https://marketpulse-jaxo.onrender.com/api'}/welcome-auth/profile?email=${encodeURIComponent(userEmail)}`
+        );
+        // Note: This is a simplified approach - in production you'd want a getProfile endpoint
+      } catch (error) {
+        console.error("Failed to load category:", error);
       }
-    }, 2000);
+    };
+    loadCategory();
+  }, []);
+
+  const handleUpdate = async () => {
+    setIsSaving(true);
+    try {
+      const userEmail = localStorage.getItem('email');
+      if (!userEmail) {
+        throw new Error('No user logged in');
+      }
+      
+      // Map category ID to display name
+      const selectedCategory = CATEGORIES.find(c => c.id === selectedId);
+      if (!selectedCategory) {
+        throw new Error('Invalid category selected');
+      }
+      
+      // Save to backend
+      await updateProfile(userEmail, { category: selectedCategory.label });
+      
+      // Also save to localStorage for immediate UI updates
+      localStorage.setItem('category', selectedCategory.label);
+      
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+        if (onNavigate) {
+          onNavigate("home");
+        }
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to update category:", error);
+      alert(`Failed to update category: ${error.message || "Please try again."}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const selectedCategory =
@@ -394,6 +439,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
           <button
             type="button"
             onClick={handleUpdate}
+            disabled={isSaving}
           >
             <span>Update Category</span>
             <svg

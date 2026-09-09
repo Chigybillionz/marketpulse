@@ -70,20 +70,23 @@ export default function StoreProfile({
       }
       
       const { updateProfile } = await import("../services/authService");
-      await updateProfile(userEmail, {
+      const result = await updateProfile(userEmail, {
         businessName: formData.businessName,
         location: formData.location,
         businessType: formData.businessType
       });
 
+      // Update parent component state
       if (setBusinessName) setBusinessName(formData.businessName);
       if (setLocationStr) setLocationStr(formData.location);
       if (setBusinessType) setBusinessType(formData.businessType);
       
+      // Persist to localStorage for session persistence
       localStorage.setItem("businessName", formData.businessName);
       localStorage.setItem("location", formData.location);
       localStorage.setItem("businessType", formData.businessType);
 
+      console.log("Profile saved successfully:", result);
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);

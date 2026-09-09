@@ -29,6 +29,11 @@ const WelcomeUserSchema = new mongoose.Schema({
     enum: ['Retail', 'Wholesale', 'Wholesale & Retail'],
     default: 'Retail'
   },
+  category: {
+    type: String,
+    trim: true,
+    default: 'Dry Goods'
+  },
   profilePicture: {
     type: String,
     default: ""
@@ -37,6 +42,14 @@ const WelcomeUserSchema = new mongoose.Schema({
     type: String
   },
   resetPinExpires: {
+    type: Date
+  },
+  // Email change rate limiting
+  emailChangeCount: {
+    type: Number,
+    default: 0
+  },
+  emailChangeResetDate: {
     type: Date
   }
 }, { timestamps: true });

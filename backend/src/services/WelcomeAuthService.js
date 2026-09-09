@@ -77,6 +77,67 @@ const updateProfile = async (email, profileData) => {
   if (profileData.businessType !== undefined) {
     user.businessType = profileData.businessType;
   }
+  if (profileData.category !== undefined) {
+    user.category = profileData.category;
+  }
+
+  await user.save();
+  return user;
+};
+
+/**
+ * Updates the user's market category
+ */
+const updateCategory = async (email, category) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  user.category = category;
+  await user.save();
+  return user;
+};
+
+/**
+ * Updates the user's email with rate limiting (max 3 changes per week)
+ */
+const updateEmail = async (email, newEmail) => {
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const now = new Date();
+  const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+
+  // Check if rate limit reset date has passed
+  if (user.emailChangeResetDate && now > user.emailChangeResetDate) {
+    // Reset the counter
+    user.emailChangeCount = 0;
+    user.emailChangeResetDate = null;
+  }
+
+  // Enforce rate limit: max 3 changes per week
+  if (user.emailChangeCount >= 3) {
+    const daysUntilReset = Math.ceil((user.emailChangeResetDate - now) / (24 * 60 * 60 * 1000));
+    throw new Error(`Email can only be changed 3 times per week. Please wait ${daysUntilReset} more day(s).`);
+  }
+
+  // Check if new email is already taken
+  const existingUser = await WelcomeUser.findOne({ email: newEmail });
+  if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+    throw new Error('This email is already registered');
+  }
+
+  // Update email and increment counter
+  user.email = newEmail.toLowerCase().trim();
+  user.emailChangeCount += 1;
+  
+  // Set reset date to 7 days from now if this is the 3rd change
+  if (user.emailChangeCount >= 3) {
+    user.emailChangeResetDate = new Date(now.getTime() + oneWeekMs);
+  }
 
   await user.save();
   return user;
@@ -219,5 +280,7 @@ module.exports = {
   resetTradePin,
   resetPassword,
   generateResetPasswordCode,
-  updateProfile
+  updateProfile,
+  updateCategory,
+  updateEmail
 };

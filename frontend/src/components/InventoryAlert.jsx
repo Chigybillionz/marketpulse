@@ -20,6 +20,7 @@ export default function InventoryAlert({ onNavigate }) {
   const [settings, setSettings] = useState({
     lowStockNotifications: true,
     dailySummary: false,
+    dailySummaryTime: "18:00", // Default to 6:00 PM
     priceChangeAlerts: true,
     threshold: 10,
   });
@@ -41,10 +42,30 @@ export default function InventoryAlert({ onNavigate }) {
     }));
   };
 
-  const handleSaveSettings = () => {
+  const handleTimeChange = (e) => {
+    const timeValue = e.target.value;
+    // Validate time format (HH:MM)
+    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (timeRegex.test(timeValue) || timeValue === '') {
+      setSettings((prev) => ({
+        ...prev,
+        dailySummaryTime: timeValue || "18:00",
+      }));
+    }
+  };
+
+  const handleSaveSettings = async () => {
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      // Save settings to backend (in production, implement this)
+      const userEmail = localStorage.getItem('email');
+      if (userEmail) {
+        // In production: await apiClient('/inventory-alerts/settings', { ... })
+        console.log('Saving inventory alert settings:', settings);
+        // Save to localStorage for now
+        localStorage.setItem('inventoryAlertSettings', JSON.stringify(settings));
+      }
+      
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
@@ -52,7 +73,12 @@ export default function InventoryAlert({ onNavigate }) {
           onNavigate("home");
         }
       }, 2000);
-    }, 1500);
+    } catch (error) {
+      console.error("Failed to save settings:", error);
+      alert(`Failed to save settings: ${error.message || "Please try again."}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -145,7 +171,17 @@ export default function InventoryAlert({ onNavigate }) {
                 </div>
                 <div className="inventory-alert-copy">
                   <h3>Daily Summary</h3>
-                  <p>End-of-day stock report at 6:00 PM</p>
+                  <p>End-of-day stock report</p>
+                </div>
+                <div className="inventory-alert-time-picker">
+                  <input
+                    type="time"
+                    value={settings.dailySummaryTime}
+                    onChange={handleTimeChange}
+                    disabled={!settings.dailySummary}
+                    className="inventory-alert-time-input"
+                    aria-label="Daily summary notification time"
+                  />
                 </div>
                 <ToggleSwitch
                   isActive={settings.dailySummary}

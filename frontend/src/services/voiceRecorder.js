@@ -4,6 +4,7 @@ export class VoiceRecorder {
     this.audioChunks = [];
     this.stream = null;
     this.isSupported = !!navigator.mediaDevices?.getUserMedia;
+    this.startTime = null;
   }
 
   isRecorderSupported() {
@@ -16,38 +17,74 @@ export class VoiceRecorder {
         throw new Error("Your browser does not support audio recording");
       }
 
+      // Check if there's an existing stream and stop it first
+      if (this.stream) {
+        this.stopMediaStream();
+      }
+      
       this.audioChunks = [];
+      this.startTime = new Date();
+      
+      // Request microphone access with audio constraints
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
+          sampleRate: 44100,
+          channelCount: 1,
         },
       });
 
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-      const source = audioContext.createMediaStreamSource(this.stream);
-      const processor = audioContext.createScriptProcessor(4096, 1, 1);
+      // Verify the stream has audio tracks
+      if (this.stream.getAudioTracks().length === 0) {
+        throw new Error("No audio tracks available from microphone");
+      }
 
-      source.connect(processor);
-      processor.connect(audioContext.destination);
+      // Set up MediaRecorder with best available mime type
+      const mimeTypes = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/mp4",
+      ];
+      
+      let selectedMimeType = mimeTypes.find(mimeType => MediaRecorder.isTypeSupported(mimeType)) || undefined;
 
       this.mediaRecorder = new MediaRecorder(this.stream, {
-        mimeType: "audio/webm;codecs=opus",
+        mimeType: selectedMimeType,
       });
 
       this.mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
+        if (event.data && event.data.size > 0) {
           this.audioChunks.push(event.data);
         }
       };
 
-      this.mediaRecorder.start();
-      console.log("Recording started...");
+      this.mediaRecorder.onstop = () => {
+        // Clean up chunks after stop to free memory
+        setTimeout(() => {
+          this.audioChunks = [];
+        }, 100);
+      };
+
+      this.mediaRecorder.onerror = (event) => {
+        console.error("MediaRecorder error:", event.error);
+        this.stopMediaStream();
+      };
+
+      // Start recording with a timeslice to get frequent data events
+      this.mediaRecorder.start(100);
+      console.log("Recording started at:", this.startTime.toISOString());
+      console.log("Using mime type:", selectedMimeType || "default");
       return true;
     } catch (error) {
       console.error("Error accessing microphone:", error);
+      // Clean up on error
+      if (this.stream) {
+        this.stopMediaStream();
+        this.stream = null;
+      }
       throw new Error(`Microphone access denied: ${error.message}`, { cause: error });
     }
   }
@@ -59,10 +96,25 @@ export class VoiceRecorder {
         return;
       }
 
+      if (this.mediaRecorder.state === "inactive") {
+        reject(new Error("Recording already stopped"));
+        return;
+      }
+
       this.mediaRecorder.onstop = () => {
         try {
-          const audioBlob = new Blob(this.audioChunks, { type: "audio/webm" });
+          if (this.audioChunks.length === 0) {
+            reject(new Error("No audio data recorded"));
+            return;
+          }
+          
+          const audioBlob = new Blob(this.audioChunks, { type: this.mediaRecorder.mimeType || "audio/webm" });
+          console.log("Recording stopped. Blob size:", audioBlob.size, "bytes");
+          console.log("Recording duration:", Math.round((new Date() - this.startTime) / 1000), "seconds");
+          
           this.stopMediaStream();
+          this.stream = null;
+          this.mediaRecorder = null;
           resolve(audioBlob);
         } catch (error) {
           reject(error);
@@ -71,7 +123,7 @@ export class VoiceRecorder {
 
       this.mediaRecorder.onerror = (event) => {
         this.stopMediaStream();
-        reject(new Error(`Recording error: ${event.error}`));
+        reject(new Error(`Recording error: ${event.error?.message || "Unknown error"}`));
       };
 
       this.mediaRecorder.stop();
@@ -80,7 +132,11 @@ export class VoiceRecorder {
 
   stopMediaStream() {
     if (this.stream) {
-      this.stream.getTracks().forEach((track) => track.stop());
+      this.stream.getTracks().forEach((track) => {
+        if (track.readyState !== "ended") {
+          track.stop();
+        }
+      });
     }
   }
 
@@ -88,8 +144,12 @@ export class VoiceRecorder {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64 = reader.result.split(",")[1];
-        resolve(base64);
+        if (reader.result && typeof reader.result === 'string') {
+          const base64 = reader.result.split(",")[1];
+          resolve(base64);
+        } else {
+          reject(new Error("Failed to convert audio to base64: invalid result"));
+        }
       };
       reader.onerror = () => {
         reject(new Error("Failed to convert audio to base64"));
@@ -99,12 +159,8 @@ export class VoiceRecorder {
   }
 
   getDuration() {
-    if (this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
-      return Math.round(
-        this.mediaRecorder.stream.getTracks()[0].readyState
-          ? new Date() - this.startTime
-          : 0,
-      );
+    if (this.startTime && this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
+      return Math.round((new Date() - this.startTime) / 1000);
     }
     return 0;
   }
