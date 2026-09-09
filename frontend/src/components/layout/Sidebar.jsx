@@ -36,7 +36,7 @@ export default function Sidebar({ active, onNavigate, businessName }) {
       </div>
 
       <nav className="mp-side-nav">
-        {NAV_ITEMS.map(({ key, label, target, Icon }) => (
+        {NAV_ITEMS.map(({ key, labelKey, target, Icon }) => (
           <button
             key={key}
             type="button"
