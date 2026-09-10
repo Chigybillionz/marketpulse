@@ -4,8 +4,12 @@ const { getSummary } = require("../services/WeeklySummaryService");
 const Transaction = require("../models/Transaction");
 const WelcomeUser = require("../models/WelcomeUser");
 
-// Initialize with the environment variable from backend
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || "");
+// Initialize with the environment variable from backend, explicitly defining the base URL
+// to avoid routing to broken internal proxies like daily-cloudcode-pa
+const genAI = new GoogleGenerativeAI(
+  process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || "",
+  { baseUrl: "https://generativelanguage.googleapis.com" }
+);
 
 /* ------------------------- quota protection layer -------------------------
  * The Gemini free tier allows very few requests/day per model (e.g. 20 RPD
