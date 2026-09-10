@@ -74,7 +74,8 @@ export default function PulseTradePin({
   // "change"). In this mode NO transaction data or amount is shown — the
   // user only manages their PIN:
   //   verify (current PIN) → create (new PIN) → confirm → done.
-  const isChangeMode = location.state?.pinMode === "change";
+  const transactionData = location.state?.transactionData;
+  const isChangeMode = location.state?.pinMode === "change" || !transactionData;
 
   const [pin, setPin] = useState("");
   const [createdPin, setCreatedPin] = useState("");
@@ -85,14 +86,9 @@ export default function PulseTradePin({
   // Determine mode: "create" | "confirm" | "verify"
   const [mode, setMode] = useState(isChangeMode ? "verify" : "verify");
 
-  const transactionData = location.state?.transactionData || {
-    type: "credit",
-    amount: 15000,
-    description: "Bulk Garri Sale",
-    category: "Dry Goods"
-  };
-  const amountNum = transactionData.amount !== undefined && transactionData.amount !== null ? Number(transactionData.amount) : 15000;
-  const isIncome = transactionData.type?.toLowerCase() === 'income' || transactionData.type?.toLowerCase() === 'credit';
+
+  const amountNum = transactionData?.amount !== undefined && transactionData?.amount !== null ? Number(transactionData.amount) : 15000;
+  const isIncome = transactionData?.type?.toLowerCase() === 'income' || transactionData?.type?.toLowerCase() === 'credit';
 
   // On mount, check if user has a PIN (normal transaction flow only —
   // change mode always starts by verifying the current PIN).

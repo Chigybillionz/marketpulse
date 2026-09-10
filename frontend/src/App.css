@@ -4037,7 +4037,7 @@
   box-shadow: 0 8px 24px rgba(1, 63, 31, 0.25);
   opacity: 0;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 1000;
+  z-index: 99999;
 }
 
 .store-profile-notification.show {
