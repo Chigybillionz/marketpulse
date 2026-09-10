@@ -87,7 +87,7 @@ export default function Analysing({ onNavigate, businessName }) {
         }
 
         if (isMounted) {
-          onNavigate(ANALYSIS_NEXT_PAGE, { transactionData });
+          onNavigate(ANALYSIS_NEXT_PAGE, { transactionData, audioBase64 });
         }
       } catch (error) {
         console.error("Analysis failed:", error);
@@ -122,7 +122,8 @@ export default function Analysing({ onNavigate, businessName }) {
                     description: "AI analysis unavailable - please enter manually",
                     category: "Other",
                     aiError: errorMessage.substring(0, 100)
-                }
+                },
+                audioBase64
               });
             }
           }, 2000);

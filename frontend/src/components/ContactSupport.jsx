@@ -205,14 +205,17 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
                 <ArrowIcon />
               </a>
 
-              <button className="contact-support-channel call" type="button">
+              <a
+                href="tel:+2347081104368"
+                className="contact-support-channel call block md:hidden"
+              >
                 <span className="contact-support-channel-icon">C</span>
                 <span className="contact-support-channel-copy">
                   <strong>Phone Call</strong>
                   <small>Speak to an agent (9AM - 5PM)</small>
                 </span>
                 <ArrowIcon />
-              </button>
+              </a>
             </section>
           </section>
         </main>
