@@ -2,28 +2,22 @@ import { useMemo, useState } from "react";
 
 const FAQS = [
   {
-    id: "data-safe",
-    question: "Is my data safe?",
+    id: "sale",
+    question: "How to record a sale?",
     answer:
-      "Yes. Your records are encrypted with 256-bit AES at rest and TLS 1.3 in transit. Voice prompts are processed locally where possible, so your trading strategies stay private to you.",
+      "Go to Home, tap the mic or add button, confirm trade details, then approve with your Trade PIN.",
   },
   {
-    id: "bank-statement",
-    question: "How do I download my bank statement?",
+    id: "pin",
+    question: "What is a Trade PIN?",
     answer:
-      "Open the History screen, tap the export icon in the top right, choose a date range, and we generate a PDF statement you can save or share instantly.",
+      "A 4-digit security code used to approve sensitive entries like sales, expenses, and credit updates.",
   },
   {
-    id: "ai-misses",
-    question: "What if the AI misses an item?",
+    id: "debt",
+    question: "How to track debt?",
     answer:
-      "You can review every entry before it is saved. On the confirmation screen just edit the amount or category, and the AI learns from your correction for next time.",
-  },
-  {
-    id: "multiple-accounts",
-    question: "Can I use multiple bank accounts?",
-    answer:
-      "Absolutely. Link as many accounts as you need from Profile → Account Settings. Each transaction is tagged to the right account so your ledgers never mix.",
+      "Use the Credit section to add debtor records, set reminders, and monitor overdue balances in one place.",
   },
 ];
 
@@ -83,17 +77,11 @@ function SupportIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path
-        d="M5 15v-3a7 7 0 0 1 14 0v3"
+        d="M8 5l8 7-8 7"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2.2"
+        strokeWidth="2.4"
         strokeLinecap="round"
-      />
-      <path
-        d="M5 15h4v5H7a2 2 0 0 1-2-2v-3ZM19 15h-4v5h2a2 2 0 0 0 2-2v-3Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
         strokeLinejoin="round"
       />
     </svg>
@@ -123,7 +111,7 @@ function ChatIcon() {
 
 export default function Faqs({ onNavigate, onBack }) {
   const [query, setQuery] = useState("");
-  const [openId, setOpenId] = useState("data-safe");
+  const [openId, setOpenId] = useState("sale");
 
   const filteredFaqs = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -211,33 +199,62 @@ export default function Faqs({ onNavigate, onBack }) {
               )}
             </div>
 
-            <article className="faqs-cta">
-              <h3>Still have questions?</h3>
-              <p>
+            <section className="contact-support-channels" aria-label="Contact channels" style={{ marginTop: '2rem' }}>
+              <h3>Contact Support</h3>
+              <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '1.5rem' }}>
                 Our support team is available 24/7 to assist you with your
                 trading journey.
               </p>
-              <button
-                className="faqs-cta-button"
-                type="button"
-                onClick={() => onNavigate && onNavigate("contact_support")}
+              <a
+                href="https://wa.me/2347081104368"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-support-channel whatsapp"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '16px', textDecoration: 'none', color: '#166534', marginBottom: '12px' }}
               >
-                <SupportIcon />
-                <span>Contact Support</span>
-              </button>
-            </article>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <span className="contact-support-channel-icon" style={{ width: '40px', height: '40px', background: '#22c55e', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>W</span>
+                  <span className="contact-support-channel-copy" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <strong style={{ fontSize: '16px' }}>WhatsApp Support</strong>
+                    <small style={{ color: '#166534', opacity: 0.8 }}>Instant chat with our team</small>
+                  </span>
+                </div>
+                <div style={{ width: '20px', height: '20px' }}>
+                  <SupportIcon />
+                </div>
+              </a>
+
+              <a
+                href="tel:+2347081104368"
+                className="contact-support-channel call block md:hidden"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', textDecoration: 'none', color: '#334155' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <span className="contact-support-channel-icon" style={{ width: '40px', height: '40px', background: '#94a3b8', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>C</span>
+                  <span className="contact-support-channel-copy" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <strong style={{ fontSize: '16px' }}>Phone Call</strong>
+                    <small style={{ color: '#475569', opacity: 0.8 }}>Speak to an agent (9AM - 5PM)</small>
+                  </span>
+                </div>
+                <div style={{ width: '20px', height: '20px' }}>
+                  <SupportIcon />
+                </div>
+              </a>
+            </section>
           </section>
         </div>
       </section>
 
-      <button
+      <a
+        href="https://wa.me/2347081104368"
+        target="_blank"
+        rel="noopener noreferrer"
         className="faqs-fab"
-        type="button"
         aria-label="Open live chat"
-        onClick={() => onNavigate && onNavigate("contact_support")}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
       >
         <ChatIcon />
-      </button>
+      </a>
     </main>
   );
 }
