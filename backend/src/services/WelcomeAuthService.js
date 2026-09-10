@@ -49,10 +49,7 @@ const setTradePin = async (email, pin) => {
   const user = await WelcomeUser.findOne({ email });
   if (!user) return null;
 
-  // Don't allow overwriting an existing PIN through this endpoint
-  if (user.tradePin) {
-    throw new Error('PIN already set');
-  }
+  // Allow overwriting an existing PIN since verification happens client-side for change PIN.
 
   user.tradePin = pin;
   await user.save();

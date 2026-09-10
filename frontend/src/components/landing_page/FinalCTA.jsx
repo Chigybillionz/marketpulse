@@ -1,6 +1,8 @@
 import { ArrowRight } from 'lucide-react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function FinalCTA({ onNavigate }) {
+  const { t } = useLanguage();
   const handleGetStarted = () => {
     if (onNavigate) {
       onNavigate("signup");
@@ -42,22 +44,21 @@ export default function FinalCTA({ onNavigate }) {
                 clipRule="evenodd"
               />
             </svg>
-            Start Your Free Trial
+            {t('landing_cta_start_trial') || 'Start Your Free Trial'}
           </div>
 
           <h2
             data-reveal="cta-entrance"
             className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 md:mb-8 tracking-tight">
-            Join the Future of
+            {t('landing_cta_title1') || 'Join the Future of'}
             <br />
-            Market Trading Today
+            {t('landing_cta_title2') || 'Market Trading Today'}
           </h2>
 
           <p
             data-reveal="cta-entrance"
             className="text-green-100 max-w-2xl mx-auto mb-10 md:mb-12 text-base md:text-lg font-medium leading-relaxed">
-            Stop stressing over lost receipts and confused ledgers. Let your voice do
-            the bookkeeping while you focus on growing your business.
+            {t('landing_cta_subtitle') || 'Stop stressing over lost receipts and confused ledgers. Let your voice do the bookkeeping while you focus on growing your business.'}
           </p>
 
           {/* CTA Buttons */}
@@ -68,7 +69,7 @@ export default function FinalCTA({ onNavigate }) {
               onClick={handleGetStarted}
               className="bg-white text-[#064E3B] px-8 py-4 md:px-10 md:py-5 rounded-2xl font-bold text-base md:text-lg flex items-center gap-3 mx-auto hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl group-hover:animate-pulse-hover"
             >
-              Create Free Account
+              {t('landing_cta_create_account') || 'Create Free Account'}
               <ArrowRight size={22} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <button
@@ -78,7 +79,7 @@ export default function FinalCTA({ onNavigate }) {
                 else navigate("/features");
               }}
             >
-              Learn More
+              {t('landing_cta_learn_more') || 'Learn More'}
             </button>
           </div>
 

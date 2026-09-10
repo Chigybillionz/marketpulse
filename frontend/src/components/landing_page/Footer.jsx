@@ -1,4 +1,7 @@
+import { useLanguage } from '../../i18n/LanguageContext';
+
 export default function Footer({ onNavigate }) {
+  const { t } = useLanguage();
   const navigate = window.navigate;
 
   const handleNavClick = (path) => {
@@ -30,40 +33,39 @@ export default function Footer({ onNavigate }) {
               </span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
-              Voice-first bookkeeping for Nigerian market traders. Track your business
-              in seconds, not hours.
+              {t('landing_footer_desc') || 'Voice-first bookkeeping for Nigerian market traders. Track your business in seconds, not hours.'}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
             <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider">
-              Product
+              {t('landing_footer_product') || 'Product'}
             </h4>
             <div className="space-y-3">
               <button
                 onClick={() => handleNavClick('features')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Features
+                {t('landing_nav_features') || 'Features'}
               </button>
               <button
                 onClick={() => handleNavClick('how-it-works')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                How It Works
+                {t('landing_nav_how_it_works') || 'How It Works'}
               </button>
               <button
                 onClick={() => handleNavClick('pricing')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Pricing
+                {t('landing_nav_pricing') || 'Pricing'}
               </button>
               <button
                 onClick={() => handleNavClick('faqs')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                FAQs
+                {t('landing_footer_faqs') || 'FAQs'}
               </button>
             </div>
           </div>
@@ -71,26 +73,26 @@ export default function Footer({ onNavigate }) {
           {/* Resources */}
           <div>
             <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider">
-              Resources
+              {t('landing_footer_resources') || 'Resources'}
             </h4>
             <div className="space-y-3">
               <button
                 onClick={() => handleNavClick('contact_support')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Contact Support
+                {t('landing_footer_contact') || 'Contact Support'}
               </button>
               <button
                 onClick={() => handleNavClick('privacy_policy')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Privacy Policy
+                {t('landing_footer_privacy') || 'Privacy Policy'}
               </button>
               <button
                 onClick={() => handleNavClick('terms_of_service')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Terms of Service
+                {t('landing_footer_terms') || 'Terms of Service'}
               </button>
             </div>
           </div>
@@ -98,20 +100,20 @@ export default function Footer({ onNavigate }) {
           {/* Connect */}
           <div>
             <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider">
-              Connect
+              {t('landing_footer_connect') || 'Connect'}
             </h4>
             <div className="space-y-3">
               <button
                 onClick={() => handleNavClick('login')}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Log In
+                {t('landing_nav_login') || 'Log In'}
               </button>
               <button
                 onClick={() => handleNavClick('signup')}
                 className="w-full bg-[#064E3B] text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#043d2e] transition-colors mt-2"
               >
-                Get Started Free
+                {t('landing_cta_create_account') || 'Get Started Free'}
               </button>
             </div>
           </div>
@@ -120,7 +122,7 @@ export default function Footer({ onNavigate }) {
         {/* Bottom bar */}
         <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm font-semibold text-gray-400">
-            © 2024 MarketPulse AI. All rights reserved.
+            {t('landing_footer_rights') || '© 2024 MarketPulse AI. All rights reserved.'}
           </p>
           <div className="flex items-center gap-4">
             <a

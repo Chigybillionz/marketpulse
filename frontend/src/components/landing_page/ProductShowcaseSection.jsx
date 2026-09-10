@@ -10,6 +10,7 @@
 import { Mic, BarChart2, Lock, Wallet } from 'lucide-react';
 import useInView from './useInView';
 import { AnimatedCounter } from './motionPrimitives';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -21,6 +22,7 @@ const staged = (visible, delay, extraTransform = 'translateY(18px)') => ({
 
 export default function ProductShowcaseSection() {
   const [sectionRef, sectionInView] = useInView({ threshold: 0.15 });
+  const { t } = useLanguage();
 
   const features = [
     {
@@ -71,24 +73,23 @@ export default function ProductShowcaseSection() {
             className="mb-6 inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green-700"
           >
             <Mic size={14} />
-            Core Features
+            {t('landing_showcase_title1') || 'Core Features'}
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
             className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
           >
-            Everything You Need to
+            {t('landing_showcase_title2') || 'Everything You Need to'}
             <br />
-            <span className="text-[#064E3B]">Run Your Market Business</span>
+            <span className="text-[#064E3B]">{t('landing_showcase_title3') || 'Run Your Market Business'}</span>
           </h2>
           <p
             data-reveal="data-entrance"
             data-reveal-delay="160"
             className="text-base font-medium text-gray-600 md:text-lg"
           >
-            Four powerful tools that work together to give you complete control
-            over your finances.
+            {t('landing_showcase_subtitle') || 'Four powerful tools that work together to give you complete control over your finances.'}
           </p>
         </div>
 

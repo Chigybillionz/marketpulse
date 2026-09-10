@@ -5,8 +5,10 @@
  */
 
 import { AnimatedCounter } from './motionPrimitives';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function MarketStorySection() {
+  const { t } = useLanguage();
   return (
     <section data-reveal="story-reveal" className="bg-[#F9FAFB] py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
@@ -14,11 +16,11 @@ export default function MarketStorySection() {
           {/* Left - Story content */}
           <div className="relative space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green-700">
-              The Story
+              {t('landing_story_title1') || 'The Story'}
             </div>
             <h2 className="text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl">
-              Built for the
-              <span className="text-[#064E3B]"> Market Hustle</span>
+              {t('landing_story_title2') || 'Built for the'}
+              <span className="text-[#064E3B]"> {t('landing_story_title3') || 'Market Hustle'}</span>
             </h2>
             {/* Accent rule (positioned relative to this container) */}
             <div
@@ -27,16 +29,10 @@ export default function MarketStorySection() {
             />
             <div className="pl-4 md:pl-0">
               <p className="text-base font-medium leading-relaxed text-gray-600 md:text-lg">
-                MarketPulse started with a simple observation: market traders are incredible
-                at what they do, but their bookkeeping often holds them back. Spreadsheets
-                are tedious. Paper receipts get lost. And by the end of the week, it's hard
-                to remember where every naira went.
+                {t('landing_story_p1') || "MarketPulse started with a simple observation: market traders are incredible at what they do, but their bookkeeping often holds them back. Spreadsheets are tedious. Paper receipts get lost. And by the end of the week, it's hard to remember where every naira went."}
               </p>
               <p className="mt-4 text-base font-medium leading-relaxed text-gray-600 md:text-lg">
-                We built MarketPulse to change that. Speak naturally, like you're telling a
-                friend about your day. Our AI understands context, categorizes transactions,
-                and gives you real-time insights about your business health — all without
-                touching a spreadsheet.
+                {t('landing_story_p2') || "We built MarketPulse to change that. Speak naturally, like you're telling a friend about your day. Our AI understands context, categorizes transactions, and gives you real-time insights about your business health — all without touching a spreadsheet."}
               </p>
             </div>
 

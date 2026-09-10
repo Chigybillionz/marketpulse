@@ -10,6 +10,7 @@
 import { BarChart2, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import useInView from './useInView';
 import { AnimatedCounter } from './motionPrimitives';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -21,6 +22,7 @@ const staged = (visible, delay) => ({
 
 export default function WeeklyPulseSection() {
   const [sectionRef, sectionInView] = useInView({ threshold: 0.15 });
+  const { t } = useLanguage();
 
   const weeklyData = [
     { day: 'Monday', revenue: 127800, expenses: 84500, profit: 43300, topProduct: 'Garri', transactions: 18 },
@@ -57,24 +59,23 @@ export default function WeeklyPulseSection() {
             className="mb-6 inline-flex items-center gap-2 rounded-full bg-purple-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-purple-700"
           >
             <Calendar size={14} />
-            Weekly Pulse
+            {t('landing_weekly_title1') || 'Weekly Pulse'}
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
             className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
           >
-            Your Week at a
+            {t('landing_weekly_title2') || 'Your Week at a'}
             <br />
-            <span className="text-[#064E3B]">Glance</span>
+            <span className="text-[#064E3B]">{t('landing_weekly_title3') || 'Glance'}</span>
           </h2>
           <p
             data-reveal="data-entrance"
             data-reveal-delay="160"
             className="text-base font-medium text-gray-600 md:text-lg"
           >
-            Understand your business rhythm. See which days are your goldmine,
-            what sells best, and where your money goes.
+            {t('landing_weekly_subtitle') || 'Understand your business rhythm. See which days are your goldmine, what sells best, and where your money goes.'}
           </p>
         </div>
 

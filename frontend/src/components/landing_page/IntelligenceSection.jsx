@@ -10,6 +10,7 @@
 import { TrendingUp, TrendingDown, Lightbulb, Calendar, ArrowRight } from 'lucide-react';
 import useInView from './useInView';
 import { AnimatedCounter } from './motionPrimitives';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -42,6 +43,7 @@ function MiniChart({ data, colorClass, active }) {
 
 export default function IntelligenceSection() {
   const [sectionRef, sectionInView] = useInView({ threshold: 0.15 });
+  const { t } = useLanguage();
 
   const revenueData = [320000, 380000, 350000, 420000, 480000, 520000, 580000];
 
@@ -59,24 +61,23 @@ export default function IntelligenceSection() {
             className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-700"
           >
             <Lightbulb size={14} />
-            AI Intelligence
+            {t('landing_intel_title1') || 'AI Intelligence'}
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
             className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
           >
-            Real-time Insights,
+            {t('landing_intel_title2') || 'Real-time Insights,'}
             <br />
-            <span className="text-[#064E3B]">Actionable Intelligence</span>
+            <span className="text-[#064E3B]">{t('landing_intel_title3') || 'Actionable Intelligence'}</span>
           </h2>
           <p
             data-reveal="data-entrance"
             data-reveal-delay="160"
             className="text-base font-medium text-gray-600 md:text-lg"
           >
-            Know exactly what's selling, where your money is going, and what tomorrow looks like
-            for your business.
+            {t('landing_intel_subtitle') || "Know exactly what's selling, where your money is going, and what tomorrow looks like for your business."}
           </p>
         </div>
 

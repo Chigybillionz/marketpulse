@@ -9,6 +9,7 @@
 
 import { Package, AlertTriangle, CheckCircle, ArrowRight } from 'lucide-react';
 import useInView from './useInView';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -20,6 +21,7 @@ const staged = (visible, delay) => ({
 
 export default function InventorySection() {
   const [sectionRef, sectionInView] = useInView({ threshold: 0.15 });
+  const { t } = useLanguage();
 
   const inventoryItems = [
     {
@@ -72,24 +74,23 @@ export default function InventorySection() {
             className="mb-6 inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-700"
           >
             <Package size={14} />
-            Inventory
+            {t('landing_inventory_title1') || 'Inventory'}
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
             className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
           >
-            Never Run Out of
+            {t('landing_inventory_title2') || 'Never Run Out of'}
             <br />
-            <span className="text-[#064E3B]">Best-Selling Stock</span>
+            <span className="text-[#064E3B]">{t('landing_inventory_title3') || 'Best-Selling Stock'}</span>
           </h2>
           <p
             data-reveal="data-entrance"
             data-reveal-delay="160"
             className="text-base font-medium text-gray-600 md:text-lg"
           >
-            Track your inventory levels, set smart reorder points, and get alerts
-            before you run out of your top-selling products.
+            {t('landing_inventory_subtitle') || 'Track your inventory levels, set smart reorder points, and get alerts before you run out of your top-selling products.'}
           </p>
         </div>
 

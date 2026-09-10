@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { VoiceRecorder } from '../../services/voiceRecorder';
 import { transcribeAndAnalyze } from '../../services/geminiService';
+import { useLanguage } from '../../i18n/LanguageContext';
 import useInView from './useInView';
 import { AnimatedCounter, VoiceWaveform } from './motionPrimitives';
 
@@ -144,6 +145,7 @@ function HeroTrendBars({ active }) {
 }
 
 export default function HeroSection({ onNavigate, onVoiceStateChange }) {
+  const { t } = useLanguage();
   const [showDemoVideo, setShowDemoVideo] = useState(false);
   const [micState, setMicState] = useState('IDLE'); // IDLE, LISTENING, PROCESSING, ANALYZING, RESULT
   const [demoResult, setDemoResult] = useState(null);
@@ -296,25 +298,23 @@ export default function HeroSection({ onNavigate, onVoiceStateChange }) {
             className="inline-flex w-fit items-center gap-2 rounded-full border border-gray-200 bg-[#E5E7EB]/60 px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm md:text-sm"
           >
             <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-            Trusted by 5,000+ Nigerian Traders
+            {t('landing_hero_trusted') || 'Trusted by 5,000+ Nigerian Traders'}
           </div>
 
           <h1
             style={enter(120)}
             className="mt-6 text-4xl font-extrabold leading-[1.12] tracking-tight text-[#111827] md:text-5xl lg:text-6xl"
           >
-            Your Market Business,
+            {t('landing_hero_title1') || 'Your Market Business,'}
             <br />
-            <span className="text-[#064E3B]">Perfectly Balanced.</span>
+            <span className="text-[#064E3B]">{t('landing_hero_title2') || 'Perfectly Balanced.'}</span>
           </h1>
 
           <p
             style={enter(240)}
             className="mt-6 max-w-lg text-base font-medium leading-relaxed text-gray-600 md:text-lg"
           >
-            Speak your sales, expenses, and debts. We track it all instantly,
-            so you always know your true profit. Voice-first bookkeeping built
-            for the hustle.
+            {t('landing_hero_subtitle') || 'Speak your sales, expenses, and debts. We track it all instantly, so you always know your true profit. Voice-first bookkeeping built for the hustle.'}
           </p>
 
           <div
@@ -325,14 +325,14 @@ export default function HeroSection({ onNavigate, onVoiceStateChange }) {
               onClick={handleGetStarted}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#064E3B] px-7 py-3.5 font-bold text-white shadow-lg shadow-green-900/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#043d2e] hover:shadow-xl hover:shadow-green-900/30 sm:w-auto"
             >
-              Get Started <ArrowRight size={18} strokeWidth={2.5} />
+              {t('landing_nav_get_started') || 'Get Started'} <ArrowRight size={18} strokeWidth={2.5} />
             </button>
             <button
               onClick={() => setShowDemoVideo(true)}
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-7 py-3.5 font-bold text-gray-800 shadow-sm transition-all duration-300 hover:bg-gray-50 hover:shadow-md sm:w-auto"
             >
               <Play size={18} className="text-gray-500" fill="currentColor" />
-              Watch Demo
+              {t('landing_hero_watch_demo') || 'Watch Demo'}
             </button>
           </div>
 

@@ -13,10 +13,12 @@ import { Mic, ArrowRight, ArrowUp, ArrowDown, Wallet } from 'lucide-react';
 import { VoiceRecorder } from '../../services/voiceRecorder';
 import { transcribeAndAnalyze } from '../../services/geminiService';
 import { VoiceWaveform } from './motionPrimitives';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const MP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export default function VoiceAISection({ onNavigate }) {
+  const { t } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false); // presentation stage of the real call
@@ -145,24 +147,23 @@ export default function VoiceAISection({ onNavigate }) {
             className="mb-6 inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green-700"
           >
             <Mic size={14} />
-            Voice AI
+            {t('landing_voice_title1') || 'Voice AI'}
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
             className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
           >
-            Just Speak.
+            {t('landing_voice_title2') || 'Just Speak.'}
             <br />
-            <span className="text-[#064E3B]">We Handle the Rest.</span>
+            <span className="text-[#064E3B]">{t('landing_voice_title3') || 'We Handle the Rest.'}</span>
           </h2>
           <p
             data-reveal="data-entrance"
             data-reveal-delay="160"
             className="mx-auto max-w-2xl text-base font-medium text-gray-600 md:text-lg"
           >
-            MarketPulse's voice AI understands natural Nigerian English, Pidgin, and market lingo.
-            Say something like "I sold 3 bags of rice for 150k" and watch it become a structured transaction instantly.
+            {t('landing_voice_subtitle') || "MarketPulse's voice AI understands natural Nigerian English, Pidgin, and market lingo. Say something like \"I sold 3 bags of rice for 150k\" and watch it become a structured transaction instantly."}
           </p>
         </div>
 
@@ -357,7 +358,7 @@ export default function VoiceAISection({ onNavigate }) {
           {/* Right - How it works */}
           <div className="space-y-6">
             <h3 data-reveal="data-entrance" className="text-2xl font-bold text-gray-900 md:text-3xl">
-              How Voice AI Works
+              {t('landing_voice_how_it_works') || 'How Voice AI Works'}
             </h3>
 
             <div data-reveal-stagger data-reveal-step="120" className="space-y-6">
@@ -367,10 +368,9 @@ export default function VoiceAISection({ onNavigate }) {
                   <span className="text-sm font-bold">1</span>
                 </div>
                 <div>
-                  <h4 className="mb-2 font-bold text-gray-900">Speak Naturally</h4>
+                  <h4 className="mb-2 font-bold text-gray-900">{t('landing_voice_step1_title') || 'Speak Naturally'}</h4>
                   <p className="text-sm leading-relaxed text-gray-600">
-                    Tap the microphone and say your transaction in plain language.
-                    Use your native market lingo — no special format required.
+                    {t('landing_voice_step1_desc') || 'Tap the microphone and say your transaction in plain language. Use your native market lingo — no special format required.'}
                   </p>
                 </div>
               </div>
@@ -381,10 +381,9 @@ export default function VoiceAISection({ onNavigate }) {
                   <span className="text-sm font-bold">2</span>
                 </div>
                 <div>
-                  <h4 className="mb-2 font-bold text-gray-900">AI Understands Context</h4>
+                  <h4 className="mb-2 font-bold text-gray-900">{t('landing_voice_step2_title') || 'AI Understands Context'}</h4>
                   <p className="text-sm leading-relaxed text-gray-600">
-                    Our AI extracts the amount, item, category, and even credit details
-                    from your natural speech.
+                    {t('landing_voice_step2_desc') || 'Our AI extracts the amount, item, category, and even credit details from your natural speech.'}
                   </p>
                 </div>
               </div>
@@ -395,10 +394,9 @@ export default function VoiceAISection({ onNavigate }) {
                   <span className="text-sm font-bold">3</span>
                 </div>
                 <div>
-                  <h4 className="mb-2 font-bold text-gray-900">Instant Structured Data</h4>
+                  <h4 className="mb-2 font-bold text-gray-900">{t('landing_voice_step3_title') || 'Instant Structured Data'}</h4>
                   <p className="text-sm leading-relaxed text-gray-600">
-                    Your transaction is logged, categorized, and ready for reporting.
-                    No typing, no spreadsheets.
+                    {t('landing_voice_step3_desc') || 'Your transaction is logged, categorized, and ready for reporting. No typing, no spreadsheets.'}
                   </p>
                 </div>
               </div>

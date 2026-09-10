@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Menu, UserCircle } from 'lucide-react';
 import MobileMenu from '../layout/MobileMenu';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function Header({ businessName, onNavigate, profilePicture }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pic = profilePicture || localStorage.getItem('profilePicture');
+  const { t } = useLanguage();
 
   return (
     <>
@@ -60,7 +62,7 @@ export default function Header({ businessName, onNavigate, profilePicture }) {
           lineHeight: 1.2,
         }}
       >
-        {businessName || 'My Store'}
+        {businessName || t('common_my_store') || 'My Store'}
       </h1>
 
       {/* Right icon — profile picture or fallback */}

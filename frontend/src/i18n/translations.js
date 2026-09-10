@@ -10,6 +10,74 @@
  */
 const translations = {
   English: {
+    // Landing Page
+    landing_nav_features: "Features",
+    landing_nav_how_it_works: "How it Works",
+    landing_nav_pricing: "Pricing",
+    landing_nav_login: "Login",
+    landing_nav_get_started: "Get Started",
+    
+    landing_hero_trusted: "Trusted by 5,000+ Nigerian Traders",
+    landing_hero_title1: "Your Market Business,",
+    landing_hero_title2: "Perfectly Balanced.",
+    landing_hero_subtitle: "Speak your sales, expenses, and debts. We track it all instantly, so you always know your true profit. Voice-first bookkeeping built for the hustle.",
+    landing_hero_watch_demo: "Watch Demo",
+    
+    landing_showcase_title1: "Core Features",
+    landing_showcase_title2: "Everything You Need to",
+    landing_showcase_title3: "Run Your Market Business",
+    landing_showcase_subtitle: "Four powerful tools that work together to give you complete control over your finances.",
+    
+    landing_story_title1: "The Story",
+    landing_story_title2: "Built for the",
+    landing_story_title3: "Market Hustle",
+    landing_story_p1: "MarketPulse started with a simple observation: market traders are incredible at what they do, but their bookkeeping often holds them back. Spreadsheets are tedious. Paper receipts get lost. And by the end of the week, it's hard to remember where every naira went.",
+    landing_story_p2: "We built MarketPulse to change that. Speak naturally, like you're telling a friend about your day. Our AI understands context, categorizes transactions, and gives you real-time insights about your business health — all without touching a spreadsheet.",
+    
+    landing_voice_title1: "Voice AI",
+    landing_voice_title2: "Just Speak.",
+    landing_voice_title3: "We Handle the Rest.",
+    landing_voice_subtitle: "MarketPulse's voice AI understands natural Nigerian English, Pidgin, and market lingo. Say something like 'I sold 3 bags of rice for 150k' and watch it become a structured transaction instantly.",
+    landing_voice_how_it_works: "How Voice AI Works",
+    landing_voice_step1_title: "Speak Naturally",
+    landing_voice_step1_desc: "Tap the microphone and say your transaction in plain language. Use your native market lingo — no special format required.",
+    landing_voice_step2_title: "AI Understands Context",
+    landing_voice_step2_desc: "Our AI extracts the amount, item, category, and even credit details from your natural speech.",
+    landing_voice_step3_title: "Instant Structured Data",
+    landing_voice_step3_desc: "Your transaction is logged, categorized, and ready for reporting. No typing, no spreadsheets.",
+    
+    landing_intelligence_title1: "AI Intelligence",
+    landing_intelligence_title2: "Real-time Insights,",
+    landing_intelligence_title3: "Actionable Intelligence",
+    landing_intelligence_subtitle: "Know exactly what's selling, where your money is going, and what tomorrow looks like for your business.",
+    
+    landing_inventory_title1: "Inventory",
+    landing_inventory_title2: "Never Run Out of",
+    landing_inventory_title3: "Best-Selling Stock",
+    landing_inventory_subtitle: "Track your inventory levels, set smart reorder points, and get alerts before you run out of your top-selling products.",
+    landing_inventory_feature1_title: "Smart Reorder Points",
+    landing_inventory_feature1_desc: "Set minimum stock levels for each product. MarketPulse tracks usage patterns and suggests optimal reorder quantities.",
+    landing_inventory_feature2_title: "Low Stock Alerts",
+    landing_inventory_feature2_desc: "Get notified when inventory drops below threshold. Never miss a sales opportunity because you're out of stock.",
+    landing_inventory_feature3_title: "Inventory Value Tracking",
+    landing_inventory_feature3_desc: "See the total value of your inventory at a glance. Track cost vs. market value, and identify slow-moving products that tie up your capital.",
+    
+    landing_pulse_title1: "Weekly Pulse",
+    landing_pulse_title2: "Your Week at a",
+    landing_pulse_title3: "Glance",
+    landing_pulse_subtitle: "Understand your business rhythm. See which days are your goldmine, what sells best, and where your money goes.",
+    
+    landing_cta_title1: "Join the Future of",
+    landing_cta_title2: "Market Trading Today",
+    landing_cta_subtitle: "Stop stressing over lost receipts and confused ledgers. Let your voice do the bookkeeping while you focus on growing your business.",
+    landing_cta_button: "Create Free Account",
+    landing_cta_perk1: "No credit card required",
+    landing_cta_perk2: "14-day free trial",
+    landing_cta_perk3: "Cancel anytime",
+    
+    landing_footer_desc: "Voice-first bookkeeping for Nigerian market traders. Track your business in seconds, not hours.",
+    landing_footer_copyright: "© 2026 MarketPulse AI. All rights reserved.",
+
     // App shell
     shell_record_a_trade: "Record a trade update for analysis",
     shell_sorting_voice: "Sorting your voice note into ledger details",
@@ -185,6 +253,74 @@ const translations = {
   },
 
   Pidgin: {
+    // Landing Page
+    landing_nav_features: "Wetin Dey Inside",
+    landing_nav_how_it_works: "How E Dey Work",
+    landing_nav_pricing: "Money Matter",
+    landing_nav_login: "Enter Your Account",
+    landing_nav_get_started: "Start Sharp Sharp",
+    
+    landing_hero_trusted: "Over 5,000 Naija Traders Dey Trust Us",
+    landing_hero_title1: "Your Market Hustle,",
+    landing_hero_title2: "E Dey Balance Well.",
+    landing_hero_subtitle: "Just talk your sales, expenses, and wetin dem owe you. We go track am instantly, so you go know your exact profit. Voice bookkeeping for the hustle.",
+    landing_hero_watch_demo: "Watch How E Dey Work",
+    
+    landing_showcase_title1: "Main Things",
+    landing_showcase_title2: "Everything Wey You Need",
+    landing_showcase_title3: "For Your Market Business",
+    landing_showcase_subtitle: "Four strong tools wey go join hands give you full control of your money.",
+    
+    landing_story_title1: "Our Story",
+    landing_story_title2: "We Make Am For",
+    landing_story_title3: "Market People",
+    landing_story_p1: "MarketPulse start because we see say market people dey try well well, but writing sales inside book dey draw dem back. Paper receipt dey loss, and by weekend, to remember how money waka dey hard.",
+    landing_story_p2: "We build MarketPulse to change am. Just talk normal normal, like say you dey gist your friend. Our AI understand am, arrange am well, and show you exactly how your business dey do — no need for pen or paper.",
+    
+    landing_voice_title1: "Voice AI",
+    landing_voice_title2: "Just Talk.",
+    landing_voice_title3: "We Go Do The Rest.",
+    landing_voice_subtitle: "Our voice AI hear English, Pidgin, and market slang clearly. Say something like 'I sell 3 bag of rice 150k' and see how e go arrange am sharply.",
+    landing_voice_how_it_works: "How E Dey Work",
+    landing_voice_step1_title: "Talk Normal Normal",
+    landing_voice_step1_desc: "Tap the mic and talk your sales normal. Use your usual market language — no special grammar needed.",
+    landing_voice_step2_title: "AI Understand You",
+    landing_voice_step2_desc: "Our AI go pick the amount, the item, the category, and even credit matter from wetin you talk.",
+    landing_voice_step3_title: "Instant Record",
+    landing_voice_step3_desc: "Your sales don enter record, organized and ready. No typing, no stress.",
+    
+    landing_intelligence_title1: "AI Brain",
+    landing_intelligence_title2: "Sharp Insights,",
+    landing_intelligence_title3: "Smart Intelligence",
+    landing_intelligence_subtitle: "Know exactly wetin dey sell pass, where your money dey go, and how tomorrow go be for your business.",
+    
+    landing_inventory_title1: "Goods / Stock",
+    landing_inventory_title2: "Make You No Find",
+    landing_inventory_title3: "Your Fast Goods Missing",
+    landing_inventory_subtitle: "Track your goods, set level when to buy more, and get alert before the ones wey dey sell well finish.",
+    landing_inventory_feature1_title: "Smart Buy Level",
+    landing_inventory_feature1_desc: "Set the lowest level for your goods. MarketPulse go monitor am tell you the exact time to order new ones.",
+    landing_inventory_feature2_title: "Low Goods Alert",
+    landing_inventory_feature2_desc: "We go notify you if your stock don dey go down. Make you no miss any customer because market don finish.",
+    landing_inventory_feature3_title: "Goods Money Tracking",
+    landing_inventory_feature3_desc: "See how much all the goods wey you get worth. Know the ones wey no dey move wey tie your money down.",
+    
+    landing_pulse_title1: "Weekly Pulse",
+    landing_pulse_title2: "How Your Week",
+    landing_pulse_title3: "Be At Once",
+    landing_pulse_subtitle: "Understand your business waka. Know the day wey market move pass, wetin you sell pass, and how you spend money.",
+    
+    landing_cta_title1: "Join The New Pattern",
+    landing_cta_title2: "Of Market Trading Today",
+    landing_cta_subtitle: "Stop to dey worry over lost receipt and book wey no clear. Use your voice record everything while you focus on how to grow your business.",
+    landing_cta_button: "Open Free Account",
+    landing_cta_perk1: "No need for ATM card",
+    landing_cta_perk2: "14 days free trial",
+    landing_cta_perk3: "You fit cancel anytime",
+    
+    landing_footer_desc: "Voice bookkeeping for Naija market traders. Track your business in seconds, no be hours.",
+    landing_footer_copyright: "© 2026 MarketPulse AI. All rights reserved.",
+
     // App shell
     shell_record_a_trade: "Record one trade update make we check am",
     shell_sorting_voice: "We dey arrange your voice note into ledger details",
@@ -360,6 +496,74 @@ const translations = {
   },
 
   Yoruba: {
+    // Landing Page
+    landing_nav_features: "Awọn Ẹya",
+    landing_nav_how_it_works: "Bii o ti ń ṣiṣẹ",
+    landing_nav_pricing: "Iye owo",
+    landing_nav_login: "Wọle",
+    landing_nav_get_started: "Bẹrẹ",
+    
+    landing_hero_trusted: "Ti a gbẹkẹle nipasẹ awọn onijaja Naijiria ti o ju 5,000 lọ",
+    landing_hero_title1: "Iṣowo Ọja Rẹ,",
+    landing_hero_title2: "Pẹlu Dọgbadọgba Pipe.",
+    landing_hero_subtitle: "Sọ awọn tita rẹ, inawo, ati awọn gbese rẹ. A n tọju rẹ lẹsẹkẹsẹ ki o le mọ èrè gidi rẹ. Iwe-kikọ ohun-akọkọ ti a kọ fun iṣowo.",
+    landing_hero_watch_demo: "Wo Bii o ti ń ṣiṣẹ",
+    
+    landing_showcase_title1: "Awọn Ẹya Pataki",
+    landing_showcase_title2: "Ohun gbogbo ti o nilo fun",
+    landing_showcase_title3: "Iṣowo Ọja Rẹ",
+    landing_showcase_subtitle: "Awọn irinṣẹ agbara mẹrin ti n ṣiṣẹ papọ lati fun ọ ni iṣakoso kikun lori owo rẹ.",
+    
+    landing_story_title1: "Itan Wa",
+    landing_story_title2: "A kọ fun awọn",
+    landing_story_title3: "Onijaja",
+    landing_story_p1: "MarketPulse bẹrẹ pẹlu akiyesi rọrun: awọn onijaja ọja jẹ iyanu ni ohun ti wọn ṣe, ṣugbọn kíkọ nǹkan sínú ìwé ma n fa wọn sẹhin. Awọn gbigba iwe ma n sọnu. Ni opin ọsẹ, o ṣoro lati ranti ibiti gbogbo naira lọ.",
+    landing_story_p2: "A kọ MarketPulse lati yi iyẹn pada. Sọrọ nipa ti ara, bii ẹnipe o n ba ọrẹ rẹ sọrọ. AI wa loye rẹ, ṣe atunto awọn iṣowo, ati fun ọ ni oye akoko-gidi nipa iṣowo rẹ — laisi kikọ sínú ìwé.",
+    
+    landing_voice_title1: "Ohun AI",
+    landing_voice_title2: "Kan Sọrọ.",
+    landing_voice_title3: "Awa yoo ṣe iyokù.",
+    landing_voice_subtitle: "Ohun AI ti MarketPulse loye gẹẹsi Naijiria, Pidgin, ati ede ọja. Sọ nkan bi 'Mo ta apo iresi 3 fun 150k' ati pe yoo ṣe atunto rẹ lẹsẹkẹsẹ.",
+    landing_voice_how_it_works: "Bii AI Ohun ti ń ṣiṣẹ",
+    landing_voice_step1_title: "Sọrọ Nipa Ti Ara",
+    landing_voice_step1_desc: "Tẹ gbohungbohun ki o sọ iṣowo rẹ ni ede ti o rọrun. Lo ede ọja rẹ deede — ko si ọna kika pataki ti a nilo.",
+    landing_voice_step2_title: "AI Loyè",
+    landing_voice_step2_desc: "AI wa fa iye, ọja, ẹka, ati paapaa awọn alaye gbese lati inu ọrọ rẹ.",
+    landing_voice_step3_title: "Igbasilẹ Lẹsẹkẹsẹ",
+    landing_voice_step3_desc: "Ti gba iṣowo rẹ silẹ, a ti ṣeto rẹ ati setan fun ijabọ. Laisi kikọ, laisi iwe.",
+    
+    landing_intelligence_title1: "Oye AI",
+    landing_intelligence_title2: "Awọn Imọran Gidi,",
+    landing_intelligence_title3: "Oye to dara",
+    landing_intelligence_subtitle: "Mọ ohun gangan ti o n ta, nibiti owo rẹ nlọ, ati bi ọla ṣe ri fun iṣowo rẹ.",
+    
+    landing_inventory_title1: "Oja",
+    landing_inventory_title2: "Maṣe jẹ ki",
+    landing_inventory_title3: "Oja rẹ to n ta tan",
+    landing_inventory_subtitle: "Tọpa iye oja rẹ, ṣeto awọn ipele lati ra diẹ sii, ki o gba itaniji ṣaaju ki awọn oja to n ta rẹ tan.",
+    landing_inventory_feature1_title: "Aago Ibere Oja",
+    landing_inventory_feature1_desc: "Ṣeto iye to kere julọ fun ọja kọọkan. MarketPulse yoo sọ fun ọ ni akoko gangan lati ra awọn tuntun.",
+    landing_inventory_feature2_title: "Itaniji Oja Kekere",
+    landing_inventory_feature2_desc: "A yoo jẹ ki o mọ nigbati ọja rẹ ba dinku. Maṣe padanu onibara nitori pe oja ti tan.",
+    landing_inventory_feature3_title: "Iṣakoso Iye Oja",
+    landing_inventory_feature3_desc: "Wo iye gbogbo ọja rẹ ni wiwo kan. Tọpa awọn ọja ti ko ta daradara ti o so owo rẹ mọlẹ.",
+    
+    landing_pulse_title1: "Pulse Ọsẹ",
+    landing_pulse_title2: "Ọsẹ Rẹ ni",
+    landing_pulse_title3: "Wiwo Kan",
+    landing_pulse_subtitle: "Loye bi iṣowo rẹ ṣe n lọ. Wo awọn ọjọ wo ni o n ta julọ, kini o ta julọ, ati ibiti owo rẹ n lọ.",
+    
+    landing_cta_title1: "Darapọ mọ Ọjọ iwaju ti",
+    landing_cta_title2: "Iṣowo Ọja Loni",
+    landing_cta_subtitle: "Duro ṣiṣe aibalẹ nipa awọn iwe-ẹri ti o sọnu. Jẹ ki ohun rẹ ṣe igbasilẹ lakoko ti o n fojusi si idagbasoke iṣowo rẹ.",
+    landing_cta_button: "Ṣii Akọọlẹ Ọfẹ",
+    landing_cta_perk1: "Ko nilo kaadi ATM",
+    landing_cta_perk2: "Idanwo ọfẹ fun ọjọ 14",
+    landing_cta_perk3: "O le fagile nigbakugba",
+    
+    landing_footer_desc: "Iwe-kikọ ohun-akọkọ fun awọn onijaja Naijiria. Tọpa iṣowo rẹ ni awọn iṣẹju aaya.",
+    landing_footer_copyright: "© 2026 MarketPulse AI. Gbogbo awọn ẹtọ wa ni ipamọ.",
+
     // App shell
     shell_record_a_trade: "Ṣe àkọsílẹ̀ ìmúdògboludìí ohun fún ọjà kan",
     shell_sorting_voice: "Ń ṣètò àkọsílẹ̀ ohùn rẹ sínú ìwé akọ́wé rẹ",
@@ -535,6 +739,74 @@ const translations = {
   },
 
   Igbo: {
+    // Landing Page
+    landing_nav_features: "Atụmatụ",
+    landing_nav_how_it_works: "Otu O Si Arụ Ọrụ",
+    landing_nav_pricing: "Ọnụahịa",
+    landing_nav_login: "Banye",
+    landing_nav_get_started: "Malite",
+    
+    landing_hero_trusted: "Ndị ahịa Naijiria karịrị 5,000 tụkwasịrị anyị obi",
+    landing_hero_title1: "Azụmahịa Ahịa Gị,",
+    landing_hero_title2: "Ziri Ezi Kpamkpam.",
+    landing_hero_subtitle: "Kwuo ahịa gị, mmefu, na ụgwọ gị. Anyị na-edekọ ya ozugbo, yabụ ị ga-amata ezigbo uru gị. Idebe akwụkwọ site na olu maka azụmahịa gị.",
+    landing_hero_watch_demo: "Lelee Otu O Si Arụ Ọrụ",
+    
+    landing_showcase_title1: "Atụmatụ Dị Mkpa",
+    landing_showcase_title2: "Ihe niile Ị Chọrọ Maka",
+    landing_showcase_title3: "Ịgba Azụmahịa Gị",
+    landing_showcase_subtitle: "Ngwá ọrụ anọ dị ike ga-enye gị njikwa ego gị n'uju.",
+    
+    landing_story_title1: "Akụkọ Anyị",
+    landing_story_title2: "E mere Maka",
+    landing_story_title3: "Ndị Ahịa",
+    landing_story_p1: "MarketPulse malitere site n'otu nlele dị mfe: ndị ahịa na-eme nke ọma n'ihe ha na-eme, mana idetu ihe n'akwụkwọ na-egbochi ha. Akwụkwọ na-efu efu, ma n'ngwụcha izu, ọ na-esiri ike icheta ebe ego niile jere.",
+    landing_story_p2: "Anyị mepụtara MarketPulse ịgbanwe nke ahụ. Na-ekwu okwu dị ka ị na-agwa enyi gị. AI anyị na-aghọta gị, na-ahazi ihe, na-enye gị nghọta banyere ahịa gị ozugbo — n'enweghị idetu n'akwụkwọ.",
+    
+    landing_voice_title1: "Olu AI",
+    landing_voice_title2: "Naanị Kwuo Okwu.",
+    landing_voice_title3: "Anyị Ga-eme Nke Fọdụrụ.",
+    landing_voice_subtitle: "AI anyị na-aghọta asụsụ Bekee, Pidgin, na asụsụ ahịa. Kwuo ihe dị ka 'Ererem akpa osikapa 3 maka 150k' hụ otú ọ ga-esi hazie ya ozugbo.",
+    landing_voice_how_it_works: "Otu Olu AI Si Arụ Ọrụ",
+    landing_voice_step1_title: "Kwuo N'ụzọ Dị Mfe",
+    landing_voice_step1_desc: "Pịa igwe okwu wee kwuo ahịa gị. Jiri asụsụ ị na-eji na ahịa gị — ọ dịghị mkpa nka ọ bụla.",
+    landing_voice_step2_title: "AI Na-aghọta Gị",
+    landing_voice_step2_desc: "AI anyị na-ewepụta ego, ngwa ahịa, ngalaba, na ọbụna nkọwa ụgwọ site n'okwu gị.",
+    landing_voice_step3_title: "Ndekọ Ozugbo",
+    landing_voice_step3_desc: "E detuola ahịa gị. Ị pịghị ihe ọ bụla na kọmputa ma ọ bụ dee n'akwụkwọ.",
+    
+    landing_intelligence_title1: "Amamihe AI",
+    landing_intelligence_title2: "Nghọta Ozugbo,",
+    landing_intelligence_title3: "Amamihe Bara Uru",
+    landing_intelligence_subtitle: "Mara kpọmkwem ihe ị na-ere, ebe ego gị na-eje, na otú echi ga-adị maka azụmahịa gị.",
+    
+    landing_inventory_title1: "Ngwa Ahịa",
+    landing_inventory_title2: "Ekwela Ka Ngwa Ahịa Ị",
+    landing_inventory_title3: "Na-ere Ọma Gwu",
+    landing_inventory_subtitle: "Lelee ngwa ahịa gị, setịpụ ọkwa ịzụta nke ọhụrụ, ma nweta ọkwa tupu ngwa ahịa gị agwụ.",
+    landing_inventory_feature1_title: "Ịzụta Nke Ọhụrụ",
+    landing_inventory_feature1_desc: "Debe ọkwa kacha nta maka ngwa ahịa ọ bụla. MarketPulse ga-agwa gị oge kwesịrị ekwesị ịzụta ihe ọhụrụ.",
+    landing_inventory_feature2_title: "Ọkwa Ngwa Ahịa Dị Ala",
+    landing_inventory_feature2_desc: "Anyị ga-eme ka ị mara mgbe ngwa ahịa gị na-ada. Ekwela ka ndị ahịa pụọ n'ihi na ngwa ahịa gwụrụ.",
+    landing_inventory_feature3_title: "Nlele Uru Ngwa Ahịa",
+    landing_inventory_feature3_desc: "Hụ uru ngwa ahịa gị niile n'otu nlele. Chọpụta ngwa ahịa na-anaghị aga nke ọma nke jidere ego gị.",
+    
+    landing_pulse_title1: "Nlele Izu Gị",
+    landing_pulse_title2: "Izu Gị N'otu",
+    landing_pulse_title3: "Nlele",
+    landing_pulse_subtitle: "Ghọta otu azụmahịa gị si aga. Hụ ụbọchị ị na-ere ahịa kacha mma, ihe ị na-ere kacha mma, na ebe ego gị na-aga.",
+    
+    landing_cta_title1: "Soro N'ọdịnihu Nke",
+    landing_cta_title2: "Ịgba Ahịa Taa",
+    landing_cta_subtitle: "Kwụsị ichegbu onwe gị maka akwụkwọ furu efu. Jiri olu gị na-edekọ ihe mgbe ị na-elekwasị anya n'iwulite azụmahịa gị.",
+    landing_cta_button: "Mepụta Akaụntụ N'efu",
+    landing_cta_perk1: "Ọ dịghị mkpa kaadi ATM",
+    landing_cta_perk2: "Nnwale ụbọchị 14 n'efu",
+    landing_cta_perk3: "Ị nwere ike ịkwụsị oge ọ bụla",
+    
+    landing_footer_desc: "Idetu ihe n'akwụkwọ site na olu maka ndị ahịa Naijiria. Soro azụmahịa gị n'ime sekọnd.",
+    landing_footer_copyright: "© 2026 MarketPulse AI. Ikike niile echekwara.",
+
     // App shell
     shell_record_a_trade: "Dekọọ mmelite ahịa maka nyocha",
     shell_sorting_voice: "Anyị na-edobe ndekọ okwu gị n'akwụkwọ edetu gị",
@@ -710,6 +982,74 @@ const translations = {
   },
 
   Hausa: {
+    // Landing Page
+    landing_nav_features: "Siffofi",
+    landing_nav_how_it_works: "Yadda yake Aiki",
+    landing_nav_pricing: "Farashi",
+    landing_nav_login: "Shiga",
+    landing_nav_get_started: "Fara",
+    
+    landing_hero_trusted: "Sama da yan kasuwar Najeriya 5,000 sun amince damu",
+    landing_hero_title1: "Kasuwancin Kasuwar Ku,",
+    landing_hero_title2: "Daidaitacce Daidai.",
+    landing_hero_subtitle: "Faɗi tallace-tallacenku, kashe kuɗi, da basusuka. Muna bin diddiginsa nan da nan, don haka koyaushe kuna san ainihin ribar ku. Kula da lissafin murya wanda aka gina don kasuwanci.",
+    landing_hero_watch_demo: "Kalli Yadda Yake Aiki",
+    
+    landing_showcase_title1: "Mafi Muhimmanci",
+    landing_showcase_title2: "Duk Abin Da Kuke Bukata",
+    landing_showcase_title3: "Don Kasuwancin Kasuwar Ku",
+    landing_showcase_subtitle: "Kayan aiki huɗu masu ƙarfi waɗanda ke aiki tare don ba ku cikakken ikon kuɗin ku.",
+    
+    landing_story_title1: "Labarin Mu",
+    landing_story_title2: "An Gina Don",
+    landing_story_title3: "Yan Kasuwa",
+    landing_story_p1: "MarketPulse ya fara da sauƙi: yan kasuwa suna da ban mamaki a abin da suke yi, amma tsarin lissafi yakan hana su ci gaba. Ana asarar takardun siye. Kuma a ƙarshen mako, yana da wahala a tuna inda kowane naira ya tafi.",
+    landing_story_p2: "Mun gina MarketPulse don canza wannan. Yi magana a zahiri, kamar yadda kuke tattaunawa da abokin ku. Fasahar mu ta AI ta fahimci ku, ta tsara ma'amaloli, kuma tana ba ku fahimta na ainihi game da kasuwancin ku — ba tare da taɓa takarda ba.",
+    
+    landing_voice_title1: "Muryar AI",
+    landing_voice_title2: "Kawai Yi Magana.",
+    landing_voice_title3: "Za Mu Yi Sauran.",
+    landing_voice_subtitle: "Muryar AI ta MarketPulse ta fahimci turancin Najeriya, Pidgin, da yaren kasuwa. Faɗi wani abu kamar 'Na sayar da buhun shinkafa 3 akan 150k' sannan ku ga yadda ya zama lissafi take.",
+    landing_voice_how_it_works: "Yadda Muryar AI take Aiki",
+    landing_voice_step1_title: "Yi Magana a Zahiri",
+    landing_voice_step1_desc: "Taɓa makirifo kuma faɗi ma'amalar ku da sauƙi. Yi amfani da yaren kasuwar ku — ba a buƙatar wani tsari na musamman.",
+    landing_voice_step2_title: "AI Yana Fahimta",
+    landing_voice_step2_desc: "Fasahar mu ta AI tana cire adadin kuɗi, abu, rukunin, har ma da bayanan bashi daga maganar ku.",
+    landing_voice_step3_title: "Cikakken Rubutu Take",
+    landing_voice_step3_desc: "An yi rikodin ma'amalar ku, an tsara ta kuma a shirye don bayar da rahoto. Babu bugawa, babu takardu.",
+    
+    landing_intelligence_title1: "Basirar AI",
+    landing_intelligence_title2: "Bayanai na Ainihi,",
+    landing_intelligence_title3: "Hanyoyin Ci Gaba",
+    landing_intelligence_subtitle: "Sanin ainihin abin da ake sayarwa, inda kuɗin ku yake tafiya, da yadda gobe za ta kasance ga kasuwancin ku.",
+    
+    landing_inventory_title1: "Kayan Kasuwa",
+    landing_inventory_title2: "Kada Ka Bari",
+    landing_inventory_title3: "Kayan da kake Siyarwa su Ƙare",
+    landing_inventory_subtitle: "Kula da yawan kayan ku, saita lokacin sake oda, kuma samun sanarwa kafin kayan da kuke siyarwa su ƙare.",
+    landing_inventory_feature1_title: "Tsarin Sake Oda",
+    landing_inventory_feature1_desc: "Saita ƙaramin adadi don kowane samfur. MarketPulse zai sanar da ku lokacin da ya dace don oda sabbin kayayyaki.",
+    landing_inventory_feature2_title: "Gargaɗin Kayan da suka Yi Ƙasa",
+    landing_inventory_feature2_desc: "Za mu sanar da ku lokacin da kayan ku suka ragu. Kada ku rasa kowane abokin ciniki saboda rashin kaya.",
+    landing_inventory_feature3_title: "Kula da Ƙimar Kayan Kasuwa",
+    landing_inventory_feature3_desc: "Duba ƙimar duk kayan ku a kallo ɗaya. Gano samfuran da basa tafiya da sauri waɗanda suke riƙe kuɗin ku.",
+    
+    landing_pulse_title1: "Lissafin Mako",
+    landing_pulse_title2: "Makon Ku a",
+    landing_pulse_title3: "Kallo Ɗaya",
+    landing_pulse_subtitle: "Fahimci yadda kasuwancin ku yake tafiya. Duba waɗanne ranaku ne suka fi kyau, abin da ake siyarwa da kyau, da kuma inda kuɗin ku ke zuwa.",
+    
+    landing_cta_title1: "Kasance Cikin Gaban",
+    landing_cta_title2: "Kasuwancin Kasuwa A Yau",
+    landing_cta_subtitle: "Daina damuwa game da ɓatattun takardu. Bari muryar ku ta yi muku rubutu yayin da kuke mai da hankali kan haɓaka kasuwancin ku.",
+    landing_cta_button: "Buɗe Asusu Kyauta",
+    landing_cta_perk1: "Ba a buƙatar katin ATM",
+    landing_cta_perk2: "Gwajin kyauta na kwanaki 14",
+    landing_cta_perk3: "Kuna iya soke kowane lokaci",
+    
+    landing_footer_desc: "Lissafi na murya ga yan kasuwar Najeriya. Kula da kasuwancin ku cikin daƙiƙa, ba awoyi ba.",
+    landing_footer_copyright: "© 2026 MarketPulse AI. Duk haƙƙoƙi an kiyaye.",
+
     // App shell
     shell_record_a_trade: "Yi rijistar sabuwar ciniki don dubawa",
     shell_sorting_voice: "Muna tsara bayanan muryarka cikin littafin kasuwanci",
