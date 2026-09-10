@@ -63,10 +63,6 @@ export default function Analysing({ onNavigate, businessName }) {
     const analyzeAudio = async () => {
       const audioBase64 = location.state?.audioBase64;
 
-      // Skip if this exact audio was already analyzed (StrictMode re-run).
-      if (audioBase64 && analyzedAudioRef.current === audioBase64) return;
-      if (audioBase64) analyzedAudioRef.current = audioBase64;
-
       try {
         let transactionData = null;
 

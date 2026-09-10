@@ -1,4 +1,6 @@
 const crypto = require("crypto");
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { getSummary } = require("../services/WeeklySummaryService");
 const Transaction = require("../models/Transaction");
@@ -68,6 +70,8 @@ function makeModel(modelName) {
 function buildAnalysisPrompt() {
   return `You are analyzing audio from a Nigerian market trader. Extract the transaction details from this audio recording.
 
+CRITICAL INSTRUCTION: If the audio is empty, silent, contains only background noise, or contains NO spoken words whatsoever, you MUST NOT invent or hallucinate a transaction. You MUST immediately respond with the UNKNOWN_AMOUNT JSON format.
+
 Extract and respond ONLY with valid JSON (no markdown, no extra text):
 {
   "type": "Income",
@@ -95,7 +99,7 @@ Rules:
 - category: one of [Dry Goods, Grains, Produce, Textiles, Electronics, Other]
 - creditDetails: ONLY include this if type is "CREDIT". Set customerName to the person's name, and calculate the dueDate in YYYY-MM-DD if they mention a day like "Friday" or "next week" (assuming today is ${new Date().toLocaleDateString()}).
 
-If the user does not mention a specific amount or value in the audio, or if you cannot extract clear information, you MUST respond with:
+If the user does not mention a specific amount or value in the audio, or if you cannot extract clear information, or if the audio is completely silent/unintelligible, you MUST respond exactly with this JSON:
 {
   "type": "UNKNOWN_AMOUNT",
   "amount": 0,
