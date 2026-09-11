@@ -18,6 +18,9 @@ const handleSignup = async (req, res) => {
         email: user.email,
         businessName: user.businessName,
         profilePicture: user.profilePicture,
+        location: user.location,
+        businessType: user.businessType,
+        category: user.category,
         hasPin: false
       }
     });
@@ -48,6 +51,9 @@ const handleLogin = async (req, res) => {
         email: user.email,
         businessName: user.businessName,
         profilePicture: user.profilePicture,
+        location: user.location,
+        businessType: user.businessType,
+        category: user.category,
         hasPin: !!user.tradePin
       }
     });
@@ -150,7 +156,10 @@ const uploadProfilePicture = async (req, res) => {
         id: user._id,
         email: user.email,
         businessName: user.businessName,
-        profilePicture: user.profilePicture
+        profilePicture: user.profilePicture,
+        location: user.location,
+        businessType: user.businessType,
+        category: user.category
       }
     });
   } catch (error) {
@@ -336,6 +345,38 @@ const sendPasswordResetCode = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const WelcomeUser = require('../models/WelcomeUser');
+    const user = await WelcomeUser.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      user: {
+        id: user._id,
+        email: user.email,
+        businessName: user.businessName,
+        profilePicture: user.profilePicture,
+        location: user.location,
+        businessType: user.businessType,
+        category: user.category,
+        hasPin: !!user.tradePin
+      }
+    });
+  } catch (error) {
+    console.error('Get Profile Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   handleSignup,
   handleLogin,
@@ -350,6 +391,7 @@ module.exports = {
   sendPasswordResetCode,
   handleUpdateProfile,
   handleUpdateCategory,
-  handleUpdateEmail
+  handleUpdateEmail,
+  getProfile
 };
 

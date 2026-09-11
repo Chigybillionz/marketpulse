@@ -70,6 +70,15 @@ export const checkHasPin = async (email) => {
 };
 
 /**
+ * Gets a user's full profile
+ */
+export const getUserProfile = async (email) => {
+  return apiClient(`/welcome-auth/profile/${encodeURIComponent(email)}`, {
+    method: 'GET',
+  });
+};
+
+/**
  * Sends a 4-digit reset code to the user's email
  */
 export const sendResetCode = async (email) => {

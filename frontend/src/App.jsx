@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getTransactions } from "./services/transactionService";
+import { getUserProfile } from "./services/authService";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import LandingPage from "./components/landing_page/LandingPage";
 import FeaturesPage from "./components/landing_page/FeaturesPage";
@@ -88,12 +89,35 @@ function App() {
   const [moneyOut, setMoneyOut] = useState(0);
   const [transactionsList, setTransactionsList] = useState([]);
 
-  // Fetch transactions on load
+  // Fetch transactions and profile on load
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) return; // Wait until logged in
+
+        const email = localStorage.getItem('email');
+        if (email) {
+          try {
+            const profileRes = await getUserProfile(email);
+            if (profileRes && profileRes.user) {
+              const u = profileRes.user;
+              localStorage.setItem('businessName', u.businessName || "");
+              localStorage.setItem('email', u.email || "");
+              localStorage.setItem('profilePicture', u.profilePicture || "");
+              localStorage.setItem('location', u.location || "");
+              localStorage.setItem('businessType', u.businessType || "Retail");
+              localStorage.setItem('hasPin', u.hasPin ? 'true' : 'false');
+              setBusinessName(u.businessName || "");
+              setEmail(u.email || "");
+              setProfilePicture(u.profilePicture || "");
+              setLocationStr(u.location || "");
+              setBusinessType(u.businessType || "Retail");
+            }
+          } catch (profileError) {
+            console.error("Failed to load profile:", profileError);
+          }
+        }
 
         const data = await getTransactions();
         
@@ -136,7 +160,7 @@ function App() {
       }
     };
 
-    fetchTransactions();
+    fetchData();
   }, [location.pathname]);
 
   // Inactivity Auto-Logout (5 minutes)

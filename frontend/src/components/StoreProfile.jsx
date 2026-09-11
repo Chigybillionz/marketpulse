@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { uploadProfilePicture } from "../services/authService";
 import {
   ChevronLeft,
@@ -33,6 +33,15 @@ export default function StoreProfile({
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Sync form data if props change after async fetch
+  useEffect(() => {
+    setFormData({
+      businessName: businessName || "My Store",
+      location: locationStr || "",
+      businessType: businessType || "Retail",
+    });
+  }, [businessName, locationStr, businessType]);
+
   const handleFieldChange = (field) => (event) => {
     setFormData((current) => ({ ...current, [field]: event.target.value }));
   };
@@ -61,6 +70,11 @@ export default function StoreProfile({
   };
 
   const handleSaveChanges = async () => {
+    if (!formData.businessName.trim() || !formData.location.trim()) {
+      alert("Business Name and Location cannot be empty.");
+      return;
+    }
+
     setIsSaving(true);
     try {
       // Call backend API
