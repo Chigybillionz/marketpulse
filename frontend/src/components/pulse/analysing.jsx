@@ -62,13 +62,14 @@ export default function Analysing({ onNavigate, businessName }) {
 
     const analyzeAudio = async () => {
       const audioBase64 = location.state?.audioBase64;
+      const mimeType = location.state?.mimeType;
 
       try {
         let transactionData = null;
 
         if (audioBase64) {
           setAnalysisStatus('analyzing');
-          transactionData = await transcribeAndAnalyze(audioBase64);
+          transactionData = await transcribeAndAnalyze(audioBase64, mimeType);
           setAnalysisStatus('success');
         } else {
           // Fallback static analysis if no audio provided (simulated delay)

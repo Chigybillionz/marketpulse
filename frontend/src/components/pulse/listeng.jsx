@@ -70,9 +70,10 @@ export default function Listeng({ onNavigate, businessName }) {
       const audioBlob = await recorderRef.current.stopRecording();
       setIsRecording(false);
       const audioBase64 = await recorderRef.current.audioToBase64(audioBlob);
+      const mimeType = audioBlob.type || "audio/webm";
       
       if (onNavigate) {
-        onNavigate('analysing', { audioBase64 });
+        onNavigate('analysing', { audioBase64, mimeType });
       }
     } catch (err) {
       console.error("Error stopping recording:", err);

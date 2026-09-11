@@ -64,7 +64,12 @@ function hashPayload(audioBase64, mimeType) {
 }
 
 function makeModel(modelName) {
-  return genAI.getGenerativeModel({ model: modelName });
+  return genAI.getGenerativeModel({ 
+    model: modelName,
+    generationConfig: {
+      temperature: 0.1
+    }
+  });
 }
 
 function buildAnalysisPrompt() {
@@ -157,7 +162,7 @@ async function generateWithQuotaHandling(promptParts) {
     throw quotaError(429, "Too many AI requests right now. Please wait a moment and try again.", 10);
   }
 
-  const primaryModel = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+  const primaryModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   const fallbackModel = process.env.GEMINI_FALLBACK_MODEL || null;
 
   const models = fallbackModel ? [primaryModel, fallbackModel] : [primaryModel];
