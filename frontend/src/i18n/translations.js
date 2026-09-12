@@ -10,6 +10,13 @@
  */
 const translations = {
   "English": {
+    "flow_brand_title": "MarketPulse AI",
+    "flow_headline": "Welcome to MarketPulse AI",
+    "flow_subtitle": "The voice-first companion that helps Nigerian traders track sales, manage credit, and read the market — all from one place.",
+    "flow_feature_voice": "Log sales by voice — no typing",
+    "flow_feature_pulse": "Weekly Pulse market insights",
+    "flow_feature_security": "Protect Your Business",
+
     "landing_nav_features": "Features",
     "landing_nav_how_it_works": "How it Works",
     "landing_nav_pricing": "Pricing",
@@ -376,6 +383,13 @@ const translations = {
     "store_location_not_set": "Location not set"
   },
   "Pidgin": {
+    "flow_brand_title": "MarketPulse AI",
+    "flow_headline": "Welcome enter MarketPulse AI",
+    "flow_subtitle": "The voice companion wey dey help Naija traders track sales, manage debt, and understand the market — all from one place.",
+    "flow_feature_voice": "Record sales with your voice — no typing",
+    "flow_feature_pulse": "Wetin dey happen for market every week",
+    "flow_feature_security": "Kwalite business make e dey safe",
+
     "landing_nav_features": "Wetin Dey Inside",
     "landing_nav_how_it_works": "How E Dey Work",
     "landing_nav_pricing": "Money Matter",
@@ -742,6 +756,13 @@ const translations = {
     "store_location_not_set": "Location never set"
   },
   "Yoruba": {
+    "flow_brand_title": "MarketPulse AI",
+    "flow_headline": "Ẹ káàbọ̀ sí MarketPulse AI",
+    "flow_subtitle": "Olùrànlọ́wọ́ ohùn tó ń ran àwọn oníṣòwò Nàìjíríà lọ́wọ́ láti tọpinpin títà, ṣàkóso gbèsè, àti láti mọ ipò ọjà — gbogbo rẹ̀ láti ibì kan.",
+    "flow_feature_voice": "Fi ohùn kọ àkọsílẹ̀ títà — kò sí kíkọ̀wé",
+    "flow_feature_pulse": "Àwọn ìròyìn ọjà Weekly Pulse",
+    "flow_feature_security": "Dáàbò bo Ìṣòwò Rẹ",
+
     "landing_nav_features": "Awọn Ẹya",
     "landing_nav_how_it_works": "Bii o ti ń ṣiṣẹ",
     "landing_nav_pricing": "Iye owo",
@@ -1108,6 +1129,13 @@ const translations = {
     "store_location_not_set": "A kò tíì yan ibùdó"
   },
   "Igbo": {
+    "flow_brand_title": "MarketPulse AI",
+    "flow_headline": "Nnọọ na MarketPulse AI",
+    "flow_subtitle": "Onye inyeaka olu na-enyere ndị ahịa Naijiria aka idekọ ahịa, ijikwa ụgwọ, na ịghọta ahịa — ha niile site n'otu ebe.",
+    "flow_feature_voice": "Jiri olu dekọọ ahịa — enweghị mkpa ide ihe",
+    "flow_feature_pulse": "Nchọpụta ahịa nke Weekly Pulse",
+    "flow_feature_security": "Chebe Azụmahịa Gị",
+
     "landing_nav_features": "Atụmatụ",
     "landing_nav_how_it_works": "Otu O Si Arụ Ọrụ",
     "landing_nav_pricing": "Ọnụahịa",
@@ -1474,6 +1502,13 @@ const translations = {
     "store_location_not_set": "Edetụbeghị ebe ọ dị"
   },
   "Hausa": {
+    "flow_brand_title": "MarketPulse AI",
+    "flow_headline": "Barka da zuwa MarketPulse AI",
+    "flow_subtitle": "Abokin aiki na murya da ke taimaka wa 'yan kasuwar Najeriya bibiyar ciniki, sarrafa bashi, da fahimtar kasuwa — duk daga wuri guda.",
+    "flow_feature_voice": "Yi rikodin ciniki da murya — ba tare da rubutu ba",
+    "flow_feature_pulse": "Bayanin kasuwa na Weekly Pulse",
+    "flow_feature_security": "Kare Kasuwancin Ka",
+
     "landing_nav_features": "Siffofi",
     "landing_nav_how_it_works": "Yadda yake Aiki",
     "landing_nav_pricing": "Farashi",

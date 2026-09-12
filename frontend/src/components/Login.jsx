@@ -98,7 +98,7 @@ export default function Login({
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <img
               src="/mylogo.png"
-              alt="MarketPulse AI logo"
+              alt={t("flow_brand_title") || "MarketPulse AI logo"}
               style={{
                 width: 32,
                 height: 32,
@@ -115,7 +115,7 @@ export default function Login({
                 letterSpacing: "-0.4px",
               }}
             >
-              MarketPulse AI
+              {t("flow_brand_title") || "MarketPulse AI"}
             </span>
           </div>
 

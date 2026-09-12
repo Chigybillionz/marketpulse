@@ -1,10 +1,5 @@
 import { Mic2, TrendingUp, ShieldCheck } from "lucide-react";
-
-const DEFAULT_FEATURES = [
-  { Icon: Mic2, label: "Log sales by voice — no typing" },
-  { Icon: TrendingUp, label: "Weekly Pulse market insights" },
-  { Icon: ShieldCheck, label: "Protect Your Business" },
-];
+import { useLanguage } from "../../i18n/LanguageContext";
 
 /**
  * Layout wrapper for single-focus flow screens (Welcome / OTP / PIN…).
@@ -18,10 +13,20 @@ const DEFAULT_FEATURES = [
  */
 export default function FlowLayout({
   children,
-  headline = "Welcome to MarketPulse AI",
-  sub = "The voice-first companion that helps Nigerian traders track sales, manage credit, and read the market — all from one place.",
-  features = DEFAULT_FEATURES,
+  headline,
+  sub,
+  features,
 }) {
+  const { t } = useLanguage();
+
+  const displayHeadline = headline || t("flow_headline");
+  const displaySub = sub || t("flow_subtitle");
+  const displayFeatures = features || [
+    { Icon: Mic2, label: t("flow_feature_voice") },
+    { Icon: TrendingUp, label: t("flow_feature_pulse") },
+    { Icon: ShieldCheck, label: t("flow_feature_security") },
+  ];
+
   return (
     <div className="mp-flow">
       <aside className="mp-flow__aside">
@@ -29,15 +34,15 @@ export default function FlowLayout({
           <img
             className="mp-flow-brand__logo"
             src="/mylogo.png"
-            alt="MarketPulse AI logo"
+            alt={t("flow_brand_title") || "MarketPulse AI logo"}
           />
-          MarketPulse AI
+          {t("flow_brand_title") || "MarketPulse AI"}
         </div>
-        <h1 className="mp-flow-headline">{headline}</h1>
-        <p className="mp-flow-sub">{sub}</p>
+        <h1 className="mp-flow-headline">{displayHeadline}</h1>
+        <p className="mp-flow-sub">{displaySub}</p>
         <div className="mp-flow-features">
-          {features.map(({ Icon, label }) => (
-            <div className="mp-flow-feature" key={label}>
+          {displayFeatures.map(({ Icon, label }, idx) => (
+            <div className="mp-flow-feature" key={idx}>
               <span className="mp-flow-ico">
                 <Icon size={21} strokeWidth={2} />
               </span>
