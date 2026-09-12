@@ -514,20 +514,46 @@
     font-size: 12px;
   }
 
-  .mp-shell .credit-debtor button {
+  .mp-shell .credit-debtor-avatar {
+    width: 44px;
     height: 44px;
-    min-width: 118px;
-    font-size: 14px;
+    font-size: 18px;
+    border-radius: 12px;
   }
 
-  .mp-shell .credit-debtor button svg {
-    width: 18px;
-    height: 18px;
+  .mp-shell .credit-debtor .credit-remind-btn,
+  .mp-shell .credit-debtor .credit-resolve-btn {
+    height: 36px;
+    min-width: 90px;
+    font-size: 13px;
+    padding: 0 12px;
+    border-radius: 8px;
+  }
+
+  .mp-shell .credit-debtor .credit-remind-btn svg {
+    width: 15px;
+    height: 15px;
   }
 
   .mp-shell .credit-overdue {
     font-size: 10px;
     padding: 4px 8px;
+  }
+
+  .mp-shell .credit-partial-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .mp-shell .credit-reminded-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+    gap: 4px;
+  }
+
+  .mp-shell .credit-reminded-badge svg {
+    width: 11px;
+    height: 11px;
   }
 
   /* ---- Profile ---- */

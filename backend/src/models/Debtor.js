@@ -20,6 +20,25 @@ const creditTransactionSchema = new mongoose.Schema({
   }
 });
 
+const reminderSchema = new mongoose.Schema({
+  sentAt: {
+    type: Date,
+    default: Date.now
+  },
+  channel: {
+    type: String,
+    enum: ['whatsapp', 'sms', 'email'],
+    default: 'whatsapp'
+  },
+  message: {
+    type: String,
+    trim: true
+  },
+  amountAtTime: {
+    type: Number
+  }
+});
+
 const debtorSchema = new mongoose.Schema({
   merchantEmail: {
     type: String,
@@ -39,15 +58,32 @@ const debtorSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  originalAmount: {
+    type: Number,
+    default: function() {
+      return this.totalOwed;
+    }
+  },
+  resolvedAmount: {
+    type: Number,
+    default: 0
+  },
   dueDate: {
     type: Date
   },
   status: {
     type: String,
-    enum: ['ACTIVE', 'PAID_OFF'],
+    enum: ['ACTIVE', 'PARTIALLY_PAID', 'RESOLVED', 'PAID_OFF'],
     default: 'ACTIVE'
   },
-  transactions: [creditTransactionSchema]
+  resolvedAt: {
+    type: Date
+  },
+  transactions: [creditTransactionSchema],
+  reminders: [reminderSchema],
+  lastRemindedAt: {
+    type: Date
+  }
 }, {
   timestamps: true
 });

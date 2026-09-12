@@ -425,7 +425,7 @@ function App() {
       <Route
         path="/credit/:id"
         element={
-          <DebtorProfile onNavigate={handleNavigate} businessName={businessName} />
+          <DebtorProfile onNavigate={handleNavigate} businessName={businessName} email={email} />
         }
       />
       <Route

@@ -24,6 +24,14 @@ const transactionSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add a description'],
     },
+    source: {
+      type: String,
+      trim: true,
+    },
+    relatedCreditId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Debtor',
+    },
     date: {
       type: Date,
       default: Date.now,

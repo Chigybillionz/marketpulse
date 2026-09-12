@@ -11,7 +11,7 @@ const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ['daily_summary', 'low_stock', 'price_change', 'general'],
+      enum: ['daily_summary', 'low_stock', 'price_change', 'general', 'credit_reminder'],
       default: 'general',
     },
     title: {
