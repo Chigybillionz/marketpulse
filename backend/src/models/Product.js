@@ -24,6 +24,10 @@ const productSchema = mongoose.Schema(
       required: [true, 'Please add a quantity'],
       default: 0,
     },
+    lowStockThreshold: {
+      type: Number,
+      default: 10,
+    },
   },
   {
     timestamps: true,

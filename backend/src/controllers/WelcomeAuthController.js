@@ -1,4 +1,4 @@
-const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile, updateCategory, updateLanguage, requestAccountDeletion, cancelAccountDeletion, getDeletionStatus } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile, updateCategory, updateLanguage, requestAccountDeletion, cancelAccountDeletion, getDeletionStatus, getProfileMetrics } = require('../services/WelcomeAuthService');
 
 const handleSignup = async (req, res) => {
   try {
@@ -441,6 +441,21 @@ const handleGetDeletionStatus = async (req, res) => {
   }
 };
 
+const handleGetProfileMetrics = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    const metrics = await getProfileMetrics(userId);
+    res.status(200).json({ success: true, ...metrics });
+  } catch (error) {
+    console.error('Get Profile Metrics Error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to retrieve profile metrics' });
+  }
+};
+
 module.exports = {
   handleSignup,
   handleLogin,
@@ -460,6 +475,6 @@ module.exports = {
   getProfile,
   handleRequestDeletion,
   handleCancelDeletion,
-  handleGetDeletionStatus
+  handleGetDeletionStatus,
+  handleGetProfileMetrics
 };
-

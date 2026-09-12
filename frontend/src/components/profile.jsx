@@ -243,6 +243,26 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
     }
   }, [email, setLocationStr]);
 
+  // ── Real-time dashboard metrics ──
+  const [weeklyGrowth, setWeeklyGrowth] = useState(0);
+  const [lowStockCount, setLowStockCount] = useState(0);
+
+  useEffect(() => {
+    const userEmail = email || localStorage.getItem('email');
+    if (userEmail) {
+      import("../services/authService").then(({ getProfileMetrics }) => {
+        getProfileMetrics(userEmail)
+          .then((res) => {
+            if (res?.success) {
+              setWeeklyGrowth(res.weeklyGrowth ?? 0);
+              setLowStockCount(res.lowStockCount ?? 0);
+            }
+          })
+          .catch((err) => console.error("Failed to fetch profile metrics:", err));
+      });
+    }
+  }, [email]);
+
   const displayLocation = currentLocation && currentLocation.trim()
     ? currentLocation.trim()
     : t("store_location_not_set", "Location not set");
@@ -536,13 +556,19 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
           <section className="profile-insights" aria-label="Quick insights">
             <article>
               <Icon name="trend" />
-              <span>{t("hist_tab_week", "MONTH GROWTH")}</span>
-              <strong className="success">+12.4%</strong>
+              <span>{t("hist_tab_week", "THIS WEEK")}</span>
+              <strong className={weeklyGrowth > 0 ? "success" : weeklyGrowth < 0 ? "alert" : ""}>
+                {weeklyGrowth > 0 ? "+" : ""}{weeklyGrowth}%
+              </strong>
             </article>
             <article>
               <Icon name="box" />
               <span>{t("alert_title", "ALERTS")}</span>
-              <strong className="alert">3 {t("notif_stat_low_stock", "Items Low")}</strong>
+              <strong className={lowStockCount > 0 ? "alert" : ""}>
+                {lowStockCount > 0
+                  ? `${lowStockCount} ${t("notif_stat_low_stock", "Low Stock")}`
+                  : t("profile_no_alerts", "No Alerts")}
+              </strong>
             </article>
           </section>
 

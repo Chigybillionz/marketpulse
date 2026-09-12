@@ -186,3 +186,12 @@ export const getDeletionStatus = async (email) => {
     method: 'GET',
   });
 };
+
+/**
+ * Fetches real-time profile dashboard metrics (weekly growth & inventory alerts)
+ */
+export const getProfileMetrics = async (email) => {
+  return apiClient(`/welcome-auth/profile-metrics?email=${encodeURIComponent(email)}`, {
+    method: 'GET',
+  });
+};

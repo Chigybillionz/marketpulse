@@ -1,5 +1,7 @@
 const WelcomeUser = require('../models/WelcomeUser');
 const DeletionRequest = require('../models/DeletionRequest');
+const Transaction = require('../models/Transaction');
+const Product = require('../models/Product');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const otpGenerator = require('otp-generator');
@@ -458,6 +460,87 @@ const getDeletionStatus = async (userId, email) => {
   };
 };
 
+/**
+ * Returns real-time profile dashboard metrics for the authenticated user:
+ * - weeklyGrowth: percentage change in income this week vs last week
+ * - lowStockCount: number of products where quantityInStock <= lowStockThreshold
+ * - lowStockItems: top 5 low-stock product names for display
+ */
+const getProfileMetrics = async (userId) => {
+  const now = new Date();
+
+  // Calculate week boundaries (Monday-based)
+  const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon
+  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+  const currentWeekStart = new Date(now);
+  currentWeekStart.setDate(now.getDate() - daysSinceMonday);
+  currentWeekStart.setHours(0, 0, 0, 0);
+
+  const previousWeekStart = new Date(currentWeekStart);
+  previousWeekStart.setDate(currentWeekStart.getDate() - 7);
+
+  const previousWeekEnd = new Date(currentWeekStart); // exclusive end
+
+  // Aggregate income transactions for current and previous week in parallel
+  const [currentWeekAgg, previousWeekAgg] = await Promise.all([
+    Transaction.aggregate([
+      {
+        $match: {
+          user: userId,
+          type: 'Income',
+          date: { $gte: currentWeekStart, $lte: now },
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$amount' } } },
+    ]),
+    Transaction.aggregate([
+      {
+        $match: {
+          user: userId,
+          type: 'Income',
+          date: { $gte: previousWeekStart, $lt: previousWeekEnd },
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$amount' } } },
+    ]),
+  ]);
+
+  const currentTotal = currentWeekAgg.length > 0 ? currentWeekAgg[0].total : 0;
+  const previousTotal = previousWeekAgg.length > 0 ? previousWeekAgg[0].total : 0;
+
+  let weeklyGrowth = 0;
+  if (previousTotal > 0) {
+    weeklyGrowth = ((currentTotal - previousTotal) / previousTotal) * 100;
+  } else if (currentTotal > 0) {
+    // If no previous data but current has data, show 100% growth
+    weeklyGrowth = 100;
+  }
+  // If both are 0, growth stays at 0
+
+  // Find products where stock is at or below the threshold
+  const lowStockProducts = await Product.find({
+    user: userId,
+    $expr: { $lte: ['$quantityInStock', '$lowStockThreshold'] },
+  })
+    .select('name quantityInStock lowStockThreshold')
+    .sort({ quantityInStock: 1 })
+    .limit(10)
+    .lean();
+
+  return {
+    weeklyGrowth: Math.round(weeklyGrowth * 10) / 10, // 1 decimal place
+    currentWeekIncome: currentTotal,
+    previousWeekIncome: previousTotal,
+    lowStockCount: lowStockProducts.length,
+    lowStockItems: lowStockProducts.slice(0, 5).map((p) => ({
+      name: p.name,
+      quantity: p.quantityInStock,
+      threshold: p.lowStockThreshold,
+    })),
+  };
+};
+
 module.exports = {
   signup,
   login,
@@ -476,4 +559,5 @@ module.exports = {
   requestAccountDeletion,
   cancelAccountDeletion,
   getDeletionStatus,
+  getProfileMetrics,
 };
