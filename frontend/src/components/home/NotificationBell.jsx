@@ -44,8 +44,31 @@ export default function NotificationBell() {
     };
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Lock mobile body scroll and block horizontal swipe when notification panel is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    const originalOverscroll = document.body.style.overscrollBehavior;
+
+    // Apply scroll lock on mobile screens
+    if (window.innerWidth <= 640) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
+    }
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overscrollBehavior = originalOverscroll;
+    };
   }, [isOpen]);
 
   // Fetch unread count on mount and every 60s
@@ -234,76 +257,87 @@ export default function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="notification-panel">
-          <div className="notification-panel-header">
-            <h3>Notifications</h3>
-            <div className="notification-panel-actions">
-              {unreadCount > 0 && (
-                <button onClick={handleMarkAllRead} className="notification-mark-all" title="Mark all as read">
-                  <CheckCheck size={16} />
-                  <span>Read all</span>
+        <>
+          <div
+            className="notification-backdrop"
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="notification-panel"
+            role="region"
+            aria-label="Notifications"
+          >
+            <div className="notification-panel-header">
+              <h3>Notifications</h3>
+              <div className="notification-panel-actions">
+                {unreadCount > 0 && (
+                  <button onClick={handleMarkAllRead} className="notification-mark-all" title="Mark all as read">
+                    <CheckCheck size={16} />
+                    <span>Read all</span>
+                  </button>
+                )}
+                <button onClick={() => setIsOpen(false)} className="notification-close-btn" title="Close">
+                  <X size={18} />
                 </button>
+              </div>
+            </div>
+
+            <div className="notification-panel-body">
+              {loading ? (
+                <div className="notification-empty">
+                  <div className="notification-spinner" />
+                  <p>Loading...</p>
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="notification-empty">
+                  <Bell size={40} strokeWidth={1.2} />
+                  <p>No notifications yet</p>
+                  <span>Your inventory alerts will appear here</span>
+                </div>
+              ) : (
+                notifications.map((notification) => (
+                  <div
+                    key={notification._id}
+                    className={`notification-item ${!notification.read ? 'unread' : ''} ${expandedId === notification._id ? 'expanded' : ''}`}
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <div className="notification-item-row">
+                      <div className="notification-item-icon">
+                        {notification.type === 'daily_summary' ? (
+                          <Package size={18} />
+                        ) : notification.type === 'low_stock' ? (
+                          <AlertTriangle size={18} />
+                        ) : (
+                          <Bell size={18} />
+                        )}
+                      </div>
+                      <div className="notification-item-content">
+                        <h4>{notification.title}</h4>
+                        <p>{notification.message}</p>
+                        <span className="notification-item-time">{timeAgo(notification.createdAt)}</span>
+                      </div>
+                      <div className="notification-item-actions">
+                        {!notification.read && (
+                          <button onClick={(e) => handleMarkAsRead(notification._id, e)} title="Mark as read">
+                            <Check size={14} />
+                          </button>
+                        )}
+                        <button onClick={(e) => handleDelete(notification._id, e)} title="Delete" className="notification-delete-btn">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {expandedId === notification._id && notification.data && (
+                      renderSummaryData(notification.data)
+                    )}
+                  </div>
+                ))
               )}
-              <button onClick={() => setIsOpen(false)} className="notification-close-btn" title="Close">
-                <X size={18} />
-              </button>
             </div>
           </div>
-
-          <div className="notification-panel-body">
-            {loading ? (
-              <div className="notification-empty">
-                <div className="notification-spinner" />
-                <p>Loading...</p>
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="notification-empty">
-                <Bell size={40} strokeWidth={1.2} />
-                <p>No notifications yet</p>
-                <span>Your inventory alerts will appear here</span>
-              </div>
-            ) : (
-              notifications.map((notification) => (
-                <div
-                  key={notification._id}
-                  className={`notification-item ${!notification.read ? 'unread' : ''} ${expandedId === notification._id ? 'expanded' : ''}`}
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <div className="notification-item-row">
-                    <div className="notification-item-icon">
-                      {notification.type === 'daily_summary' ? (
-                        <Package size={18} />
-                      ) : notification.type === 'low_stock' ? (
-                        <AlertTriangle size={18} />
-                      ) : (
-                        <Bell size={18} />
-                      )}
-                    </div>
-                    <div className="notification-item-content">
-                      <h4>{notification.title}</h4>
-                      <p>{notification.message}</p>
-                      <span className="notification-item-time">{timeAgo(notification.createdAt)}</span>
-                    </div>
-                    <div className="notification-item-actions">
-                      {!notification.read && (
-                        <button onClick={(e) => handleMarkAsRead(notification._id, e)} title="Mark as read">
-                          <Check size={14} />
-                        </button>
-                      )}
-                      <button onClick={(e) => handleDelete(notification._id, e)} title="Delete" className="notification-delete-btn">
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {expandedId === notification._id && notification.data && (
-                    renderSummaryData(notification.data)
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
