@@ -562,6 +562,8 @@ function App() {
           <DataPortability
             onNavigate={handleNavigate}
             onBack={() => handleBack("privacy_policy")}
+            profilePicture={profilePicture}
+            email={email}
           />
         }
       />

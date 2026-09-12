@@ -27,6 +27,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/debtors', require('./routes/DebtorRoutes'));
 app.use('/api/notifications', require('./routes/NotificationRoutes'));
 app.use('/api/inventory-alerts', require('./routes/NotificationRoutes'));
+app.use('/api/portability', require('./routes/PortabilityRoutes'));
 app.use('/api/ai', require('./routes/AIRoutes'));
 
 // Database Connection

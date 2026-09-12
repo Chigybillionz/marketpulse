@@ -14,10 +14,10 @@ const DATA_POINTS = [
     icon: "pin",
   },
   {
-    id: "phone",
-    title: "Phone Number",
-    body: "Required for secure 2FA and direct SMS alerts for critical trade executions.",
-    icon: "phone",
+    id: "email",
+    title: "Email Address",
+    body: "Used for account authentication, important notifications, and communication related to your account.",
+    icon: "mail",
   },
 ];
 

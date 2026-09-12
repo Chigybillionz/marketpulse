@@ -1,224 +1,463 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  getExportHistory,
+  requestDataExport,
+  checkPinRequirement,
+  downloadExportFile,
+} from "../services/portabilityService";
 
-const FORMATS = [
-  {
-    id: "csv",
-    glyph: "CSV",
-    title: "CSV",
-    sub: "Best for Excel & Google Sheets",
-  },
-  {
-    id: "json",
-    glyph: "{ }",
-    title: "JSON",
-    sub: "Standard for developers & APIs",
-  },
-];
-
-const RECENT_EXPORTS = [
-  {
-    id: "trade-history",
-    name: "Trade_History_May_2024.csv",
-    meta: "May 24, 2024 • 4.2 MB",
-    status: "Completed",
-  },
-  {
-    id: "account-summary",
-    name: "Account_Summary_2023.json",
-    meta: "Dec 31, 2023 • 1.8 MB",
-    status: "Completed",
-  },
-];
-
-function Icon({ name }) {
-  const paths = {
-    back: <path d="M19 12H5M12 5l-7 7 7 7" />,
-    help: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M9.5 9a2.6 2.6 0 0 1 4.8 1.3c0 1.7-2.3 2-2.3 3.4M12 17h.01" />
-      </>
-    ),
-    folder: (
-      <>
-        <path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" />
-        <path d="M14.5 12.5 17 15l-2.5 2.5M13 15h4" />
-      </>
-    ),
-    shield: (
-      <>
-        <path d="M12 3 5 6v5c0 4.2 2.9 7.7 7 9 4.1-1.3 7-4.8 7-9V6l-7-3Z" />
-        <path d="M9.5 12l1.8 1.8 3.5-3.8" />
-      </>
-    ),
-    clock: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7v5l3 2" />
-      </>
-    ),
-    lock: (
-      <>
-        <rect x="5" y="11" width="14" height="9" rx="2" />
-        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-      </>
-    ),
-    download: <path d="M12 4v10m0 0-4-4m4 4 4-4M5 19h14" />,
-  };
-
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {paths[name]}
-    </svg>
-  );
-}
-
-export default function DataPortability({ onNavigate, onBack }) {
+export default function DataPortability({ onNavigate, onBack, profilePicture, email }) {
   const [format, setFormat] = useState("csv");
+  const [exportsList, setExportsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const [downloadNotice, setDownloadNotice] = useState(null);
+  const [hasPin, setHasPin] = useState(false);
+
+  // Security Check / PIN Modal State
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinDigits, setPinDigits] = useState(["", "", "", ""]);
+  const [pinError, setPinError] = useState("");
+  const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+
+  const activeEmail = email || localStorage.getItem("email") || "";
+  const userAvatar =
+    profilePicture ||
+    localStorage.getItem("profilePicture") ||
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop";
+
+  // Load real user exports and PIN requirement on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const [historyRes, pinRes] = await Promise.allSettled([
+          getExportHistory(activeEmail),
+          checkPinRequirement(activeEmail),
+        ]);
+
+        if (isMounted) {
+          if (historyRes.status === "fulfilled" && historyRes.value?.exports) {
+            setExportsList(historyRes.value.exports);
+          } else {
+            setExportsList([]);
+          }
+
+          if (pinRes.status === "fulfilled" && pinRes.value?.hasPin !== undefined) {
+            setHasPin(pinRes.value.hasPin);
+          } else {
+            const localHasPin = localStorage.getItem("hasPin") === "true";
+            setHasPin(localHasPin);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load export data:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeEmail]);
 
   const goBack = () => {
     if (onBack) onBack();
     else if (onNavigate) onNavigate("privacy_policy");
   };
 
-  const requestExport = () => {
-    // A valid Trade PIN is required to authorize export generation.
-    if (onNavigate) onNavigate("pulse_trade_pin");
+  const showToast = (msg) => {
+    setDownloadNotice(msg);
+    setTimeout(() => setDownloadNotice(null), 4000);
+  };
+
+  // Direct trigger for browser download from string content
+  const triggerClientDownload = (content, fileName, mimeType) => {
+    try {
+      const blob = new Blob([content], { type: `${mimeType};charset=utf-8;` });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Client download failed:", e);
+    }
+  };
+
+  // Handle clicking row to download existing export
+  const handleDownloadExisting = async (record) => {
+    try {
+      showToast(`Downloading ${record.name}...`);
+      await downloadExportFile(record.id, record.name, activeEmail);
+    } catch (err) {
+      console.error("Failed to download export:", err);
+      showToast(`Error downloading file: ${err.message}`);
+    }
+  };
+
+  // Open PIN verification or execute direct export
+  const handleInitiateExport = () => {
+    if (hasPin) {
+      setPinDigits(["", "", "", ""]);
+      setPinError("");
+      setShowPinModal(true);
+    } else {
+      executeExport(null);
+    }
+  };
+
+  // Execute export API call with or without PIN
+  const executeExport = async (pinValue) => {
+    setIsExporting(true);
+    setPinError("");
+
+    try {
+      const res = await requestDataExport(format.toUpperCase(), pinValue, activeEmail);
+
+      if (res && res.success && res.exportRecord) {
+        // Add new database record to local state
+        setExportsList((prev) => [res.exportRecord, ...prev]);
+
+        // Trigger real file download
+        if (res.downloadData) {
+          triggerClientDownload(res.downloadData, res.fileName, res.mimeType || "text/plain");
+        } else if (res.exportRecord.id) {
+          await downloadExportFile(res.exportRecord.id, res.exportRecord.name, activeEmail);
+        }
+
+        setShowPinModal(false);
+        showToast(`Export generated: ${res.fileName}`);
+      } else {
+        throw new Error(res?.message || "Failed to generate export");
+      }
+    } catch (err) {
+      console.error("Export request failed:", err);
+      if (err.requiresPin || err.message?.toLowerCase().includes("pin")) {
+        setPinError(err.message || "Invalid Trade PIN. Please try again.");
+      } else {
+        setPinError(err.message || "Export failed. Please check your connection.");
+        if (!hasPin) {
+          showToast(`Error: ${err.message}`);
+        }
+      }
+    } finally {
+      setIsExporting(false);
+      setIsVerifyingPin(false);
+    }
+  };
+
+  // Handle PIN Digit changes
+  const handlePinChange = (idx, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newDigits = [...pinDigits];
+    newDigits[idx] = value.slice(-1);
+    setPinDigits(newDigits);
+    setPinError("");
+
+    // Auto-focus next input
+    if (value && idx < 3) {
+      const nextInput = document.getElementById(`portability-pin-${idx + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handlePinKeyDown = (idx, e) => {
+    if (e.key === "Backspace" && !pinDigits[idx] && idx > 0) {
+      const prevInput = document.getElementById(`portability-pin-${idx - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handlePinSubmit = (e) => {
+    e.preventDefault();
+    const pin = pinDigits.join("");
+    if (pin.length < 4) {
+      setPinError("Please enter your full 4-digit Trade PIN");
+      return;
+    }
+    setIsVerifyingPin(true);
+    executeExport(pin);
   };
 
   return (
-    <main className="portability-page" aria-label="Data portability export">
-      <div style={{ minHeight: "100vh", background: "#e8ede8", display: "flex", justifyContent: "center", alignItems: "flex-start", fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif", WebkitFontSmoothing: "antialiased" }}>
-      <section style={{ width: "100%", maxWidth: 480, height: "100dvh", background: "#f4f6f4", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
-        <div style={{ flexShrink: 0, padding: "18px 18px 0", boxSizing: "border-box", width: "100%" }}>
-        <header className="portability-topbar">
-          <button
-            className="portability-icon-btn"
-            type="button"
-            aria-label="Go back"
-            onClick={goBack}
-          >
-            <Icon name="back" />
-          </button>
-          <h1>Data Portability</h1>
-          <button
-            className="portability-icon-btn ghost"
-            type="button"
-            aria-label="Help"
-          >
-            <Icon name="help" />
-          </button>
-        </header>
+    <main className="portability-page" aria-label="Data Portability">
+      {/* Toast Notification */}
+      {downloadNotice && (
+        <div className="portability-toast" role="status" aria-live="polite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>{downloadNotice}</span>
         </div>
+      )}
 
-        <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "18px 18px 40px", boxSizing: "border-box", width: "100%" }}>
-        <div className="portability-content" style={{ display: "flex", flexDirection: "column", gap: 20, boxSizing: "border-box" }}>
-          <div className="portability-primary">
-            <article className="portability-intro">
-              <div className="portability-intro-head">
-                <span className="portability-intro-icon">
-                  <Icon name="folder" />
-                </span>
-                <h2>Export Your Records</h2>
+      {/* Security Check / Trade PIN Modal */}
+      {showPinModal && (
+        <div className="portability-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-pin-title">
+          <div className="portability-modal-card">
+            <div className="portability-modal-head">
+              <div className="portability-modal-icon">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00f2fe" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
               </div>
-              <p>
-                Download a comprehensive archive of your{" "}
-                <strong>MarketPulse AI</strong> activity. This includes your full
-                trade history, credit logs, performance analytics, and profile
-                data in machine-readable formats for external audits or personal
-                backups.
-              </p>
-            </article>
+              <h2 id="modal-pin-title">Security Check</h2>
+              <p>Enter your 4-digit <strong>Trade PIN</strong> to authorize generating and exporting your financial data.</p>
+            </div>
 
-            <section className="portability-formats" aria-label="Format selection">
-              <h3 className="portability-label">Format Selection</h3>
-              <div className="portability-format-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
-                {FORMATS.map((item) => {
-                  const active = item.id === format;
-                  return (
-                    <button
-                      className={`portability-format ${active ? "active" : ""}`}
-                      type="button"
-                      key={item.id}
-                      aria-pressed={active}
-                      onClick={() => setFormat(item.id)}
-                    >
-                      <span className="portability-format-glyph">
-                        {item.glyph}
-                      </span>
-                      <strong>{item.title}</strong>
-                      <small>{item.sub}</small>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            <article className="portability-security">
-              <span className="portability-security-icon">
-                <Icon name="shield" />
-              </span>
-              <div>
-                <strong>Security Check</strong>
-                <p>
-                  For your protection, a valid <strong>Trade PIN</strong> will be
-                  required to authorize the data generation process.
-                </p>
-              </div>
-            </article>
-          </div>
-
-          <div className="portability-aside">
-            <article className="portability-archive">
-              <span className="portability-archive-lock">
-                <Icon name="lock" />
-              </span>
-              <div className="portability-archive-copy">
-                <h3>Secure Archives</h3>
-                <p>Bank-grade encryption on all exports</p>
-              </div>
-            </article>
-
-            <section className="portability-recent" aria-label="Recent exports">
-              <h3 className="portability-label">Recent Exports</h3>
-              <div className="portability-recent-list">
-                {RECENT_EXPORTS.map((item) => (
-                  <article className="portability-file" key={item.id}>
-                    <span className="portability-file-icon">
-                      <Icon name="clock" />
-                    </span>
-                    <span className="portability-file-copy">
-                      <strong>{item.name}</strong>
-                      <small>{item.meta}</small>
-                    </span>
-                    <span className="portability-file-status">
-                      {item.status}
-                    </span>
-                  </article>
+            <form onSubmit={handlePinSubmit} className="portability-pin-form">
+              <div className="portability-pin-inputs">
+                {pinDigits.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    id={`portability-pin-${idx}`}
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handlePinChange(idx, e.target.value)}
+                    onKeyDown={(e) => handlePinKeyDown(idx, e)}
+                    className="portability-pin-box"
+                    autoFocus={idx === 0}
+                    disabled={isVerifyingPin}
+                  />
                 ))}
               </div>
-            </section>
 
-            <button
-              className="portability-submit"
-              type="button"
-              onClick={requestExport}
-            >
-              <Icon name="download" />
-              <span>Request Data Export</span>
-            </button>
+              {pinError && <div className="portability-pin-error">{pinError}</div>}
+
+              <div className="portability-modal-actions">
+                <button
+                  type="button"
+                  className="portability-modal-btn cancel"
+                  onClick={() => setShowPinModal(false)}
+                  disabled={isVerifyingPin}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="portability-modal-btn confirm"
+                  disabled={isVerifyingPin || pinDigits.some((d) => !d)}
+                >
+                  {isVerifyingPin ? "Authorizing..." : "Authorize & Export"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-        </div>
-      </section>
+      )}
+
+      <div className="portability-wrapper">
+        {/* Top Bar */}
+        <header className="portability-topbar">
+          <div className="portability-topbar-left">
+            <button
+              className="portability-back-btn"
+              type="button"
+              aria-label="Go back"
+              onClick={goBack}
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h1 className="portability-title">Data Portability</h1>
+          </div>
+
+          <div
+            className="portability-user-profile"
+            onClick={() => onNavigate && onNavigate("profile")}
+            role="button"
+            tabIndex={0}
+            aria-label="User profile"
+          >
+            <img src={userAvatar} alt="User Avatar" className="portability-avatar-img" />
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+        </header>
+
+        {/* Top Cards Section */}
+        <section className="portability-top-section">
+          {/* Left Card: Export Your Records */}
+          <div className="portability-records-card">
+            <div className="portability-records-header">
+              <div className="portability-folder-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
+                  <polyline points="14 11 17 14 14 17" />
+                  <line x1="9" y1="14" x2="17" y2="14" />
+                </svg>
+              </div>
+              <h2>Export Your Records</h2>
+            </div>
+
+            <div className="portability-formats-grid">
+              {/* CSV Card */}
+              <div
+                className={`portability-format-box ${format === "csv" ? "active-glow" : "frosted"}`}
+                onClick={() => setFormat("csv")}
+                role="button"
+                tabIndex={0}
+                aria-pressed={format === "csv"}
+              >
+                <div className="portability-badge-wrap">
+                  <span className="portability-badge csv-badge">CSV</span>
+                </div>
+                <h3 className="portability-format-title">CSV</h3>
+                <p className="portability-format-desc">
+                  {format === "csv" ? (
+                    "Download a comprehensive archive of your MarketPulse AI activity history, credit logs, performance analytics, and profile data in machine-readable formats for external audits or personal backups."
+                  ) : (
+                    "Spreadsheets & tabular analysis formatted for Excel or Google Sheets."
+                  )}
+                </p>
+              </div>
+
+              {/* JSON Card */}
+              <div
+                className={`portability-format-box ${format === "json" ? "active-glow" : "frosted"}`}
+                onClick={() => setFormat("json")}
+                role="button"
+                tabIndex={0}
+                aria-pressed={format === "json"}
+              >
+                <div className="portability-badge-wrap">
+                  <span className="portability-badge json-badge">{"{ }"}</span>
+                </div>
+                <h3 className="portability-format-title">JSON</h3>
+                <p className="portability-format-desc">
+                  {format === "json" ? (
+                    "Download complete hierarchical JSON data including product catalog, sales logs, audit trails, and customer metrics for developers and API integrations."
+                  ) : (
+                    "Standard for developers & APIs"
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="portability-action-row">
+              <button
+                className="portability-request-btn"
+                type="button"
+                onClick={handleInitiateExport}
+                disabled={isExporting}
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                  <path d="M12 12v9" />
+                  <path d="m8 17 4 4 4-4" />
+                </svg>
+                <span>{isExporting ? "Generating Export..." : "Request Data Export"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right Security Column */}
+          <div className="portability-security-column">
+            {/* Security Check Card */}
+            <div className="portability-dark-card">
+              <div className="portability-icon-badge">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00f2fe" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </div>
+              <h3 className="portability-security-title">Security Check</h3>
+              <p className="portability-security-text">
+                For your protection, a valid <strong>Trade PIN</strong> will authorize the data generation process.
+              </p>
+            </div>
+
+            {/* Secure Archives Card */}
+            <div className="portability-dark-card">
+              <div className="portability-icon-badge">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00f2fe" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <h3 className="portability-security-title">Secure Archives</h3>
+              <p className="portability-security-text">
+                Bank-grade encryption on all exports
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Bottom Data Table Section */}
+        <section className="portability-table-section" aria-label="Export History Table">
+          <div className="portability-table-card">
+            <div className="portability-table-scroll">
+              <table className="portability-table">
+                <thead>
+                  <tr className="portability-thead-row">
+                    <th className="portability-th th-filename">File Name</th>
+                    <th className="portability-th th-type">Type</th>
+                    <th className="portability-th th-date">Date</th>
+                    <th className="portability-th th-size">Size</th>
+                    <th className="portability-th th-status">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={5} className="portability-td-empty">
+                        Loading your export records...
+                      </td>
+                    </tr>
+                  ) : exportsList.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="portability-td-empty">
+                        No export archives generated yet. Click &quot;Request Data Export&quot; above to create your first archive.
+                      </td>
+                    </tr>
+                  ) : (
+                    exportsList.map((row, idx) => {
+                      const isEven = idx % 2 === 1;
+                      return (
+                        <tr
+                          key={row.id || idx}
+                          className={`portability-tr ${isEven ? "tr-even" : "tr-odd"}`}
+                          onClick={() => handleDownloadExisting(row)}
+                          title={`Click to download ${row.name}`}
+                        >
+                          <td className="portability-td td-filename">
+                            {row.name}
+                          </td>
+                          <td className="portability-td td-type">
+                            {row.type}
+                          </td>
+                          <td className="portability-td td-date">
+                            {row.date}
+                          </td>
+                          <td className="portability-td td-size">
+                            {row.size}
+                          </td>
+                          <td className="portability-td td-status">
+                            <span className="portability-status-pill">
+                              {row.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );
