@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { updateProfile } from "../services/authService";
+import { updateProfile, updateCategory } from "../services/authService";
 
 const CATEGORIES = [
   {
     id: "dry-goods",
     label: "Dry Goods",
     description: "Grains, spices, and packaged food",
-    bgColor: "#e8f3e8",
-    iconColor: "#305c36",
+    image: "/marketcateoryimages/drygoods.png",
+    bgColor: "linear-gradient(135deg, rgba(255, 237, 213, 0.7) 0%, rgba(254, 215, 170, 0.4) 100%)",
+    buttonColor: "linear-gradient(135deg, #ea580c 0%, #c2410c 100%)",
+    iconColor: "#c2410c",
+    textColor: "#0f172a",
     icon: (
       <svg
         className="w-6 h-6"
@@ -26,11 +29,10 @@ const CATEGORIES = [
     ),
     watermark: (
       <svg
-        className="absolute right-4 bottom-4 w-20 h-20 text-[#f1f5f9] pointer-events-none"
+        className="absolute right-4 bottom-4 w-20 h-20 text-[#fdba74] opacity-20 pointer-events-none"
         viewBox="0 0 100 100"
         fill="currentColor"
       >
-        {/* Diamond dot pattern watermark */}
         <circle cx="50" cy="20" r="6" />
         <circle cx="35" cy="35" r="6" />
         <circle cx="65" cy="35" r="6" />
@@ -47,8 +49,11 @@ const CATEGORIES = [
     id: "produce",
     label: "Produce",
     description: "Fresh fruits, vegetables, and tubers",
-    bgColor: "#d9e6da",
-    iconColor: "#305c36",
+    image: "/marketcateoryimages/produce.png",
+    bgColor: "linear-gradient(135deg, rgba(220, 252, 231, 0.7) 0%, rgba(187, 247, 208, 0.4) 100%)",
+    buttonColor: "linear-gradient(135deg, #16a34a 0%, #15803d 100%)",
+    iconColor: "#15803d",
+    textColor: "#0f172a",
     icon: (
       <svg
         className="w-6 h-6"
@@ -66,7 +71,7 @@ const CATEGORIES = [
     ),
     watermark: (
       <svg
-        className="absolute right-0 bottom-0 w-28 h-28 text-[#f1f5f9] pointer-events-none translate-x-4 translate-y-4"
+        className="absolute right-0 bottom-0 w-28 h-28 text-[#86efac] opacity-20 pointer-events-none translate-x-4 translate-y-4"
         viewBox="0 0 100 100"
         fill="none"
         stroke="currentColor"
@@ -74,7 +79,6 @@ const CATEGORIES = [
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        {/* Large leaf watermark */}
         <path d="M10 90 C 20 40, 60 20, 90 10" />
         <path d="M90 10 C 70 50, 40 70, 10 90" />
         <path d="M35 55 C 45 45, 55 45, 60 30" />
@@ -86,8 +90,11 @@ const CATEGORIES = [
     id: "electronics",
     label: "Electronics",
     description: "Phones, accessories, and power tools",
-    bgColor: "#e3ebf7",
-    iconColor: "#35527b",
+    image: "/marketcateoryimages/electronics.png",
+    bgColor: "linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(49, 46, 129, 0.9) 100%)",
+    buttonColor: "linear-gradient(135deg, #3730a3 0%, #312e81 100%)",
+    iconColor: "#c7d2fe",
+    textColor: "#ffffff",
     icon: (
       <svg
         className="w-6 h-6"
@@ -107,7 +114,7 @@ const CATEGORIES = [
     ),
     watermark: (
       <svg
-        className="absolute right-0 bottom-0 w-24 h-32 text-[#f1f5f9] pointer-events-none translate-x-2"
+        className="absolute right-0 bottom-0 w-24 h-32 text-[#818cf8] opacity-10 pointer-events-none translate-x-2"
         viewBox="0 0 100 100"
         fill="none"
         stroke="currentColor"
@@ -115,7 +122,6 @@ const CATEGORIES = [
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        {/* Lightning bolt watermark */}
         <path d="M60 10 L25 55 L55 55 L40 90 L80 40 L50 40 Z" />
       </svg>
     ),
@@ -124,8 +130,11 @@ const CATEGORIES = [
     id: "textiles",
     label: "Textiles",
     description: "Fabrics, garments, and traditional attire",
-    bgColor: "#f2e4bd",
-    iconColor: "#6c5414",
+    image: "/marketcateoryimages/textiles.png",
+    bgColor: "linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(226, 232, 240, 0.5) 100%)",
+    buttonColor: "linear-gradient(135deg, #475569 0%, #334155 100%)",
+    iconColor: "#475569",
+    textColor: "#0f172a",
     icon: (
       <svg
         className="w-6 h-6"
@@ -141,10 +150,9 @@ const CATEGORIES = [
     ),
     watermark: (
       <svg
-        className="absolute right-0 bottom-0 w-24 h-24 text-[#f1f5f9] pointer-events-none"
+        className="absolute right-0 bottom-0 w-24 h-24 text-[#94a3b8] opacity-10 pointer-events-none"
         viewBox="0 0 100 100"
       >
-        {/* Diagonal stripes watermark */}
         <line
           x1="0"
           y1="100"
@@ -208,27 +216,20 @@ const CATEGORIES = [
 
 export default function MarketCategory({ onNavigate, profilePicture }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedId, setSelectedId] = useState("dry-goods");
+  const [selectedId, setSelectedId] = useState("electronics");
   const [showNotification, setShowNotification] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const pic = profilePicture || localStorage.getItem('profilePicture');
   
-  // Load saved category from backend on mount
+  // Load saved category from localStorage on mount
   useEffect(() => {
-    const loadCategory = async () => {
-      try {
-        const userEmail = localStorage.getItem('email');
-        if (!userEmail) return;
-        
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL || 'https://marketpulse-jaxo.onrender.com/api'}/welcome-auth/profile?email=${encodeURIComponent(userEmail)}`
-        );
-        // Note: This is a simplified approach - in production you'd want a getProfile endpoint
-      } catch (error) {
-        console.error("Failed to load category:", error);
+    const savedCategory = localStorage.getItem('category');
+    if (savedCategory) {
+      const match = CATEGORIES.find(c => c.label === savedCategory);
+      if (match) {
+        setSelectedId(match.id);
       }
-    };
-    loadCategory();
+    }
   }, []);
 
   const handleUpdate = async () => {
@@ -239,16 +240,15 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
         throw new Error('No user logged in');
       }
       
-      // Map category ID to display name
       const selectedCategory = CATEGORIES.find(c => c.id === selectedId);
       if (!selectedCategory) {
         throw new Error('Invalid category selected');
       }
       
-      // Save to backend
-      await updateProfile(userEmail, { category: selectedCategory.label });
+      // Save to backend using correct API
+      await updateCategory(userEmail, selectedCategory.label);
       
-      // Also save to localStorage for immediate UI updates
+      // Save to localStorage for immediate UI updates
       localStorage.setItem('category', selectedCategory.label);
       
       setShowNotification(true);
@@ -277,6 +277,18 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
 
   return (
     <div className="market-category-page">
+      <div className="hero-background-layer">
+        {CATEGORIES.map((category) => (
+          <img
+            key={category.id}
+            src={category.image}
+            alt={`${category.label} hero`}
+            className={`hero-bg-image ${selectedId === category.id ? "active" : ""}`}
+            loading="lazy"
+          />
+        ))}
+        <div className="hero-bg-overlay" />
+      </div>
       <div className="market-category-shell">
         <header className="market-category-topbar">
           <button
@@ -317,7 +329,14 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
           <aside className="market-category-preview">
             <div
               className="market-category-preview-hero"
-              style={{ background: selectedCategory.bgColor }}
+              style={{ 
+                backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6)), url("${selectedCategory.image}")`, 
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backdropFilter: "blur(4px)", 
+                border: "1px solid rgba(255,255,255,0.4)" 
+              }}
             >
               <div
                 className="market-category-preview-icon"
@@ -391,24 +410,28 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
                       className={`market-category-card ${
                         isSelected ? "is-selected" : ""
                       }`}
+                      style={{
+                        background: category.bgColor,
+                        color: category.textColor
+                      }}
                     >
                       <div
                         className="market-category-card-icon"
                         style={{
-                          backgroundColor: category.bgColor,
-                          color: category.iconColor,
+                          background: isSelected ? "rgba(255,255,255,0.2)" : category.bgColor,
+                          color: isSelected ? category.textColor : category.iconColor,
                         }}
                       >
                         {category.icon}
                       </div>
 
                       <div className="market-category-card-copy">
-                        <h3>{category.label}</h3>
-                        <p>{category.description}</p>
+                        <h3 style={{ color: category.textColor }}>{category.label}</h3>
+                        <p style={{ color: category.textColor, opacity: 0.8 }}>{category.description}</p>
                       </div>
 
-                      <div className="market-category-card-action">
-                        <span>{isSelected ? "Selected" : "Tap to choose"}</span>
+                      <div className="market-category-card-action" style={{ color: category.textColor, opacity: isSelected ? 1 : 0.7 }}>
+                        <span>{isSelected ? "SELECTED" : "TAP TO CHOOSE"}</span>
                         <svg
                           viewBox="0 0 24 24"
                           fill="none"
@@ -417,7 +440,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >
-                          <path d="M8 5l8 7-8 7" />
+                          <path d="M9 18l6-6-6-6" />
                         </svg>
                       </div>
 
@@ -436,12 +459,8 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
         </main>
 
         <footer className="market-category-footer">
-          <button
-            type="button"
-            onClick={handleUpdate}
-            disabled={isSaving}
-          >
-            <span>Update Category</span>
+          <button type="button" onClick={handleUpdate} disabled={isSaving} style={{ background: selectedCategory.buttonColor, color: "#ffffff" }}>
+            {isSaving ? "Saving..." : "Update Category"}
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -449,6 +468,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
+              style={{ marginLeft: 8 }}
             >
               <polyline points="20 6 9 17 4 12" />
               <polyline points="16 6 9 13.5 9 13.5" />

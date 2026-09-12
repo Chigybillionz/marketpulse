@@ -51,6 +51,16 @@ export const updateProfile = async (email, profileData) => {
 };
 
 /**
+ * Updates the user's market category
+ */
+export const updateCategory = async (email, category) => {
+  return apiClient('/welcome-auth/category', {
+    method: 'PUT',
+    body: JSON.stringify({ email, category }),
+  });
+};
+
+/**
  * Verifies a user's trade PIN against the stored hash
  */
 export const verifyPin = async (email, pin) => {

@@ -1,9 +1,37 @@
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useState, useEffect, useRef } from 'react';
 
 export default function AIConfirmation({ onNavigate }) {
   const location = useLocation();
   const { t } = useLanguage();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (location.state?.audioBase64) {
+      audioRef.current = new Audio(`data:audio/webm;base64,${location.state.audioBase64}`);
+      audioRef.current.onended = () => setIsPlaying(false);
+    }
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [location.state?.audioBase64]);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   const transactionData = location.state?.transactionData || {
     type: 'Income',
     amount: 15000,
@@ -28,16 +56,17 @@ export default function AIConfirmation({ onNavigate }) {
           </p>
           {location.state?.audioBase64 && (
             <button
-              onClick={() => {
-                const audio = new Audio(location.state.audioBase64);
-                audio.play();
-              }}
+              onClick={togglePlay}
               className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all mb-4"
             >
               <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
+                {isPlaying ? (
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                ) : (
+                  <path d="M8 5v14l11-7z" />
+                )}
               </svg>
-              <span>{t('confirm_play_recording') || 'Play Recording'}</span>
+              <span>{isPlaying ? 'Pause Recording' : (t('confirm_play_recording') || 'Play Recording')}</span>
             </button>
           )}
           <button
@@ -175,16 +204,17 @@ export default function AIConfirmation({ onNavigate }) {
 
           {location.state?.audioBase64 && (
             <button
-              onClick={() => {
-                const audio = new Audio(location.state.audioBase64);
-                audio.play();
-              }}
+              onClick={togglePlay}
               className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all mb-4 z-20 relative active:scale-[0.98]"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
+                {isPlaying ? (
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                ) : (
+                  <path d="M8 5v14l11-7z" />
+                )}
               </svg>
-              <span className="text-lg tracking-wide">{t('confirm_play_recording') || 'Play Recording'}</span>
+              <span className="text-lg tracking-wide">{isPlaying ? 'Pause Recording' : (t('confirm_play_recording') || 'Play Recording')}</span>
             </button>
           )}
 

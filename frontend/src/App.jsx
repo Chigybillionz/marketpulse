@@ -107,6 +107,7 @@ function App() {
               localStorage.setItem('profilePicture', u.profilePicture || "");
               localStorage.setItem('location', u.location || "");
               localStorage.setItem('businessType', u.businessType || "Retail");
+              localStorage.setItem('category', u.category || "Dry Goods");
               localStorage.setItem('hasPin', u.hasPin ? 'true' : 'false');
               setBusinessName(u.businessName || "");
               setEmail(u.email || "");

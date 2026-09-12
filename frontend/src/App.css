@@ -3419,11 +3419,47 @@
 
 .market-category-page {
   min-height: 100svh;
-  background:
-    radial-gradient(circle at top left, rgba(12, 58, 30, 0.045), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(228, 231, 255, 0.45), transparent 28%),
-    linear-gradient(180deg, #f4f7fb 0%, #eef2f7 100%);
-  color: #08150e;
+  color: #0f172a;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.hero-background-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-color: #0f172a; /* Fallback */
+  overflow: hidden;
+}
+
+.hero-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity 400ms ease-in-out, transform 400ms ease-in-out;
+}
+
+.hero-bg-image.active {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(226, 232, 240, 0.85) 0%, rgba(203, 213, 225, 0.95) 100%);
+  pointer-events: none;
 }
 
 .market-category-shell {
@@ -3453,8 +3489,19 @@
   padding: 0;
   cursor: pointer;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 24px rgba(8, 21, 14, 0.08);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.market-category-back {
+  background: transparent !important;
+  border: 2px solid #16a34a !important;
+  box-shadow: none !important;
+}
+.market-category-back svg {
+  stroke: #16a34a !important;
 }
 
 .market-category-back {
@@ -3489,8 +3536,8 @@
 
 .market-category-titleblock h1 {
   margin: 0;
-  color: #08150e;
-  font-family: Georgia, 'Times New Roman', serif;
+  color: #0f172a;
+  font-family: 'Inter', 'SF Pro Display', sans-serif;
   font-size: 30px;
   font-weight: 800;
   line-height: 1;
@@ -3518,10 +3565,11 @@
   gap: 14px;
   min-height: 72px;
   padding: 0 18px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(12, 58, 30, 0.08);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 22px;
-  box-shadow: 0 10px 22px rgba(8, 21, 14, 0.04);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .market-category-search span {
@@ -3579,9 +3627,9 @@
   min-height: 164px;
   padding: 22px 22px 20px;
   border-radius: 28px;
-  border: 1px solid rgba(12, 58, 30, 0.1);
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 20px rgba(8, 21, 14, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
   text-align: left;
   cursor: pointer;
   display: grid;
@@ -3591,8 +3639,10 @@
 }
 
 .market-category-card.is-selected {
-  border-color: rgba(12, 58, 30, 0.45);
-  box-shadow: 0 14px 26px rgba(12, 58, 30, 0.07);
+  border-color: rgba(34, 211, 238, 0.8) !important;
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.35), 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
 }
 
 .market-category-card-icon {
@@ -3616,8 +3666,7 @@
 
 .market-category-card-copy h3 {
   margin: 0;
-  color: #08150e;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Inter', 'SF Pro Display', sans-serif;
   font-size: 20px;
   font-weight: 800;
   line-height: 1.08;
@@ -3670,8 +3719,8 @@
 
 .market-category-empty strong {
   display: block;
-  color: #08150e;
-  font-family: Georgia, 'Times New Roman', serif;
+  color: #0f172a;
+  font-family: 'Inter', 'SF Pro Display', sans-serif;
   font-size: 20px;
   margin-bottom: 8px;
 }
@@ -3693,13 +3742,13 @@
   min-height: 62px;
   border: 0;
   border-radius: 18px;
-  background: #052e16;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
   color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  box-shadow: 0 16px 28px rgba(5, 46, 22, 0.22);
+  box-shadow: 0 16px 28px rgba(30, 27, 75, 0.22);
   cursor: pointer;
   font-size: 17px;
   font-weight: 800;
@@ -3829,14 +3878,14 @@
     text-transform: uppercase;
   }
 
-  .market-category-preview-copy h2 {
+.market-category-preview-copy h2 {
     margin: 16px 0 10px;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: 'Inter', 'SF Pro Display', sans-serif;
     font-size: 38px;
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.03em;
-    color: #08150e;
+    color: #0f172a;
   }
 
   .market-category-preview-copy p {
@@ -3881,8 +3930,8 @@
 
   .market-category-preview-details strong {
     display: block;
-    color: #08150e;
-    font-family: Georgia, 'Times New Roman', serif;
+    color: #0f172a;
+    font-family: 'Inter', 'SF Pro Display', sans-serif;
     font-size: 20px;
     font-weight: 800;
     line-height: 1.1;

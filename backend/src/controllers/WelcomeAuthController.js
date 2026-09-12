@@ -1,4 +1,4 @@
-const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile, updateCategory } = require('../services/WelcomeAuthService');
 
 const handleSignup = async (req, res) => {
   try {

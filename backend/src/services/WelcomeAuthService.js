@@ -86,12 +86,19 @@ const updateProfile = async (email, profileData) => {
  * Updates the user's market category
  */
 const updateCategory = async (email, category) => {
+  if (typeof category !== 'string' || category.trim().length === 0) {
+    throw new Error('Category must be a non-empty string');
+  }
+  if (category.length > 50) {
+    throw new Error('Category must be under 50 characters');
+  }
+
   const user = await WelcomeUser.findOne({ email });
   if (!user) {
     throw new Error('User not found');
   }
 
-  user.category = category;
+  user.category = category.trim();
   await user.save();
   return user;
 };
