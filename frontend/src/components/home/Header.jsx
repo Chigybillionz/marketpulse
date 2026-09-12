@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Menu, UserCircle } from 'lucide-react';
 import MobileMenu from '../layout/MobileMenu';
+import NotificationBell from './NotificationBell';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function Header({ businessName, onNavigate, profilePicture }) {
@@ -64,6 +65,9 @@ export default function Header({ businessName, onNavigate, profilePicture }) {
       >
         {businessName || t('common_my_store') || 'My Store'}
       </h1>
+
+      {/* Notification Bell */}
+      <NotificationBell />
 
       {/* Right icon — profile picture or fallback */}
       <button

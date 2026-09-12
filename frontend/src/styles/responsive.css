@@ -1242,6 +1242,195 @@
   height: 22px;
 }
 
+/* ---- Mobile-first overrides for Inventory Alerts ---- */
+
+@media (max-width: 520px) {
+  .inventory-alert-shell {
+    padding: 14px 14px 20px;
+    gap: 14px;
+  }
+
+  .inventory-alert-topbar {
+    grid-template-columns: 42px 1fr 42px;
+    gap: 10px;
+  }
+
+  .inventory-alert-back,
+  .inventory-alert-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .inventory-alert-titleblock p {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    margin-bottom: 3px;
+  }
+
+  .inventory-alert-titleblock h1 {
+    font-size: 22px;
+  }
+
+  .inventory-alert-section-head h2 {
+    font-size: 22px;
+  }
+
+  .inventory-alert-section-head p {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .inventory-alert-card {
+    border-radius: 18px;
+  }
+
+  .inventory-alert-row {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 14px;
+  }
+
+  .inventory-alert-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .inventory-alert-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .inventory-alert-copy {
+    flex: 1 1 0;
+    min-width: 120px;
+  }
+
+  .inventory-alert-copy h3 {
+    font-size: 15px;
+  }
+
+  .inventory-alert-copy p {
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+  .inventory-alert-time-picker {
+    min-width: 80px;
+    order: 4;
+    flex-basis: 100%;
+    margin-left: 52px;
+    margin-top: -4px;
+  }
+
+  .inventory-alert-time-input {
+    height: 38px;
+    font-size: 14px;
+    padding: 0 10px;
+    border-radius: 10px;
+  }
+
+  .inventory-alert-threshold {
+    padding: 16px 14px 14px;
+  }
+
+  .inventory-alert-threshold-head h3 {
+    font-size: 18px;
+  }
+
+  .inventory-alert-threshold-head p {
+    font-size: 12px;
+  }
+
+  .inventory-alert-threshold-head strong {
+    font-size: 28px;
+  }
+
+  .inventory-alert-threshold-head {
+    margin-bottom: 12px;
+  }
+
+  .inventory-alert-slider {
+    height: 10px;
+  }
+
+  .inventory-alert-slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    border-width: 3px;
+  }
+
+  .inventory-alert-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-width: 3px;
+  }
+
+  .inventory-alert-scale {
+    font-size: 11px;
+  }
+
+  .inventory-alert-footer {
+    padding-top: 8px;
+  }
+
+  .inventory-alert-footer button {
+    min-height: 56px;
+    border-radius: 16px;
+    font-size: 16px;
+    gap: 8px;
+  }
+
+  .inventory-alert-footer button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .inventory-alert-hero {
+    min-height: 200px;
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .inventory-alert-hero h2 {
+    font-size: 20px;
+    margin: 12px 0 8px;
+  }
+
+  .inventory-alert-hero p {
+    font-size: 13px;
+  }
+
+  .inventory-alert-kicker {
+    min-height: 26px;
+    padding: 0 10px;
+    font-size: 9px;
+  }
+
+  .inventory-alert-metrics {
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .inventory-alert-metrics article {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .inventory-alert-metrics span {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+
+  .inventory-alert-metrics strong {
+    font-size: 18px;
+  }
+
+  .inventory-alert-note p {
+    font-size: 13px;
+  }
+}
+
 @media (min-width: 521px) {
   .inventory-alert-shell {
     padding: 26px 26px 30px;

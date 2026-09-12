@@ -4,14 +4,32 @@ import { AlertTriangle, Calendar, TrendingUp, Save, CheckCircle2 } from "lucide-
 const ToggleSwitch = ({ isActive, onToggle }) => (
   <button
     onClick={onToggle}
-    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
-      isActive ? "bg-[#052e16]" : "bg-gray-300"
-    }`}
+    style={{
+      position: 'relative',
+      display: 'inline-flex',
+      height: 30,
+      width: 54,
+      alignItems: 'center',
+      borderRadius: 999,
+      border: 'none',
+      padding: 0,
+      cursor: 'pointer',
+      background: isActive ? '#052e16' : '#d1d5db',
+      transition: 'background 0.2s ease',
+      flexShrink: 0,
+    }}
   >
     <span
-      className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-md transition-transform ${
-        isActive ? "translate-x-8" : "translate-x-0.5"
-      }`}
+      style={{
+        display: 'inline-block',
+        height: 24,
+        width: 24,
+        borderRadius: '50%',
+        background: '#ffffff',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+        transition: 'transform 0.2s ease',
+        transform: isActive ? 'translateX(26px)' : 'translateX(3px)',
+      }}
     />
   </button>
 );
