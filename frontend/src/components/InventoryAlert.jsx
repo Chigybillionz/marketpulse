@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { AlertTriangle, Calendar, TrendingUp, Save, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AlertTriangle, Calendar, TrendingUp, Save, CheckCircle2, AlertCircle } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
+import { getNotificationSettings, updateNotificationSettings } from "../services/notificationService";
 
 const ToggleSwitch = ({ isActive, onToggle }) => (
   <button
@@ -37,16 +38,68 @@ const ToggleSwitch = ({ isActive, onToggle }) => (
 
 export default function InventoryAlert({ onNavigate, onBack }) {
   const { t } = useLanguage();
-  const [settings, setSettings] = useState({
-    lowStockNotifications: true,
-    dailySummary: false,
-    dailySummaryTime: "18:00", // Default to 6:00 PM
-    priceChangeAlerts: true,
-    threshold: 10,
+  const [settings, setSettings] = useState(() => {
+    try {
+      const cached = localStorage.getItem('inventoryAlertSettings');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return {
+          lowStockNotifications: parsed.lowStockNotifications !== undefined ? parsed.lowStockNotifications : true,
+          dailySummary: parsed.dailySummary !== undefined ? parsed.dailySummary : false,
+          dailySummaryTime: parsed.dailySummaryTime || "18:00",
+          priceChangeAlerts: parsed.priceChangeAlerts !== undefined ? parsed.priceChangeAlerts : true,
+          threshold: typeof parsed.threshold === 'number' ? parsed.threshold : 10,
+        };
+      }
+    } catch (e) {
+      console.warn("Failed to parse cached inventory settings", e);
+    }
+    return {
+      lowStockNotifications: true,
+      dailySummary: false,
+      dailySummaryTime: "18:00",
+      priceChangeAlerts: true,
+      threshold: 10,
+    };
   });
 
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Load saved settings from backend database on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchSettings = async () => {
+      try {
+        const res = await getNotificationSettings();
+        if (isMounted && res?.settings) {
+          const fetched = res.settings;
+          const merged = {
+            lowStockNotifications: fetched.lowStockNotifications !== undefined ? fetched.lowStockNotifications : true,
+            dailySummary: fetched.dailySummary !== undefined ? fetched.dailySummary : false,
+            dailySummaryTime: fetched.dailySummaryTime || "18:00",
+            priceChangeAlerts: fetched.priceChangeAlerts !== undefined ? fetched.priceChangeAlerts : true,
+            threshold: typeof fetched.threshold === 'number' ? fetched.threshold : 10,
+          };
+          setSettings(merged);
+          localStorage.setItem('inventoryAlertSettings', JSON.stringify(merged));
+        }
+      } catch (err) {
+        console.warn("Failed to load settings from server, using local preferences:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    fetchSettings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const toggleSwitch = (key) => {
     setSettings((prev) => ({
@@ -58,13 +111,12 @@ export default function InventoryAlert({ onNavigate, onBack }) {
   const handleThresholdChange = (e) => {
     setSettings((prev) => ({
       ...prev,
-      threshold: parseInt(e.target.value),
+      threshold: parseInt(e.target.value, 10),
     }));
   };
 
   const handleTimeChange = (e) => {
     const timeValue = e.target.value;
-    // Validate time format (HH:MM)
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
     if (timeRegex.test(timeValue) || timeValue === '') {
       setSettings((prev) => ({
@@ -75,17 +127,33 @@ export default function InventoryAlert({ onNavigate, onBack }) {
   };
 
   const handleSaveSettings = async () => {
-    setIsSaving(true);
-    try {
-      // Save settings to backend (in production, implement this)
-      const userEmail = localStorage.getItem('email');
-      if (userEmail) {
-        // In production: await apiClient('/inventory-alerts/settings', { ... })
-        console.log('Saving inventory alert settings:', settings);
-        // Save to localStorage for now
-        localStorage.setItem('inventoryAlertSettings', JSON.stringify(settings));
+    // Validate daily summary time format
+    if (settings.dailySummary) {
+      const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+      if (!timeRegex.test(settings.dailySummaryTime)) {
+        setErrorMessage(t("alert_invalid_time", "Please select a valid daily summary time (HH:MM)."));
+        return;
       }
-      
+    }
+
+    // Validate threshold percentage
+    if (isNaN(settings.threshold) || settings.threshold < 1 || settings.threshold > 100) {
+      setErrorMessage(t("alert_invalid_threshold", "Low stock threshold must be between 1% and 100%."));
+      return;
+    }
+
+    setIsSaving(true);
+    setErrorMessage("");
+
+    try {
+      // Save notification settings to the database
+      const res = await updateNotificationSettings(settings);
+
+      // Save to local storage for instant access across reloads
+      const saved = res?.settings || settings;
+      localStorage.setItem('inventoryAlertSettings', JSON.stringify(saved));
+      setSettings(saved);
+
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
@@ -97,7 +165,9 @@ export default function InventoryAlert({ onNavigate, onBack }) {
       }, 2000);
     } catch (error) {
       console.error("Failed to save settings:", error);
-      alert(t("alert_save_error"));
+      const msg = error.message || t("alert_save_error", "Failed to save settings. Please try again.");
+      setErrorMessage(msg);
+      alert(msg);
     } finally {
       setIsSaving(false);
     }
@@ -176,6 +246,28 @@ export default function InventoryAlert({ onNavigate, onBack }) {
               <h2>{t("alert_section_title")}</h2>
               <p>{t("alert_section_desc")}</p>
             </div>
+
+            {errorMessage && (
+              <div
+                style={{
+                  background: '#fef2f2',
+                  color: '#991b1b',
+                  border: '1px solid #f87171',
+                  borderRadius: 12,
+                  padding: '12px 16px',
+                  marginBottom: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
+                role="alert"
+              >
+                <AlertCircle size={18} />
+                <span>{errorMessage}</span>
+              </div>
+            )}
 
             <div className="inventory-alert-card inventory-alert-list">
               <div className="inventory-alert-row">

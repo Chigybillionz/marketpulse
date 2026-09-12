@@ -41,3 +41,26 @@ export const deleteNotification = async (id) => {
 export const generateSummary = async () => {
   return apiClient('/notifications/generate-summary', { method: 'POST' });
 };
+
+/**
+ * Fetches user's saved notification/inventory alert settings from backend
+ */
+export const getNotificationSettings = async () => {
+  const email = localStorage.getItem('email');
+  const query = email ? `?email=${encodeURIComponent(email)}` : '';
+  return apiClient(`/notifications/settings${query}`, { method: 'GET' });
+};
+
+/**
+ * Updates user's notification/inventory alert settings on backend
+ */
+export const updateNotificationSettings = async (settings) => {
+  const email = localStorage.getItem('email');
+  return apiClient('/notifications/settings', {
+    method: 'PUT',
+    body: JSON.stringify({
+      ...settings,
+      email: email || undefined,
+    }),
+  });
+};

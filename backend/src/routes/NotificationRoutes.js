@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
+const { protect, protectOrEmail } = require('../middleware/authMiddleware');
 const {
   getNotifications,
   getUnreadCount,
@@ -8,7 +8,13 @@ const {
   markAllAsRead,
   deleteNotification,
   generateSummary,
+  getNotificationSettings,
+  updateNotificationSettings,
 } = require('../controllers/NotificationController');
+
+// Settings routes
+router.get('/settings', protectOrEmail, getNotificationSettings);
+router.put('/settings', protectOrEmail, updateNotificationSettings);
 
 // All routes are protected (require JWT)
 router.get('/', protect, getNotifications);

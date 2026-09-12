@@ -1,4 +1,6 @@
 const Notification = require('../models/Notification');
+const NotificationSettings = require('../models/NotificationSettings');
+const WelcomeUser = require('../models/WelcomeUser');
 const Product = require('../models/Product');
 
 // @desc    Get all notifications for the logged-in user
@@ -106,7 +108,8 @@ const generateSummary = async (req, res) => {
     const products = await Product.find({ user: userId });
 
     const totalProducts = products.length;
-    const threshold = 10; // Default low-stock threshold
+    const userSettings = await NotificationSettings.findOne({ user: userId });
+    const threshold = userSettings?.threshold || 10; // User-configured or default low-stock threshold
 
     // Compute inventory stats
     let totalStockValue = 0;
@@ -172,6 +175,126 @@ const generateSummary = async (req, res) => {
   }
 };
 
+// Helper to resolve user ID from req.user or fallback email
+const resolveUserId = async (req) => {
+  if (req.user?.id) {
+    return req.user.id;
+  }
+  const email = req.query?.email || req.body?.email;
+  if (email) {
+    const user = await WelcomeUser.findOne({ email });
+    if (user) return user._id;
+  }
+  return null;
+};
+
+// @desc    Get notification settings for the authenticated user
+// @route   GET /api/notifications/settings
+// @access  Private
+const getNotificationSettings = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    let settings = await NotificationSettings.findOne({ user: userId });
+
+    if (!settings) {
+      settings = await NotificationSettings.create({
+        user: userId,
+        lowStockNotifications: true,
+        dailySummary: false,
+        dailySummaryTime: '18:00',
+        priceChangeAlerts: true,
+        threshold: 10,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      settings: {
+        lowStockNotifications: settings.lowStockNotifications,
+        dailySummary: settings.dailySummary,
+        dailySummaryTime: settings.dailySummaryTime,
+        priceChangeAlerts: settings.priceChangeAlerts,
+        threshold: settings.threshold,
+        createdAt: settings.createdAt,
+        updatedAt: settings.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Get Notification Settings Error:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Update notification settings for the authenticated user
+// @route   PUT /api/notifications/settings
+// @access  Private
+const updateNotificationSettings = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    const {
+      lowStockNotifications,
+      dailySummary,
+      dailySummaryTime,
+      priceChangeAlerts,
+      threshold,
+    } = req.body;
+
+    // Validate dailySummaryTime format if provided
+    if (dailySummaryTime !== undefined && dailySummaryTime !== '') {
+      const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+      if (typeof dailySummaryTime !== 'string' || !timeRegex.test(dailySummaryTime)) {
+        return res.status(400).json({ message: 'Invalid time format (HH:MM expected)' });
+      }
+    }
+
+    // Validate threshold if provided
+    if (threshold !== undefined) {
+      const thresholdNum = Number(threshold);
+      if (isNaN(thresholdNum) || thresholdNum < 1 || thresholdNum > 100) {
+        return res.status(400).json({ message: 'Threshold must be a percentage between 1 and 100' });
+      }
+    }
+
+    const updateData = {};
+    if (lowStockNotifications !== undefined) updateData.lowStockNotifications = Boolean(lowStockNotifications);
+    if (dailySummary !== undefined) updateData.dailySummary = Boolean(dailySummary);
+    if (dailySummaryTime !== undefined && dailySummaryTime !== '') updateData.dailySummaryTime = dailySummaryTime;
+    if (priceChangeAlerts !== undefined) updateData.priceChangeAlerts = Boolean(priceChangeAlerts);
+    if (threshold !== undefined) updateData.threshold = Number(threshold);
+
+    const settings = await NotificationSettings.findOneAndUpdate(
+      { user: userId },
+      { $set: updateData },
+      { returnDocument: 'after', upsert: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Notification settings updated successfully',
+      settings: {
+        lowStockNotifications: settings.lowStockNotifications,
+        dailySummary: settings.dailySummary,
+        dailySummaryTime: settings.dailySummaryTime,
+        priceChangeAlerts: settings.priceChangeAlerts,
+        threshold: settings.threshold,
+        createdAt: settings.createdAt,
+        updatedAt: settings.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Update Notification Settings Error:', error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
 module.exports = {
   getNotifications,
   getUnreadCount,
@@ -179,4 +302,6 @@ module.exports = {
   markAllAsRead,
   deleteNotification,
   generateSummary,
+  getNotificationSettings,
+  updateNotificationSettings,
 };
