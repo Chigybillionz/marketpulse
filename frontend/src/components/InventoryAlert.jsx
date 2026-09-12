@@ -35,7 +35,7 @@ const ToggleSwitch = ({ isActive, onToggle }) => (
   </button>
 );
 
-export default function InventoryAlert({ onNavigate }) {
+export default function InventoryAlert({ onNavigate, onBack }) {
   const { t } = useLanguage();
   const [settings, setSettings] = useState({
     lowStockNotifications: true,
@@ -89,8 +89,10 @@ export default function InventoryAlert({ onNavigate }) {
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
-        if (onNavigate) {
-          onNavigate("home");
+        if (onBack) {
+          onBack();
+        } else if (onNavigate) {
+          onNavigate("profile");
         }
       }, 2000);
     } catch (error) {
@@ -114,7 +116,7 @@ export default function InventoryAlert({ onNavigate }) {
           <button
             type="button"
             className="inventory-alert-back"
-            onClick={() => onNavigate && onNavigate("home")}
+            onClick={() => (onBack ? onBack() : onNavigate ? onNavigate("profile") : window.history.back())}
             aria-label={t("common_back")}
           >
             <svg

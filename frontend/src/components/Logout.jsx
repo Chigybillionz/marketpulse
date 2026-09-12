@@ -39,10 +39,10 @@ function LogoutIcon() {
   );
 }
 
-export default function Logout({ onNavigate }) {
+export default function Logout({ onNavigate, onBack }) {
   const { t } = useLanguage();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const goBack = () => onNavigate && onNavigate("home");
+  const goBack = () => (onBack ? onBack() : onNavigate && onNavigate("profile"));
 
   return (
     <>
@@ -87,6 +87,10 @@ export default function Logout({ onNavigate }) {
                     localStorage.removeItem("token");
                     localStorage.removeItem("businessName");
                     localStorage.removeItem("email");
+                    localStorage.removeItem("location");
+                    localStorage.removeItem("businessType");
+                    localStorage.removeItem("profilePicture");
+                    localStorage.removeItem("category");
                     window.location.href = "/";
                   }}
                 >

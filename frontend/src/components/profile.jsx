@@ -3,7 +3,7 @@ import { uploadProfilePicture } from "../services/authService";
 import AppShell from "./layout/AppShell";
 import { useLanguage } from "../i18n/LanguageContext";
 
-function getSections(businessName, email, t, currentLanguageLabel) {
+function getSections(businessName, email, t, currentLanguageLabel, displayLocation, displayCategory) {
   return [
     {
       title: t("profile_business_details"),
@@ -15,9 +15,15 @@ function getSections(businessName, email, t, currentLanguageLabel) {
           target: "storeProfile",
         },
         {
+          icon: "location",
+          label: t("store_location_label", "Store Location"),
+          sub: displayLocation,
+          target: "storeProfile",
+        },
+        {
           icon: "category",
           label: t("profile_market_category"),
-          sub: "Wholesale Dry Goods",
+          sub: displayCategory || "Wholesale Dry Goods",
           target: "market_category",
         },
         {
@@ -192,9 +198,89 @@ function SettingItem({ item, onClick }) {
   );
 }
 
-export default function Profile({ onNavigate, businessName, email, profilePicture }) {
+export default function Profile({ onNavigate, businessName, email, profilePicture, locationStr, setLocationStr }) {
   const { t, language } = useLanguage();
-  const sections = getSections(businessName, email, t, language);
+  const [currentLocation, setCurrentLocation] = useState(
+    locationStr !== undefined && locationStr !== null
+      ? locationStr
+      : localStorage.getItem('location') || ""
+  );
+
+  useEffect(() => {
+    if (locationStr !== undefined && locationStr !== null) {
+      setCurrentLocation(locationStr);
+    }
+  }, [locationStr]);
+
+  // Listen for location changes dispatched across components or storage
+  useEffect(() => {
+    const handleLocationChanged = (e) => {
+      const newLoc = e.detail !== undefined ? e.detail : localStorage.getItem('location');
+      setCurrentLocation(newLoc || "");
+    };
+    window.addEventListener('storeLocationChanged', handleLocationChanged);
+    window.addEventListener('storage', handleLocationChanged);
+    return () => {
+      window.removeEventListener('storeLocationChanged', handleLocationChanged);
+      window.removeEventListener('storage', handleLocationChanged);
+    };
+  }, []);
+
+  // Fetch the authenticated user's store profile data from database on mount to guarantee single source of truth
+  useEffect(() => {
+    const userEmail = email || localStorage.getItem('email');
+    if (userEmail) {
+      import("../services/authService").then(({ getUserProfile }) => {
+        getUserProfile(userEmail).then((res) => {
+          if (res?.user && res.user.location !== undefined) {
+            const dbLocation = res.user.location || "";
+            setCurrentLocation(dbLocation);
+            localStorage.setItem("location", dbLocation);
+            if (setLocationStr) setLocationStr(dbLocation);
+          }
+        }).catch((err) => console.error("Failed to fetch fresh profile in Profile.jsx:", err));
+      });
+    }
+  }, [email, setLocationStr]);
+
+  const displayLocation = currentLocation && currentLocation.trim()
+    ? currentLocation.trim()
+    : t("store_location_not_set", "Location not set");
+
+  const LANGUAGE_LABELS = {
+    en: "English",
+    pidgin: "Pidgin English",
+    yo: "Yoruba",
+    ig: "Igbo",
+    ha: "Hausa",
+  };
+  const currentLanguageLabel = LANGUAGE_LABELS[language] || language || "English";
+
+  const [currentCategory, setCurrentCategory] = useState(
+    () => localStorage.getItem("category") || "Wholesale Dry Goods"
+  );
+
+  useEffect(() => {
+    const handleCategoryChanged = (e) => {
+      const newCat = e.detail || localStorage.getItem("category");
+      if (newCat) setCurrentCategory(newCat);
+    };
+    window.addEventListener("categoryChanged", handleCategoryChanged);
+    window.addEventListener("storage", handleCategoryChanged);
+    return () => {
+      window.removeEventListener("categoryChanged", handleCategoryChanged);
+      window.removeEventListener("storage", handleCategoryChanged);
+    };
+  }, []);
+
+  const sections = getSections(
+    businessName,
+    email,
+    t,
+    currentLanguageLabel,
+    displayLocation,
+    currentCategory
+  );
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [pendingAvatarBase64, setPendingAvatarBase64] = useState(null);
   const [businessAvatarUrl, setBusinessAvatarUrl] = useState(profilePicture || null);
@@ -443,7 +529,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
             <p>{businessName || t("common_my_store")}</p>
             <div className="profile-location">
               <Icon name="location" />
-              Onyingbo Market, Lagos
+              {displayLocation}
             </div>
           </section>
 
@@ -474,9 +560,9 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                           // "Change Trade PIN" opens the PIN screen in change
                           // mode (PIN-only UI, no transaction/amount display).
                           if (item.isChangePin) {
-                            onNavigate(item.target, { pinMode: "change" });
+                            onNavigate(item.target, { pinMode: "change", from: "profile" });
                           } else {
-                            onNavigate(item.target);
+                            onNavigate(item.target, { from: "profile" });
                           }
                         }
                       }}
@@ -490,7 +576,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
           <button
             className="profile-logout"
             type="button"
-            onClick={() => onNavigate && onNavigate("logout")}
+            onClick={() => onNavigate && onNavigate("logout", { from: "profile" })}
           >
             <Icon name="logout" />
             {t("profile_logout")}

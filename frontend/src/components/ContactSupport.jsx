@@ -113,7 +113,7 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
             type="button"
             aria-label={t("common_back", "Go back")}
             onClick={() =>
-              onBack ? onBack() : onNavigate && onNavigate("home")
+              onBack ? onBack() : onNavigate ? onNavigate("profile") : window.history.back()
             }
           >
             <BackIcon />

@@ -9,7 +9,7 @@ import {
   Clock,
 } from "lucide-react";
 
-export default function Email({ onNavigate, email, setEmail }) {
+export default function Email({ onNavigate, onBack, email, setEmail }) {
   const [isChanging, setIsChanging] = useState(false);
   const [changeStatus, setChangeStatus] = useState({
     remainingChanges: 3,
@@ -119,8 +119,10 @@ export default function Email({ onNavigate, email, setEmail }) {
       setNewEmail("");
       alert("Email updated successfully!");
 
-      if (onNavigate) {
-        onNavigate("home");
+      if (onBack) {
+        onBack();
+      } else if (onNavigate) {
+        onNavigate("profile");
       }
     } catch (err) {
       setEmailError(err.message || "Failed to update email. Please try again.");
@@ -157,7 +159,7 @@ export default function Email({ onNavigate, email, setEmail }) {
           <button
             type="button"
             className="email-back"
-            onClick={() => onNavigate && onNavigate("home")}
+            onClick={() => (onBack ? onBack() : onNavigate ? onNavigate("profile") : window.history.back())}
             aria-label="Go back"
           >
             <ChevronLeft size={28} />

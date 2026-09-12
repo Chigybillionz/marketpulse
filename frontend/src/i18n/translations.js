@@ -372,7 +372,8 @@ const translations = {
     "logout_confirm_title": "Log out of MarketPulse?",
     "logout_confirm_desc": "You will need to enter your email and password to sign back in.",
     "logout_btn": "Yes, Log Out",
-    "logout_cancel": "Stay Logged In"
+    "logout_cancel": "Stay Logged In",
+    "store_location_not_set": "Location not set"
   },
   "Pidgin": {
     "landing_nav_features": "Wetin Dey Inside",
@@ -737,7 +738,8 @@ const translations = {
     "logout_confirm_title": "You sure say you wan comot?",
     "logout_confirm_desc": "You go need your email and password to log in again.",
     "logout_btn": "Yes, Comot",
-    "logout_cancel": "Make I Stay"
+    "logout_cancel": "Make I Stay",
+    "store_location_not_set": "Location never set"
   },
   "Yoruba": {
     "landing_nav_features": "Awọn Ẹya",
@@ -1102,7 +1104,8 @@ const translations = {
     "logout_confirm_title": "Ṣe o fẹ́ jade kúrò ní MarketPulse?",
     "logout_confirm_desc": "Wàá nílò imeeli ati ọ̀rọ̀-ìgbaniwọlé rẹ láti wọlé padà.",
     "logout_btn": "Bẹ́ẹ̀ni, Jade",
-    "logout_cancel": "Dúró Síbẹ̀"
+    "logout_cancel": "Dúró Síbẹ̀",
+    "store_location_not_set": "A kò tíì yan ibùdó"
   },
   "Igbo": {
     "landing_nav_features": "Atụmatụ",
@@ -1467,7 +1470,8 @@ const translations = {
     "logout_confirm_title": "Ị chọrọ ịpụ na MarketPulse?",
     "logout_confirm_desc": "Ị ga-achọ imeel na okwuntughe gị iji banyeghachi.",
     "logout_btn": "Ee, Pụọ",
-    "logout_cancel": "Nọgide"
+    "logout_cancel": "Nọgide",
+    "store_location_not_set": "Edetụbeghị ebe ọ dị"
   },
   "Hausa": {
     "landing_nav_features": "Siffofi",
@@ -1832,7 +1836,8 @@ const translations = {
     "logout_confirm_title": "Kuna son fita daga MarketPulse?",
     "logout_confirm_desc": "Kuna buƙatar shigar da imeel da kalmar sirrinku don sake shiga.",
     "logout_btn": "I, Fita",
-    "logout_cancel": "Ci gaba da zama"
+    "logout_cancel": "Ci gaba da zama",
+    "store_location_not_set": "Ba a saita wuri ba"
   }
 };
 

@@ -223,7 +223,7 @@ const CATEGORIES = [
   },
 ];
 
-export default function MarketCategory({ onNavigate, profilePicture }) {
+export default function MarketCategory({ onNavigate, onBack, profilePicture }) {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState("electronics");
@@ -260,12 +260,15 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
       
       // Save to localStorage for immediate UI updates
       localStorage.setItem('category', selectedCategory.label);
+      window.dispatchEvent(new CustomEvent('categoryChanged', { detail: selectedCategory.label }));
       
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
-        if (onNavigate) {
-          onNavigate("home");
+        if (onBack) {
+          onBack();
+        } else if (onNavigate) {
+          onNavigate("profile");
         }
       }, 2000);
     } catch (error) {
@@ -306,7 +309,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
           <button
             type="button"
             className="market-category-back"
-            onClick={() => onNavigate && onNavigate("home")}
+            onClick={() => (onBack ? onBack() : onNavigate ? onNavigate("profile") : window.history.back())}
             aria-label={t("common_back", "Go back")}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">

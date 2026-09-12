@@ -30,7 +30,7 @@ const LANGUAGES = [
   },
 ];
 
-export default function LanguageSetting({ onNavigate, businessName }) {
+export default function LanguageSetting({ onNavigate, onBack, businessName }) {
   const { language, setLanguage, t } = useLanguage();
 
   // Preselect the currently active language.
@@ -47,7 +47,9 @@ export default function LanguageSetting({ onNavigate, businessName }) {
     setShowNotification(true);
     setTimeout(() => {
       setShowNotification(false);
-      if (onNavigate) {
+      if (onBack) {
+        onBack();
+      } else if (onNavigate) {
         onNavigate("profile");
       }
     }, 2000);
@@ -64,7 +66,7 @@ export default function LanguageSetting({ onNavigate, businessName }) {
           <button
             type="button"
             className="language-back"
-            onClick={() => onNavigate && onNavigate("home")}
+            onClick={() => (onBack ? onBack() : onNavigate ? onNavigate("profile") : window.history.back())}
             aria-label={t("common_back")}
           >
             <svg

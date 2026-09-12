@@ -13,6 +13,7 @@ import {
 
 export default function StoreProfile({
   onNavigate,
+  onBack,
   businessName,
   setBusinessName,
   email,
@@ -44,6 +45,29 @@ export default function StoreProfile({
     });
   }, [businessName, locationStr, businessType]);
 
+  // Load fresh profile data directly from database on mount as single source of truth
+  useEffect(() => {
+    const userEmail = email || localStorage.getItem('email');
+    if (userEmail) {
+      import("../services/authService").then(({ getUserProfile }) => {
+        getUserProfile(userEmail).then((res) => {
+          if (res?.user) {
+            const u = res.user;
+            setFormData(prev => ({
+              businessName: u.businessName || prev.businessName || "My Store",
+              location: u.location || prev.location || "",
+              businessType: u.businessType || prev.businessType || "Retail",
+            }));
+            if (u.location !== undefined) {
+              localStorage.setItem("location", u.location || "");
+              if (setLocationStr) setLocationStr(u.location || "");
+            }
+          }
+        }).catch((err) => console.error("Failed to fetch fresh profile in StoreProfile.jsx:", err));
+      });
+    }
+  }, [email, setLocationStr]);
+
   const handleFieldChange = (field) => (event) => {
     setFormData((current) => ({ ...current, [field]: event.target.value }));
   };
@@ -57,7 +81,6 @@ export default function StoreProfile({
     reader.onload = async (e) => {
       try {
         const base64Image = e.target.result;
-        // In a real app, you would compress the image using a canvas here
         await uploadProfilePicture(email, base64Image);
         if (setProfilePicture) setProfilePicture(base64Image);
         localStorage.setItem("profilePicture", base64Image);
@@ -102,12 +125,17 @@ export default function StoreProfile({
       localStorage.setItem("location", formData.location);
       localStorage.setItem("businessType", formData.businessType);
 
+      // Dispatch event to synchronize location across all pages immediately
+      window.dispatchEvent(new CustomEvent('storeLocationChanged', { detail: formData.location }));
+
       console.log("Profile saved successfully:", result);
       setShowNotification(true);
       setTimeout(() => {
         setShowNotification(false);
-        if (onNavigate) {
-          onNavigate("home");
+        if (onBack) {
+          onBack();
+        } else if (onNavigate) {
+          onNavigate("profile");
         }
       }, 2000);
     } catch (error) {
@@ -125,7 +153,7 @@ export default function StoreProfile({
           <button
             type="button"
             className="store-profile-back"
-            onClick={() => onNavigate && onNavigate("home")}
+            onClick={() => (onBack ? onBack() : onNavigate ? onNavigate("profile") : window.history.back())}
             aria-label={t("common_back", "Go back")}
           >
             <ChevronLeft size={30} />
@@ -173,7 +201,7 @@ export default function StoreProfile({
               </p>
               <div className="store-profile-hero-tags">
                 <span>{formData.businessType === "Wholesale" ? t("store_type_wholesale", "Wholesale") : formData.businessType === "Wholesale & Retail" ? t("store_type_both", "Wholesale & Retail") : t("store_type_retail", "Retail")}</span>
-                <span>{formData.location || t("store_location_placeholder", "No location set")}</span>
+                <span>{formData.location || t("store_location_not_set", "Location not set")}</span>
               </div>
             </div>
 
@@ -217,8 +245,8 @@ export default function StoreProfile({
             </article>
             <article className="store-profile-fact">
               <span>{t("store_location_label", "Location")}</span>
-              <strong>{formData.location ? formData.location.split(',')[0] : t("store_location_placeholder", "Not set")}</strong>
-              <small>{formData.location ? formData.location.split(',').slice(1).join(',').trim() || "Local Market" : t("store_location_placeholder", "Please set your location")}</small>
+              <strong>{formData.location ? formData.location.split(',')[0] : t("store_location_not_set", "Location not set")}</strong>
+              <small>{formData.location ? formData.location.split(',').slice(1).join(',').trim() || formData.location : t("store_location_placeholder", "Please set your location")}</small>
             </article>
             <article className="store-profile-fact">
               <span>{t("common_status", "Status")}</span>

@@ -133,7 +133,7 @@ export default function Faqs({ onNavigate, onBack }) {
             className="faqs-back"
             type="button"
             aria-label={t("common_back", "Go back")}
-            onClick={() => onBack ? onBack() : (onNavigate && onNavigate("home"))}
+            onClick={() => (onBack ? onBack() : onNavigate ? onNavigate("profile") : window.history.back())}
           >
             <BackIcon />
           </button>

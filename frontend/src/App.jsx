@@ -89,6 +89,20 @@ function App() {
   const [moneyOut, setMoneyOut] = useState(0);
   const [transactionsList, setTransactionsList] = useState([]);
 
+  // Listen for location changes dispatched across components or storage
+  useEffect(() => {
+    const handleLocationUpdate = (e) => {
+      const newLoc = e.detail !== undefined ? e.detail : localStorage.getItem('location');
+      setLocationStr(newLoc || "");
+    };
+    window.addEventListener('storeLocationChanged', handleLocationUpdate);
+    window.addEventListener('storage', handleLocationUpdate);
+    return () => {
+      window.removeEventListener('storeLocationChanged', handleLocationUpdate);
+      window.removeEventListener('storage', handleLocationUpdate);
+    };
+  }, []);
+
   // Fetch transactions and profile on load
   useEffect(() => {
     const fetchData = async () => {
@@ -225,10 +239,27 @@ function App() {
     }
   };
 
-  // "Back" uses the real browser history, so arrows return to the actual
-  // previous page. Falls back to a default if there is nothing to go back to.
+  // "Back" uses context-aware navigation:
+  // 1. If explicit previous route context is passed via location.state?.from, return there.
+  // 2. If browser/in-app history exists (SPA history index > 0), navigate(-1).
+  // 3. Otherwise fall back safely to the specified fallback route (defaulting to "profile" or "home").
   const handleBack = (fallback = "home") => {
-    if (window.history.length > 1) {
+    const from = location.state?.from;
+    const hasInAppHistory =
+      window.history.state &&
+      typeof window.history.state.idx === "number" &&
+      window.history.state.idx > 0;
+
+    if (from && PATHS[from]) {
+      if (hasInAppHistory) {
+        navigate(-1);
+      } else {
+        navigate(PATHS[from]);
+      }
+      return;
+    }
+
+    if (hasInAppHistory) {
       navigate(-1);
     } else {
       navigate(PATHS[fallback] ?? "/home");
@@ -339,7 +370,13 @@ function App() {
         element={
           <PulseTradePin
             onNavigate={handleNavigate}
-            onBack={() => handleBack("ai_confirmation")}
+            onBack={() =>
+              handleBack(
+                location.state?.pinMode === "change" || location.state?.from === "profile"
+                  ? "profile"
+                  : "ai_confirmation"
+              )
+            }
             businessName={businessName}
             email={email}
             setBalance={setBalance}
@@ -409,6 +446,8 @@ function App() {
             businessName={businessName}
             email={email}
             profilePicture={profilePicture}
+            locationStr={locationStr}
+            setLocationStr={setLocationStr}
           />
         }
       />
@@ -417,6 +456,7 @@ function App() {
         element={
           <StoreProfile
             onNavigate={handleNavigate}
+            onBack={() => handleBack("profile")}
             businessName={businessName}
             setBusinessName={setBusinessName}
             email={email}
@@ -431,13 +471,19 @@ function App() {
       />
       <Route
         path={PATHS.inventoryAlert}
-        element={<InventoryAlert onNavigate={handleNavigate} />}
+        element={
+          <InventoryAlert
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("profile")}
+          />
+        }
       />
       <Route
         path={PATHS.email}
         element={
           <Email
             onNavigate={handleNavigate}
+            onBack={() => handleBack("profile")}
             email={email}
             setEmail={setEmail}
           />
@@ -445,13 +491,20 @@ function App() {
       />
       <Route
         path={PATHS.market_category}
-        element={<MarketCategory onNavigate={handleNavigate} />}
+        element={
+          <MarketCategory
+            onNavigate={handleNavigate}
+            onBack={() => handleBack("profile")}
+            profilePicture={profilePicture}
+          />
+        }
       />
       <Route
         path={PATHS.language_setting}
         element={
           <LanguageSetting
             onNavigate={handleNavigate}
+            onBack={() => handleBack("profile")}
             businessName={businessName}
           />
         }
@@ -461,21 +514,27 @@ function App() {
         element={
           <ContactSupport
             onNavigate={handleNavigate}
-            onBack={() => handleBack("profile")}
+            onBack={() => handleBack(location.state?.from || "profile")}
             businessName={businessName}
           />
         }
       />
       <Route
         path={PATHS.faqs}
-        element={<Faqs onNavigate={handleNavigate} onBack={() => handleBack("landing")} businessName={businessName} />}
+        element={
+          <Faqs
+            onNavigate={handleNavigate}
+            onBack={() => handleBack(location.state?.from || "profile")}
+            businessName={businessName}
+          />
+        }
       />
       <Route
         path={PATHS.privacy_policy}
         element={
           <PrivacyPolicy
             onNavigate={handleNavigate}
-            onBack={() => handleBack("login")}
+            onBack={() => handleBack(location.state?.from || "profile")}
           />
         }
       />
@@ -484,7 +543,7 @@ function App() {
         element={
           <TermsOfService
             onNavigate={handleNavigate}
-            onBack={() => handleBack("login")}
+            onBack={() => handleBack(location.state?.from || "profile")}
           />
         }
       />
@@ -506,7 +565,26 @@ function App() {
           />
         }
       />
-      <Route path={PATHS.logout} element={<Logout onNavigate={handleNavigate} />} />
+      <Route
+        path={PATHS.logout}
+        element={
+          <Logout
+            onNavigate={handleNavigate}
+            onBack={() => handleBack(location.state?.from || "profile")}
+          />
+        }
+      />
+
+      {/* Direct profile settings URL aliases */}
+      <Route path="/profile/store" element={<Navigate to={PATHS.storeProfile} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/alerts" element={<Navigate to={PATHS.inventoryAlert} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/inventory" element={<Navigate to={PATHS.inventoryAlert} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/inventory-alerts" element={<Navigate to={PATHS.inventoryAlert} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/category" element={<Navigate to={PATHS.market_category} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/market-category" element={<Navigate to={PATHS.market_category} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/language" element={<Navigate to={PATHS.language_setting} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/email" element={<Navigate to={PATHS.email} replace state={{ from: "profile" }} />} />
+      <Route path="/profile/security" element={<Navigate to={PATHS.pulse_trade_pin} replace state={{ pinMode: "change", from: "profile" }} />} />
       <Route path="*" element={<Navigate to={PATHS.login} replace />} />
     </Routes>
     </LanguageProvider>
