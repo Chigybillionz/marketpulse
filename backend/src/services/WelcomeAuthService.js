@@ -1,4 +1,5 @@
 const WelcomeUser = require('../models/WelcomeUser');
+const DeletionRequest = require('../models/DeletionRequest');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const otpGenerator = require('otp-generator');
@@ -36,6 +37,28 @@ const login = async (email, password) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw new Error('Invalid email or password');
+  }
+
+  // Check account deletion status
+  if (user.deletionStatus === 'DELETED') {
+    const error = new Error('This account has been permanently deleted.');
+    error.status = 403;
+    throw error;
+  }
+
+  if (user.deletionStatus === 'PENDING_DELETION') {
+    const now = new Date();
+    const canRestore = user.gracePeriodEndDate && now <= new Date(user.gracePeriodEndDate);
+    const error = new Error(
+      canRestore
+        ? 'Your account is pending deletion. You can restore your account within the grace period.'
+        : 'This account has been deactivated and is scheduled for permanent erasure.'
+    );
+    error.status = 403;
+    error.pendingDeletion = true;
+    error.canRestore = canRestore;
+    error.gracePeriodEndDate = user.gracePeriodEndDate;
+    throw error;
   }
 
   const token = generateToken(user._id);
@@ -293,6 +316,148 @@ const generateResetPasswordCode = async (email) => {
   return true;
 };
 
+/**
+ * Request account deletion with confirmation requirement
+ */
+const requestAccountDeletion = async (userId, email, confirmationText) => {
+  if (!confirmationText || String(confirmationText).trim().toUpperCase() !== 'DELETE') {
+    const error = new Error('You must type "DELETE" exactly to confirm account deletion.');
+    error.status = 400;
+    throw error;
+  }
+
+  let user = null;
+  if (userId) {
+    user = await WelcomeUser.findById(userId);
+  }
+  if (!user && email) {
+    user = await WelcomeUser.findOne({ email: String(email).trim().toLowerCase() });
+  }
+
+  if (!user) {
+    const error = new Error('User account not found');
+    error.status = 404;
+    throw error;
+  }
+
+  // Grace period: 3 days. Scheduled total erasure: 30 days.
+  const now = new Date();
+  const gracePeriodEndDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const scheduledDeletionDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  // Update user model
+  user.deletionStatus = 'PENDING_DELETION';
+  user.deletionRequestedAt = now;
+  user.gracePeriodEndDate = gracePeriodEndDate;
+  await user.save();
+
+  // Create or update DeletionRequest document
+  const deletionRequest = await DeletionRequest.findOneAndUpdate(
+    { user: user._id },
+    {
+      user: user._id,
+      userEmail: user.email,
+      requestDate: now,
+      gracePeriodEndDate,
+      scheduledDeletionDate,
+      status: 'PENDING_DELETION',
+      cancellationStatus: false,
+      cancelledAt: null,
+    },
+    { upsert: true, new: true }
+  );
+
+  return {
+    success: true,
+    message: 'Account deletion request submitted. Your account is now deactivated.',
+    deletionRequest: {
+      id: deletionRequest._id,
+      status: deletionRequest.status,
+      requestDate: deletionRequest.requestDate,
+      gracePeriodEndDate: deletionRequest.gracePeriodEndDate,
+      scheduledDeletionDate: deletionRequest.scheduledDeletionDate,
+    },
+  };
+};
+
+/**
+ * Cancel a pending account deletion within the 3-day grace period
+ */
+const cancelAccountDeletion = async (userId, email) => {
+  let user = null;
+  if (userId) {
+    user = await WelcomeUser.findById(userId);
+  }
+  if (!user && email) {
+    user = await WelcomeUser.findOne({ email: String(email).trim().toLowerCase() });
+  }
+
+  if (!user) {
+    const error = new Error('User account not found');
+    error.status = 404;
+    throw error;
+  }
+
+  const deletionRequest = await DeletionRequest.findOne({ user: user._id, status: 'PENDING_DELETION' });
+  if (!deletionRequest) {
+    const error = new Error('No active deletion request found for this account.');
+    error.status = 404;
+    throw error;
+  }
+
+  const now = new Date();
+  if (now > new Date(deletionRequest.gracePeriodEndDate)) {
+    const error = new Error('The 3-day grace period has expired. This deletion request can no longer be cancelled.');
+    error.status = 400;
+    throw error;
+  }
+
+  // Restore user to active
+  user.deletionStatus = 'ACTIVE';
+  user.deletionRequestedAt = null;
+  user.gracePeriodEndDate = null;
+  await user.save();
+
+  // Mark deletion request cancelled
+  deletionRequest.status = 'CANCELLED';
+  deletionRequest.cancellationStatus = true;
+  deletionRequest.cancelledAt = now;
+  await deletionRequest.save();
+
+  return {
+    success: true,
+    message: 'Deletion request cancelled successfully. Your account and data have been fully restored.',
+  };
+};
+
+/**
+ * Get current deletion status for account
+ */
+const getDeletionStatus = async (userId, email) => {
+  let user = null;
+  if (userId) {
+    user = await WelcomeUser.findById(userId);
+  }
+  if (!user && email) {
+    user = await WelcomeUser.findOne({ email: String(email).trim().toLowerCase() });
+  }
+
+  if (!user) {
+    return { status: 'ACTIVE', hasRequest: false };
+  }
+
+  const deletionRequest = await DeletionRequest.findOne({ user: user._id }).sort({ createdAt: -1 });
+
+  return {
+    deletionStatus: user.deletionStatus || 'ACTIVE',
+    hasRequest: !!deletionRequest && deletionRequest.status === 'PENDING_DELETION',
+    requestDate: deletionRequest?.requestDate || null,
+    gracePeriodEndDate: deletionRequest?.gracePeriodEndDate || null,
+    scheduledDeletionDate: deletionRequest?.scheduledDeletionDate || null,
+    canCancel: deletionRequest ? new Date() <= new Date(deletionRequest.gracePeriodEndDate) : false,
+  };
+};
+
 module.exports = {
   signup,
   login,
@@ -307,5 +472,8 @@ module.exports = {
   updateProfile,
   updateCategory,
   updateEmail,
-  updateLanguage
+  updateLanguage,
+  requestAccountDeletion,
+  cancelAccountDeletion,
+  getDeletionStatus,
 };

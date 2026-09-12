@@ -553,6 +553,7 @@ function App() {
           <DeleteData
             onNavigate={handleNavigate}
             onBack={() => handleBack("privacy_policy")}
+            email={email}
           />
         }
       />

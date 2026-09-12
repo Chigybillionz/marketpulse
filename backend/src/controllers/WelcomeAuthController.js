@@ -1,4 +1,4 @@
-const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile, updateCategory, updateLanguage } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile, updateCategory, updateLanguage, requestAccountDeletion, cancelAccountDeletion, getDeletionStatus } = require('../services/WelcomeAuthService');
 
 const handleSignup = async (req, res) => {
   try {
@@ -403,6 +403,44 @@ const handleUpdateLanguage = async (req, res) => {
   }
 };
 
+const handleRequestDeletion = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { email, confirmationText } = req.body;
+    const result = await requestAccountDeletion(userId, email, confirmationText);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Request Account Deletion Error:', error);
+    const statusCode = error.status || 500;
+    res.status(statusCode).json({ success: false, message: error.message || 'Failed to process account deletion request' });
+  }
+};
+
+const handleCancelDeletion = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { email } = req.body;
+    const result = await cancelAccountDeletion(userId, email);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Cancel Account Deletion Error:', error);
+    const statusCode = error.status || 500;
+    res.status(statusCode).json({ success: false, message: error.message || 'Failed to cancel deletion request' });
+  }
+};
+
+const handleGetDeletionStatus = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { email } = req.params;
+    const result = await getDeletionStatus(userId, email);
+    res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    console.error('Get Deletion Status Error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to retrieve deletion status' });
+  }
+};
+
 module.exports = {
   handleSignup,
   handleLogin,
@@ -419,6 +457,9 @@ module.exports = {
   handleUpdateCategory,
   handleUpdateEmail,
   handleUpdateLanguage,
-  getProfile
+  getProfile,
+  handleRequestDeletion,
+  handleCancelDeletion,
+  handleGetDeletionStatus
 };
 

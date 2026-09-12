@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { handleSignup, handleLogin, setupPin, verifyPin, checkHasPin, uploadProfilePicture, sendResetCode, verifyResetCode, resetPin, resetUserPassword, sendPasswordResetCode, handleUpdateProfile, handleUpdateCategory, handleUpdateEmail, handleUpdateLanguage, getProfile } = require('../controllers/WelcomeAuthController');
+const { handleSignup, handleLogin, setupPin, verifyPin, checkHasPin, uploadProfilePicture, sendResetCode, verifyResetCode, resetPin, resetUserPassword, sendPasswordResetCode, handleUpdateProfile, handleUpdateCategory, handleUpdateEmail, handleUpdateLanguage, getProfile, handleRequestDeletion, handleCancelDeletion, handleGetDeletionStatus } = require('../controllers/WelcomeAuthController');
+const { protectOrEmail } = require('../middleware/authMiddleware');
 
 // Welcome Page Auth Routes
 router.post('/signup', handleSignup);
@@ -14,6 +15,11 @@ router.put('/profile', handleUpdateProfile);
 router.put('/category', handleUpdateCategory);
 router.put('/email', handleUpdateEmail);
 router.put('/language', handleUpdateLanguage);
+
+// Account Deletion & Lifecycle Routes
+router.post('/request-deletion', protectOrEmail, handleRequestDeletion);
+router.post('/cancel-deletion', protectOrEmail, handleCancelDeletion);
+router.get('/deletion-status/:email', protectOrEmail, handleGetDeletionStatus);
 
 // Forgot PIN Routes
 router.post('/forgot-pin/send-code', sendResetCode);

@@ -56,6 +56,18 @@ const WelcomeUserSchema = new mongoose.Schema({
   },
   emailChangeResetDate: {
     type: Date
+  },
+  // Account deletion lifecycle
+  deletionStatus: {
+    type: String,
+    enum: ['ACTIVE', 'PENDING_DELETION', 'DELETED'],
+    default: 'ACTIVE'
+  },
+  deletionRequestedAt: {
+    type: Date
+  },
+  gracePeriodEndDate: {
+    type: Date
   }
 }, { timestamps: true });
 

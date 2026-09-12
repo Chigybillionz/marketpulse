@@ -157,3 +157,32 @@ export const updateLanguage = async (email, language) => {
     body: JSON.stringify({ email, language }),
   });
 };
+
+/**
+ * Submits an account deletion request requiring typing "DELETE"
+ */
+export const requestAccountDeletion = async (confirmationText, email = null) => {
+  return apiClient('/welcome-auth/request-deletion', {
+    method: 'POST',
+    body: JSON.stringify({ confirmationText, email }),
+  });
+};
+
+/**
+ * Cancels a pending account deletion within the 3-day grace period
+ */
+export const cancelAccountDeletion = async (email = null) => {
+  return apiClient('/welcome-auth/cancel-deletion', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+};
+
+/**
+ * Fetches the current account deletion status
+ */
+export const getDeletionStatus = async (email) => {
+  return apiClient(`/welcome-auth/deletion-status/${encodeURIComponent(email)}`, {
+    method: 'GET',
+  });
+};
