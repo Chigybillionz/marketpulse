@@ -3,6 +3,7 @@ import AppShell from './layout/AppShell';
 import Header from './home/Header';
 import NavigationBar from './home/NavigationBar';
 import { getDebtors } from '../services/debtorService';
+import { useLanguage } from '../i18n/LanguageContext';
 
 function MessageIcon() {
   return (
@@ -22,25 +23,29 @@ function TrendIcon() {
   );
 }
 
-function DebtorCard({ debtor, businessName, onNavigate }) {
+function DebtorCard({ debtor, businessName, onNavigate, t }) {
   const isOverdue = debtor.dueDate && new Date(debtor.dueDate) < new Date() && debtor.status === 'ACTIVE';
 
   const handleRemind = (e) => {
     e.stopPropagation();
     if (!debtor.phoneNumber) {
-      alert("No phone number available for this debtor.");
+      alert(t("credit_no_phone", "No phone number available for this debtor."));
       return;
     }
     
     let phone = debtor.phoneNumber;
     // Basic formatting for WA links (ensure country code)
     if (phone.startsWith('0')) {
-      phone = '234' + phone.substring(1); // Assuming Nigerian default for now, could be improved
+      phone = '234' + phone.substring(1); // Nigerian default
     } else if (phone.startsWith('+')) {
       phone = phone.substring(1);
     }
     
-    const message = `Hello ${debtor.customerName}, this is a friendly reminder from ${businessName} regarding your outstanding balance of ₦${debtor.totalOwed.toLocaleString()}. Thank you!`;
+    const message = t("credit_remind_msg", "Hello {name}, this is a friendly reminder from {store} regarding your outstanding balance of {amount}. Thank you!", {
+      name: debtor.customerName,
+      store: businessName || "MarketPulse",
+      amount: `₦${debtor.totalOwed.toLocaleString()}`
+    });
     const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     window.open(waLink, '_blank');
   };
@@ -53,16 +58,16 @@ function DebtorCard({ debtor, businessName, onNavigate }) {
     >
       <div className="credit-debtor-main">
         <h3>{debtor.customerName}</h3>
-        <p>{debtor.phoneNumber || 'No phone number'}</p>
+        <p>{debtor.phoneNumber || t("credit_no_phone", "No phone number")}</p>
         <div>
           <strong>₦{debtor.totalOwed.toLocaleString()}</strong>
           <span>{new Date(debtor.updatedAt).toLocaleDateString()}</span>
         </div>
       </div>
       <div className="credit-debtor-actions">
-        {isOverdue && <span className="credit-overdue">OVERDUE</span>}
+        {isOverdue && <span className="credit-overdue">{t("credit_overdue", "OVERDUE")}</span>}
         <button type="button" onClick={handleRemind}>
-          <MessageIcon />Remind
+          <MessageIcon />{t("credit_remind", "Remind")}
         </button>
       </div>
     </article>
@@ -70,6 +75,7 @@ function DebtorCard({ debtor, businessName, onNavigate }) {
 }
 
 export default function Credit({ onNavigate, businessName, email }) {
+  const { t } = useLanguage();
   const [debtors, setDebtors] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -99,28 +105,28 @@ export default function Credit({ onNavigate, businessName, email }) {
       active="credit"
       onNavigate={onNavigate}
       businessName={businessName}
-      title="Credit & Debtors"
-      subtitle="Track money owed to your store"
+      title={t("credit_title", "Credit Ledger")}
+      subtitle={t("credit_total_owed", "Track money owed to your store")}
     >
       <main className="credit-page">
         <Header businessName={businessName} onNavigate={onNavigate} />
         
         <section className="credit-overview">
-          <span>CREDIT OVERVIEW</span>
-          <h1>Total Money Outside:<br />₦{totalMoneyOutside.toLocaleString()}</h1>
-          <p><TrendIcon />+0% from last month</p>
+          <span>{t("credit_title", "CREDIT OVERVIEW").toUpperCase()}</span>
+          <h1>{t("credit_total_owed", "Total Outstanding Credit")}:<br />₦{totalMoneyOutside.toLocaleString()}</h1>
+          <p><TrendIcon />+0%</p>
         </section>
         
         <div className="credit-section-title">
-          <h2>Active Debtors</h2>
-          <span>{debtors.length} People</span>
+          <h2>{t("credit_active_debtors", "Active Debtors")}</h2>
+          <span>{debtors.length} {t("notif_items", "People")}</span>
         </div>
         
         <section className="credit-list">
           {loading ? (
-            <p style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>Loading debtors...</p>
+            <p style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>{t("common_loading", "Loading debtors...")}</p>
           ) : debtors.length === 0 ? (
-            <p style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>No active debtors found.</p>
+            <p style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>{t("credit_no_debtors", "No active debtors found.")}</p>
           ) : (
             debtors.map((debtor) => (
               <DebtorCard 
@@ -128,6 +134,7 @@ export default function Credit({ onNavigate, businessName, email }) {
                 debtor={debtor} 
                 businessName={businessName} 
                 onNavigate={onNavigate} 
+                t={t}
               />
             ))
           )}

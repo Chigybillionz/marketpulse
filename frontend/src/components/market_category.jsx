@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { updateProfile, updateCategory } from "../services/authService";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const CATEGORIES = [
   {
     id: "dry-goods",
     label: "Dry Goods",
+    labelKey: "cat_dry_goods_name",
+    descKey: "cat_dry_goods_desc",
     description: "Grains, spices, and packaged food",
     image: "/marketcateoryimages/drygoods.png",
     bgColor: "linear-gradient(135deg, rgba(255, 237, 213, 0.7) 0%, rgba(254, 215, 170, 0.4) 100%)",
@@ -48,6 +51,8 @@ const CATEGORIES = [
   {
     id: "produce",
     label: "Produce",
+    labelKey: "cat_produce_name",
+    descKey: "cat_produce_desc",
     description: "Fresh fruits, vegetables, and tubers",
     image: "/marketcateoryimages/produce.png",
     bgColor: "linear-gradient(135deg, rgba(220, 252, 231, 0.7) 0%, rgba(187, 247, 208, 0.4) 100%)",
@@ -89,6 +94,8 @@ const CATEGORIES = [
   {
     id: "electronics",
     label: "Electronics",
+    labelKey: "cat_electronics_name",
+    descKey: "cat_electronics_desc",
     description: "Phones, accessories, and power tools",
     image: "/marketcateoryimages/electronics.png",
     bgColor: "linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(49, 46, 129, 0.9) 100%)",
@@ -129,6 +136,8 @@ const CATEGORIES = [
   {
     id: "textiles",
     label: "Textiles",
+    labelKey: "cat_fashion_name",
+    descKey: "cat_fashion_desc",
     description: "Fabrics, garments, and traditional attire",
     image: "/marketcateoryimages/textiles.png",
     bgColor: "linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(226, 232, 240, 0.5) 100%)",
@@ -215,6 +224,7 @@ const CATEGORIES = [
 ];
 
 export default function MarketCategory({ onNavigate, profilePicture }) {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState("electronics");
   const [showNotification, setShowNotification] = useState(false);
@@ -260,7 +270,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
       }, 2000);
     } catch (error) {
       console.error("Failed to update category:", error);
-      alert(`Failed to update category: ${error.message || "Please try again."}`);
+      alert(t("cat_update_error", "Failed to update category. Please try again."));
     } finally {
       setIsSaving(false);
     }
@@ -271,8 +281,10 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
 
   const filteredCategories = CATEGORIES.filter(
     (cat) =>
+      t(cat.labelKey, cat.label).toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t(cat.descKey, cat.description).toLowerCase().includes(searchQuery.toLowerCase()) ||
       cat.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cat.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      cat.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -282,7 +294,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
           <img
             key={category.id}
             src={category.image}
-            alt={`${category.label} hero`}
+            alt={`${t(category.labelKey, category.label)} hero`}
             className={`hero-bg-image ${selectedId === category.id ? "active" : ""}`}
             loading="lazy"
           />
@@ -295,7 +307,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
             type="button"
             className="market-category-back"
             onClick={() => onNavigate && onNavigate("home")}
-            aria-label="Go back"
+            aria-label={t("common_back", "Go back")}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M19 12H5M12 5l-7 7 7 7" />
@@ -303,15 +315,15 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
           </button>
 
           <div className="market-category-titleblock">
-            <p>Select the niche that best describes your store</p>
-            <h1>Market Category</h1>
+            <p>{t("cat_page_subtitle", "Select the niche that best describes your store")}</p>
+            <h1>{t("cat_page_title", "Market Category")}</h1>
           </div>
 
           {pic ? (
             <button
               type="button"
               className="market-category-avatar"
-              aria-label="User profile"
+              aria-label={t("menu_account", "User profile")}
               onClick={() => onNavigate && onNavigate("profile")}
             >
               <img
@@ -345,9 +357,9 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
                 {selectedCategory.icon}
               </div>
               <div className="market-category-preview-copy">
-                <span>Primary niche</span>
-                <h2>{selectedCategory.label}</h2>
-                <p>{selectedCategory.description}</p>
+                <span>{t("cat_kicker", "Primary niche")}</span>
+                <h2>{t(selectedCategory.labelKey, selectedCategory.label)}</h2>
+                <p>{t(selectedCategory.descKey, selectedCategory.description)}</p>
               </div>
               <div className="market-category-preview-watermark">
                 {selectedCategory.watermark}
@@ -356,12 +368,12 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
 
             <div className="market-category-preview-details">
               <div>
-                <span>Selection</span>
-                <strong>{filteredCategories.length} niches found</strong>
+                <span>{t("cat_section_title", "Available Categories")}</span>
+                <strong>{filteredCategories.length} {t("notif_items", "categories")}</strong>
               </div>
               <div>
-                <span>Status</span>
-                <strong>Ready to update</strong>
+                <span>{t("cat_kicker", "Focus")}</span>
+                <strong>{t("cat_active", "Active Category")}</strong>
               </div>
             </div>
           </aside>
@@ -385,16 +397,15 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for your niche..."
-                aria-label="Search for your niche"
+                placeholder={t("common_search", "Search for your niche...")}
+                aria-label={t("common_search", "Search for your niche")}
               />
             </div>
 
             <div className="market-category-heading">
-              <h2>Select Primary Niche</h2>
+              <h2>{t("cat_section_title", "Select Primary Niche")}</h2>
               <p>
-                Choose one category that best matches the goods you sell most
-                often.
+                {t("cat_hero_desc", "Choose one category that best matches the goods you sell most often.")}
               </p>
             </div>
 
@@ -426,12 +437,12 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
                       </div>
 
                       <div className="market-category-card-copy">
-                        <h3 style={{ color: category.textColor }}>{category.label}</h3>
-                        <p style={{ color: category.textColor, opacity: 0.8 }}>{category.description}</p>
+                        <h3 style={{ color: category.textColor }}>{t(category.labelKey, category.label)}</h3>
+                        <p style={{ color: category.textColor, opacity: 0.8 }}>{t(category.descKey, category.description)}</p>
                       </div>
 
                       <div className="market-category-card-action" style={{ color: category.textColor, opacity: isSelected ? 1 : 0.7 }}>
-                        <span>{isSelected ? "SELECTED" : "TAP TO CHOOSE"}</span>
+                        <span>{isSelected ? t("cat_selected", "SELECTED") : t("cat_active", "TAP TO CHOOSE")}</span>
                         <svg
                           viewBox="0 0 24 24"
                           fill="none"
@@ -450,8 +461,8 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
                 })
               ) : (
                 <div className="market-category-empty">
-                  <strong>No matching niches found</strong>
-                  <p>Try a different keyword to see more categories.</p>
+                  <strong>{t("hist_no_tx", "No matching niches found")}</strong>
+                  <p>{t("hist_empty_desc", "Try a different keyword to see more categories.")}</p>
                 </div>
               )}
             </div>
@@ -460,7 +471,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
 
         <footer className="market-category-footer">
           <button type="button" onClick={handleUpdate} disabled={isSaving} style={{ background: selectedCategory.buttonColor, color: "#ffffff" }}>
-            {isSaving ? "Saving..." : "Update Category"}
+            {isSaving ? t("cat_updating", "Saving...") : t("cat_update_btn", "Update Category")}
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -479,7 +490,7 @@ export default function MarketCategory({ onNavigate, profilePicture }) {
 
       <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
         <CheckCircle2 size={24} />
-        <span>Changes saved successfully!</span>
+        <span>{t("cat_updated_success", "Changes saved successfully!")}</span>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import Header from "../home/Header";
 import AppShell from "../layout/AppShell";
 import NavigationBar from "../home/NavigationBar";
 import { getSummary } from "../../services/geminiService";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const base64ToBlobUrl = (base64, mimeType) => {
   const byteChars = atob(base64);
@@ -16,12 +17,6 @@ const estimateDuration = (script) => {
   const words = (script || "").trim().split(/\s+/).filter(Boolean).length;
   return Math.max(15, Math.round((words / 150) * 60));
 };
-
-const PERIOD_TABS = [
-  { key: "daily", label: "Daily" },
-  { key: "weekly", label: "Weekly" },
-  { key: "monthly", label: "Monthly" },
-];
 
 const PERIOD_META = {
   daily: { label: "Daily", suffix: "today" },
@@ -50,6 +45,7 @@ const getPeriodRangeLabel = (period) => {
 };
 
 export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = "weekly" }) {
+  const { t } = useLanguage();
   const audioRef = useRef(null);
   const audioUrlRef = useRef(null);
   const speechTimerRef = useRef(null);
@@ -57,6 +53,12 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
 
   const [period, setPeriod] = useState(PERIOD_META[initialPeriod] ? initialPeriod : "weekly");
   const periodMeta = PERIOD_META[period] || PERIOD_META.weekly;
+
+  const periodTabs = [
+    { key: "daily", label: t("pulse_tab_daily", "Daily") },
+    { key: "weekly", label: t("pulse_tab_weekly", "Weekly") },
+    { key: "monthly", label: t("pulse_tab_monthly", "Monthly") },
+  ];
 
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [errorMsg, setErrorMsg] = useState("");
@@ -283,22 +285,24 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
     18, 32, 44, 24, 40, 28, 36, 14, 42, 34, 45, 26, 38, 16, 36, 12, 38, 30,
   ];
 
+  const currentPeriodLabel = period === "daily" ? t("pulse_tab_daily", "Daily") : period === "monthly" ? t("pulse_tab_monthly", "Monthly") : t("pulse_tab_weekly", "Weekly");
+
   const statusLabel =
     status === "loading"
-      ? "Preparing your summary…"
+      ? t("pulse_generating", "Preparing your summary…")
       : status === "error"
-        ? errorMsg
+        ? (errorMsg || t("pulse_error_gen", "Could not load your summary."))
         : ttsUsed
-          ? `MarketPulse AI Generated • Tap play to listen`
-          : `MarketPulse AI Generated • Voice preview`;
+          ? `MarketPulse AI • ${t("pulse_listen", "Tap play to listen")}`
+          : `MarketPulse AI • Voice preview`;
 
   return (
     <AppShell
       active="pulse"
       onNavigate={onNavigate}
       businessName={businessName}
-      title={`${periodMeta.label} Pulse`}
-      subtitle="Real-time performance audio-summary and insights."
+      title={`${currentPeriodLabel} ${t("pulse_title", "Pulse")}`}
+      subtitle={t("pulse_listen", "Real-time performance audio-summary and insights.")}
     >
       <div
         style={{
@@ -321,10 +325,10 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 96, scrollbarWidth: "none", msOverflowStyle: "none" }}>
           <section style={{ padding: "8px 20px 16px", textAlign: "left" }}>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: "#030712", margin: 0, letterSpacing: "-0.5px", lineHeight: 1 }}>
-              {periodMeta.label} Pulse
+              {currentPeriodLabel} {t("pulse_title", "Pulse")}
             </h1>
             <p style={{ fontSize: 13.5, fontWeight: 500, color: "#9ca3af", margin: "8px 0 0 0" }}>
-              Real-time performance audio-summary and insights.
+              {t("pulse_listen", "Real-time performance audio-summary and insights.")}
             </p>
           </section>
 
@@ -342,7 +346,7 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
                 boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)",
               }}
             >
-              {PERIOD_TABS.map((tab) => {
+              {periodTabs.map((tab) => {
                 const active = period === tab.key;
                 return (
                   <button
@@ -407,7 +411,7 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
                 <button
                   onClick={togglePlay}
                   disabled={status !== "ready"}
-                  aria-label={isPlaying ? `Pause ${periodMeta.label.toLowerCase()} summary` : `Play ${periodMeta.label.toLowerCase()} summary`}
+                  aria-label={isPlaying ? t("pulse_pause", "Pause summary") : t("pulse_play", "Play summary")}
                   style={{
                     width: 56,
                     height: 56,
@@ -448,7 +452,7 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
 
                 <div style={{ textAlign: "left", minWidth: 0 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: 0, lineHeight: 1.3 }}>
-                    Listen to {periodMeta.label} Summary
+                    {t("pulse_listen", `Listen to ${currentPeriodLabel} Summary`)}
                   </h3>
                   <span
                     style={{
@@ -476,7 +480,7 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
                         cursor: "pointer",
                       }}
                     >
-                      Retry
+                      {t("common_retry", "Retry")}
                     </button>
                   )}
                 </div>
@@ -669,7 +673,7 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
-              <span>{ttsUsed ? `Download ${periodMeta.label} Summary (Audio)` : "Download Summary Transcript"}</span>
+              <span>{ttsUsed ? `${t("pulse_listen", "Download")} ${currentPeriodLabel} ${t("pulse_title", "Pulse")} (Audio)` : `${t("pulse_listen", "Download")} Transcript`}</span>
             </button>
           </section>
         </div>

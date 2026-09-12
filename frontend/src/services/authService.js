@@ -147,3 +147,13 @@ export const resetPassword = async (email, code, newPassword) => {
     body: JSON.stringify({ email, code, newPassword }),
   });
 };
+
+/**
+ * Updates the user's preferred language in the backend
+ */
+export const updateLanguage = async (email, language) => {
+  return apiClient('/welcome-auth/language', {
+    method: 'PUT',
+    body: JSON.stringify({ email, language }),
+  });
+};

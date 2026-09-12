@@ -49,6 +49,9 @@ export default function Login({
           localStorage.setItem('location', res.user.location || "");
           localStorage.setItem('businessType', res.user.businessType || "Retail");
           localStorage.setItem('hasPin', res.user.hasPin ? 'true' : 'false');
+          if (res.user.language) {
+            setLanguage(res.user.language, false);
+          }
           if (setBusinessName) setBusinessName(res.user.businessName || "");
           if (setEmail) setEmail(res.user.email || "");
           if (setProfilePicture) setProfilePicture(res.user.profilePicture || "");

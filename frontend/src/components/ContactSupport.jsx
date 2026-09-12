@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const FAQS = [
   {
@@ -89,6 +90,7 @@ function ArrowIcon() {
 }
 
 export default function ContactSupport({ onNavigate, onBack, businessName }) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState(null);
 
@@ -103,13 +105,13 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
   }, [query]);
 
   return (
-    <main className="contact-support-page" aria-label="Help and support">
+    <main className="contact-support-page" aria-label={t("support_page_title", "Help and support")}>
       <section className="contact-support-shell">
         <header className="contact-support-topbar">
           <button
             className="contact-support-back"
             type="button"
-            aria-label="Go back"
+            aria-label={t("common_back", "Go back")}
             onClick={() =>
               onBack ? onBack() : onNavigate && onNavigate("home")
             }
@@ -118,8 +120,8 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
           </button>
 
           <div className="contact-support-titleblock">
-            <p>Need assistance</p>
-            <h1>Help &amp; Support</h1>
+            <p>{t("support_subtitle", "Need assistance")}</p>
+            <h1>{t("support_page_title", "Help & Support")}</h1>
           </div>
 
           <div style={{ width: 40 }} />
@@ -128,11 +130,10 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
         <main className="contact-support-content">
           <aside className="contact-support-preview">
             <article className="contact-support-hero">
-              <span className="contact-support-kicker">Priority support</span>
-              <h2>Get help quickly, in the channel you prefer.</h2>
+              <span className="contact-support-kicker">{t("support_page_title", "Priority support")}</span>
+              <h2>{t("support_subtitle", "Get help quickly, in the channel you prefer.")}</h2>
               <p>
-                {businessName || "My Store"} can contact support through instant
-                chat or a direct phone call.
+                {businessName || "My Store"} - {t("support_subtitle", "contact support through instant chat or a direct phone call.")}
               </p>
             </article>
           </aside>
@@ -147,15 +148,15 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
                 type="text"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search for answers..."
+                placeholder={t("common_search", "Search for answers...")}
               />
             </label>
 
             <section
               className="contact-support-faqs"
-              aria-label="Frequently asked questions"
+              aria-label={t("faq_page_title", "Frequently asked questions")}
             >
-              <h2>Frequently Asked Questions</h2>
+              <h2>{t("faq_page_title", "Frequently Asked Questions")}</h2>
               <div className="contact-support-faq-list">
                 {filteredFaqs.length ? (
                   filteredFaqs.map((item) => {
@@ -180,7 +181,7 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
                   })
                 ) : (
                   <p className="contact-support-empty">
-                    No matching FAQs found.
+                    {t("hist_no_tx", "No matching FAQs found.")}
                   </p>
                 )}
               </div>
@@ -188,9 +189,9 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
 
             <section
               className="contact-support-channels"
-              aria-label="Contact channels"
+              aria-label={t("support_page_title", "Contact channels")}
             >
-              <h2>Contact Support</h2>
+              <h2>{t("support_page_title", "Contact Support")}</h2>
               <a
                 href="https://wa.me/2347081104368"
                 target="_blank"
@@ -199,7 +200,7 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
               >
                 <span className="contact-support-channel-icon">W</span>
                 <span className="contact-support-channel-copy">
-                  <strong>WhatsApp Support</strong>
+                  <strong>{t("support_whatsapp", "WhatsApp Support")}</strong>
                   <small>Instant chat with our team</small>
                 </span>
                 <ArrowIcon />
@@ -211,7 +212,7 @@ export default function ContactSupport({ onNavigate, onBack, businessName }) {
               >
                 <span className="contact-support-channel-icon">C</span>
                 <span className="contact-support-channel-copy">
-                  <strong>Phone Call</strong>
+                  <strong>{t("support_call", "Phone Call")}</strong>
                   <small>Speak to an agent (9AM - 5PM)</small>
                 </span>
                 <ArrowIcon />

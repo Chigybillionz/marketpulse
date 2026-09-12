@@ -2,12 +2,7 @@ import { useState, useMemo } from "react";
 import AppShell from "./layout/AppShell";
 import Header from "./home/Header";
 import NavigationBar from "./home/NavigationBar";
-
-const historyTabs = [
-  { key: "today", label: "Today" },
-  { key: "yesterday", label: "Yesterday" },
-  { key: "week", label: "This Week" },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 function ItemIcon({ icon }) {
   const paths = {
@@ -46,7 +41,7 @@ function ItemIcon({ icon }) {
   );
 }
 
-function TransactionCard({ item }) {
+function TransactionCard({ item, t }) {
   // Extract just the time part for meta, unless it's older than today, then we show date + time
   let displayMeta = item.meta;
   if (item.rawDate) {
@@ -64,7 +59,7 @@ function TransactionCard({ item }) {
       </span>
       <span className={`history-money ${item.type}`}>
         <strong>{item.amount}</strong>
-        <em>{item.type.toUpperCase()}</em>
+        <em>{item.type === "income" ? t("hist_income", "SALE") : t("hist_expense", "EXPENSE")}</em>
       </span>
     </button>
   );
@@ -76,7 +71,14 @@ export default function History({
   transactionsList,
   businessName,
 }) {
+  const { t } = useLanguage();
   const [activePeriod, setActivePeriod] = useState("today");
+
+  const historyTabs = [
+    { key: "today", label: t("hist_tab_today", "Today") },
+    { key: "yesterday", label: t("hist_tab_yesterday", "Yesterday") },
+    { key: "week", label: t("hist_tab_week", "This Week") },
+  ];
 
   // Group transactions by date
   const groupedTransactions = useMemo(() => {
@@ -121,9 +123,9 @@ export default function History({
   const visibleTransactions = groupedTransactions[activePeriod] || [];
 
   const balanceLabel = {
-    today: "NET BALANCE TODAY",
-    yesterday: "NET BALANCE YESTERDAY",
-    week: "NET BALANCE THIS WEEK",
+    today: `${t("home_net_balance", "NET BALANCE")} ${t("hist_tab_today", "TODAY").toUpperCase()}`,
+    yesterday: `${t("home_net_balance", "NET BALANCE")} ${t("hist_tab_yesterday", "YESTERDAY").toUpperCase()}`,
+    week: `${t("home_net_balance", "NET BALANCE")} ${t("hist_tab_week", "THIS WEEK").toUpperCase()}`,
   }[activePeriod];
 
   // Calculate balance for the active period
@@ -140,8 +142,8 @@ export default function History({
       active="history"
       onNavigate={onNavigate}
       businessName={businessName}
-      title="Transaction History"
-      subtitle="Every sale and expense, logged"
+      title={t("hist_title", "Transaction History")}
+      subtitle={t("hist_empty_desc", "Every sale and expense, logged")}
     >
       <main className="history-page">
         <Header businessName={businessName} onNavigate={onNavigate} />
@@ -164,12 +166,12 @@ export default function History({
           
           {visibleTransactions.length === 0 ? (
             <div style={{ textAlign: "center", padding: "40px 20px", color: "#888" }}>
-              <p>No transactions found for {activePeriod}.</p>
+              <p>{t("hist_empty_desc", "No sales or expenses recorded for this period.")}</p>
             </div>
           ) : (
             <section className="history-list">
               {visibleTransactions.map((item) => (
-                <TransactionCard item={item} key={item.id || item.title} />
+                <TransactionCard item={item} key={item.id || item.title} t={t} />
               ))}
             </section>
           )}
@@ -177,11 +179,11 @@ export default function History({
           {activePeriod === "today" && groupedTransactions.yesterday.length > 0 && (
             <>
               <div className="history-divider">
-                <span>YESTERDAY</span>
+                <span>{t("hist_tab_yesterday", "YESTERDAY").toUpperCase()}</span>
               </div>
               <section className="history-list yesterday">
                 {groupedTransactions.yesterday.map((item) => (
-                  <TransactionCard item={item} key={item.id || item.title} />
+                  <TransactionCard item={item} key={item.id || item.title} t={t} />
                 ))}
               </section>
             </>

@@ -1,4 +1,4 @@
-const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile, updateCategory } = require('../services/WelcomeAuthService');
+const { signup, login, setTradePin, verifyTradePin, hasTradePin, generateResetPinCode, verifyResetPinCode, resetTradePin, resetPassword, generateResetPasswordCode, updateProfile, updateCategory, updateLanguage } = require('../services/WelcomeAuthService');
 
 const handleSignup = async (req, res) => {
   try {
@@ -21,6 +21,7 @@ const handleSignup = async (req, res) => {
         location: user.location,
         businessType: user.businessType,
         category: user.category,
+        language: user.language || 'English',
         hasPin: false
       }
     });
@@ -54,6 +55,7 @@ const handleLogin = async (req, res) => {
         location: user.location,
         businessType: user.businessType,
         category: user.category,
+        language: user.language || 'English',
         hasPin: !!user.tradePin
       }
     });
@@ -170,12 +172,12 @@ const uploadProfilePicture = async (req, res) => {
 
 const handleUpdateProfile = async (req, res) => {
   try {
-    const { email, businessName, location, businessType } = req.body;
+    const { email, businessName, location, businessType, language } = req.body;
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    const updatedUser = await updateProfile(email, { businessName, location, businessType });
+    const updatedUser = await updateProfile(email, { businessName, location, businessType, language });
     
     res.status(200).json({
       message: 'Profile updated successfully',
@@ -185,7 +187,9 @@ const handleUpdateProfile = async (req, res) => {
         businessName: updatedUser.businessName,
         location: updatedUser.location,
         businessType: updatedUser.businessType,
-        profilePicture: updatedUser.profilePicture
+        profilePicture: updatedUser.profilePicture,
+        category: updatedUser.category,
+        language: updatedUser.language || 'English'
       }
     });
   } catch (error) {
@@ -368,12 +372,34 @@ const getProfile = async (req, res) => {
         location: user.location,
         businessType: user.businessType,
         category: user.category,
+        language: user.language || 'English',
         hasPin: !!user.tradePin
       }
     });
   } catch (error) {
     console.error('Get Profile Error:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const handleUpdateLanguage = async (req, res) => {
+  try {
+    const { email, language } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    if (!language) {
+      return res.status(400).json({ message: 'Language is required' });
+    }
+
+    const updatedUser = await updateLanguage(email, language);
+    res.status(200).json({
+      message: 'Language updated successfully',
+      language: updatedUser.language
+    });
+  } catch (error) {
+    console.error('Update Language Error:', error);
+    res.status(400).json({ message: error.message || 'Failed to update language' });
   }
 };
 
@@ -392,6 +418,7 @@ module.exports = {
   handleUpdateProfile,
   handleUpdateCategory,
   handleUpdateEmail,
+  handleUpdateLanguage,
   getProfile
 };
 

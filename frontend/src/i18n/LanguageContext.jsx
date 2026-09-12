@@ -39,9 +39,49 @@ export function LanguageProvider({ children }) {
     }
   }, [language]);
 
-  const setLanguage = (lang) => {
+  // Listen for language changes triggered by profile load or other tabs
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === STORAGE_KEY && e.newValue && translations[e.newValue]) {
+        setLanguageState(e.newValue);
+      }
+    };
+    const handleCustomChange = (e) => {
+      if (e.detail && translations[e.detail]) {
+        setLanguageState(e.detail);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("appLanguageChanged", handleCustomChange);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("appLanguageChanged", handleCustomChange);
+    };
+  }, []);
+
+  const setLanguage = (lang, syncToBackend = true) => {
     if (translations[lang]) {
       setLanguageState(lang);
+      try {
+        localStorage.setItem(STORAGE_KEY, lang);
+      } catch (e) {
+        // ignore
+      }
+
+      // Sync to backend if authenticated
+      if (syncToBackend) {
+        try {
+          const email = localStorage.getItem("email");
+          const token = localStorage.getItem("token");
+          if (email && token) {
+            import("../services/authService")
+              .then(({ updateLanguage }) => updateLanguage(email, lang))
+              .catch((err) => console.warn("Failed to sync language to backend:", err));
+          }
+        } catch (e) {
+          // ignore background sync errors
+        }
+      }
     }
   };
 

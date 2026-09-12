@@ -1,4 +1,5 @@
 import Sidebar from "./Sidebar";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 /**
  * Dashboard layout wrapper (Home / History / Credit / Profile).
@@ -18,6 +19,7 @@ export default function AppShell({
   subtitle,
   children,
 }) {
+  const { t } = useLanguage();
   const initials = businessName
     ? businessName
         .split(" ")
@@ -34,13 +36,13 @@ export default function AppShell({
       <div className="mp-shell__main">
         <header className="mp-shell__topbar">
           <div className="mp-top-heading">
-            <span className="mp-top-title">{title || businessName || "My Store"}</span>
+            <span className="mp-top-title">{title || businessName || t("common_my_store")}</span>
             {subtitle && <span className="mp-top-sub">{subtitle}</span>}
           </div>
           <button
             type="button"
             className="mp-top-user"
-            aria-label="Profile"
+            aria-label={t("nav_profile")}
             onClick={() => onNavigate && onNavigate("profile")}
           >
             {initials}

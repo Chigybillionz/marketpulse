@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AlertTriangle, Calendar, TrendingUp, Save, CheckCircle2 } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const ToggleSwitch = ({ isActive, onToggle }) => (
   <button
@@ -35,6 +36,7 @@ const ToggleSwitch = ({ isActive, onToggle }) => (
 );
 
 export default function InventoryAlert({ onNavigate }) {
+  const { t } = useLanguage();
   const [settings, setSettings] = useState({
     lowStockNotifications: true,
     dailySummary: false,
@@ -93,11 +95,17 @@ export default function InventoryAlert({ onNavigate }) {
       }, 2000);
     } catch (error) {
       console.error("Failed to save settings:", error);
-      alert(`Failed to save settings: ${error.message || "Please try again."}`);
+      alert(t("alert_save_error"));
     } finally {
       setIsSaving(false);
     }
   };
+
+  const activeRulesCount = [
+    settings.lowStockNotifications,
+    settings.dailySummary,
+    settings.priceChangeAlerts,
+  ].filter(Boolean).length;
 
   return (
     <div className="inventory-alert-page">
@@ -107,7 +115,7 @@ export default function InventoryAlert({ onNavigate }) {
             type="button"
             className="inventory-alert-back"
             onClick={() => onNavigate && onNavigate("home")}
-            aria-label="Go back"
+            aria-label={t("common_back")}
           >
             <svg
               viewBox="0 0 24 24"
@@ -123,8 +131,8 @@ export default function InventoryAlert({ onNavigate }) {
           </button>
 
           <div className="inventory-alert-titleblock">
-            <p>Stock and pricing rules</p>
-            <h1>Inventory Alerts</h1>
+            <p>{t("alert_subtitle")}</p>
+            <h1>{t("alert_title")}</h1>
           </div>
 
           <div style={{ width: 40 }} />
@@ -134,21 +142,20 @@ export default function InventoryAlert({ onNavigate }) {
           <aside className="inventory-alert-preview">
             <div className="inventory-alert-hero">
               <span className="inventory-alert-kicker">
-                Proactive monitoring
+                {t("alert_kicker")}
               </span>
-              <h2>Stay ahead of stockouts before they affect sales.</h2>
+              <h2>{t("alert_hero_title")}</h2>
               <p>
-                Automated notifications keep you informed about low stock, daily
-                reports, and market price changes.
+                {t("alert_hero_desc")}
               </p>
 
               <div className="inventory-alert-metrics">
                 <article>
-                  <span>Rules active</span>
-                  <strong>2 of 3</strong>
+                  <span>{t("alert_rules_active")}</span>
+                  <strong>{t("alert_rules_ratio", { active: activeRulesCount, total: 3 })}</strong>
                 </article>
                 <article>
-                  <span>Threshold</span>
+                  <span>{t("alert_threshold_badge")}</span>
                   <strong>{settings.threshold}%</strong>
                 </article>
               </div>
@@ -157,15 +164,15 @@ export default function InventoryAlert({ onNavigate }) {
             <div className="inventory-alert-note">
               <AlertTriangle size={18} />
               <p>
-                Low stock alerts are the fastest way to prevent missed sales.
+                {t("alert_note")}
               </p>
             </div>
           </aside>
 
           <section className="inventory-alert-panel">
             <div className="inventory-alert-section-head">
-              <h2>Notification Rules</h2>
-              <p>Manage how you receive updates about your stock and prices.</p>
+              <h2>{t("alert_section_title")}</h2>
+              <p>{t("alert_section_desc")}</p>
             </div>
 
             <div className="inventory-alert-card inventory-alert-list">
@@ -174,8 +181,8 @@ export default function InventoryAlert({ onNavigate }) {
                   <AlertTriangle size={24} />
                 </div>
                 <div className="inventory-alert-copy">
-                  <h3>Low Stock Notifications</h3>
-                  <p>Alert when stock falls below threshold</p>
+                  <h3>{t("alert_low_stock_title")}</h3>
+                  <p>{t("alert_low_stock_desc")}</p>
                 </div>
                 <ToggleSwitch
                   isActive={settings.lowStockNotifications}
@@ -188,8 +195,8 @@ export default function InventoryAlert({ onNavigate }) {
                   <Calendar size={24} />
                 </div>
                 <div className="inventory-alert-copy">
-                  <h3>Daily Summary</h3>
-                  <p>End-of-day stock report</p>
+                  <h3>{t("alert_daily_summary_title")}</h3>
+                  <p>{t("alert_daily_summary_desc")}</p>
                 </div>
                 <div className="inventory-alert-time-picker">
                   <input
@@ -198,7 +205,7 @@ export default function InventoryAlert({ onNavigate }) {
                     onChange={handleTimeChange}
                     disabled={!settings.dailySummary}
                     className="inventory-alert-time-input"
-                    aria-label="Daily summary notification time"
+                    aria-label={t("alert_daily_summary_title")}
                   />
                 </div>
                 <ToggleSwitch
@@ -212,8 +219,8 @@ export default function InventoryAlert({ onNavigate }) {
                   <TrendingUp size={24} />
                 </div>
                 <div className="inventory-alert-copy">
-                  <h3>Price Change Alerts</h3>
-                  <p>Notify on market price fluctuations</p>
+                  <h3>{t("alert_price_change_title")}</h3>
+                  <p>{t("alert_price_change_desc")}</p>
                 </div>
                 <ToggleSwitch
                   isActive={settings.priceChangeAlerts}
@@ -225,8 +232,8 @@ export default function InventoryAlert({ onNavigate }) {
             <div className="inventory-alert-card inventory-alert-threshold">
               <div className="inventory-alert-threshold-head">
                 <div>
-                  <h3>Low Stock Threshold</h3>
-                  <p>Set the percentage for alerts</p>
+                  <h3>{t("alert_threshold_title")}</h3>
+                  <p>{t("alert_threshold_desc")}</p>
                 </div>
                 <strong>{settings.threshold}%</strong>
               </div>
@@ -264,14 +271,14 @@ export default function InventoryAlert({ onNavigate }) {
             disabled={isSaving}
           >
             <Save size={22} />
-            <span>{isSaving ? "Saving..." : "Save Settings"}</span>
+            <span>{isSaving ? t("alert_saving") : t("alert_save_btn")}</span>
           </button>
         </footer>
       </div>
 
       <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
         <CheckCircle2 size={24} />
-        <span>Settings saved successfully!</span>
+        <span>{t("alert_saved_success")}</span>
       </div>
     </div>
   );

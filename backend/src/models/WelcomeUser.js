@@ -38,6 +38,11 @@ const WelcomeUserSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  language: {
+    type: String,
+    enum: ['English', 'Pidgin', 'Yoruba', 'Igbo', 'Hausa'],
+    default: 'English'
+  },
   resetPinCode: {
     type: String
   },

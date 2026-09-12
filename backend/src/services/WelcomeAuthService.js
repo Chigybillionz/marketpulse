@@ -77,7 +77,27 @@ const updateProfile = async (email, profileData) => {
   if (profileData.category !== undefined) {
     user.category = profileData.category;
   }
+  if (profileData.language !== undefined) {
+    user.language = profileData.language;
+  }
 
+  await user.save();
+  return user;
+};
+
+/**
+ * Updates the user's preferred application language
+ */
+const updateLanguage = async (email, language) => {
+  const allowed = ['English', 'Pidgin', 'Yoruba', 'Igbo', 'Hausa'];
+  if (!allowed.includes(language)) {
+    throw new Error(`Invalid language. Allowed: ${allowed.join(', ')}`);
+  }
+  const user = await WelcomeUser.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  user.language = language;
   await user.save();
   return user;
 };
@@ -286,5 +306,6 @@ module.exports = {
   generateResetPasswordCode,
   updateProfile,
   updateCategory,
-  updateEmail
+  updateEmail,
+  updateLanguage
 };

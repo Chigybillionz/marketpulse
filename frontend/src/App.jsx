@@ -109,6 +109,10 @@ function App() {
               localStorage.setItem('businessType', u.businessType || "Retail");
               localStorage.setItem('category', u.category || "Dry Goods");
               localStorage.setItem('hasPin', u.hasPin ? 'true' : 'false');
+              if (u.language) {
+                localStorage.setItem('appLanguage', u.language);
+                window.dispatchEvent(new CustomEvent('appLanguageChanged', { detail: u.language }));
+              }
               setBusinessName(u.businessName || "");
               setEmail(u.email || "");
               setProfilePicture(u.profilePicture || "");

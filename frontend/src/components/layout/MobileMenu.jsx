@@ -1,21 +1,22 @@
 import { useEffect } from "react";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 const SECTIONS = [
   {
-    title: "Business",
+    titleKey: "menu_business",
     items: [
-      { icon: "store", label: "Store Profile", target: "storeProfile" },
-      { icon: "tag", label: "Market Category", target: "market_category" },
-      { icon: "bell", label: "Inventory Alerts", target: "inventoryAlert" },
+      { icon: "store", labelKey: "menu_store_profile", target: "storeProfile" },
+      { icon: "tag", labelKey: "menu_market_category", target: "market_category" },
+      { icon: "bell", labelKey: "menu_inventory_alerts", target: "inventoryAlert" },
     ],
   },
   {
-    title: "Account",
+    titleKey: "menu_account",
     items: [
-      { icon: "globe", label: "Language", target: "language_setting" },
-      { icon: "support", label: "Contact Support", target: "contact_support" },
-      { icon: "faq", label: "FAQs", target: "faqs" },
-      { icon: "shield", label: "Privacy Policy", target: "privacy_policy" },
+      { icon: "globe", labelKey: "menu_language", target: "language_setting" },
+      { icon: "support", labelKey: "menu_support", target: "contact_support" },
+      { icon: "faq", labelKey: "menu_faqs", target: "faqs" },
+      { icon: "shield", labelKey: "menu_privacy", target: "privacy_policy" },
     ],
   },
 ];
@@ -75,6 +76,7 @@ function Icon({ name }) {
 }
 
 export default function MobileMenu({ open, onClose, onNavigate, businessName }) {
+  const { t } = useLanguage();
   const initials = businessName
     ? businessName
         .split(" ")
@@ -118,14 +120,14 @@ export default function MobileMenu({ open, onClose, onNavigate, businessName }) 
           >
             <span className="mp-menu__avatar">{initials}</span>
             <span className="mp-menu__id">
-              <strong>{businessName || "My Store"}</strong>
-              <small>View profile &amp; settings</small>
+              <strong>{businessName || t("common_my_store")}</strong>
+              <small>{t("shell_profile_subtitle")}</small>
             </span>
           </button>
           <button
             className="mp-menu__close"
             type="button"
-            aria-label="Close menu"
+            aria-label={t("menu_close")}
             onClick={onClose}
           >
             <Icon name="close" />
@@ -134,8 +136,8 @@ export default function MobileMenu({ open, onClose, onNavigate, businessName }) 
 
         <nav className="mp-menu__nav">
           {SECTIONS.map((section) => (
-            <div className="mp-menu__section" key={section.title}>
-              <p className="mp-menu__section-title">{section.title}</p>
+            <div className="mp-menu__section" key={section.titleKey}>
+              <p className="mp-menu__section-title">{t(section.titleKey)}</p>
               {section.items.map((item) => (
                 <button
                   className="mp-menu__item"
@@ -146,7 +148,7 @@ export default function MobileMenu({ open, onClose, onNavigate, businessName }) 
                   <span className="mp-menu__item-icon">
                     <Icon name={item.icon} />
                   </span>
-                  <span className="mp-menu__item-label">{item.label}</span>
+                  <span className="mp-menu__item-label">{t(item.labelKey)}</span>
                   <span className="mp-menu__item-chevron">
                     <Icon name="chevron" />
                   </span>
@@ -163,7 +165,7 @@ export default function MobileMenu({ open, onClose, onNavigate, businessName }) 
             onClick={() => go("logout")}
           >
             <Icon name="logout" />
-            <span>Logout</span>
+            <span>{t("menu_logout")}</span>
           </button>
         </footer>
       </aside>

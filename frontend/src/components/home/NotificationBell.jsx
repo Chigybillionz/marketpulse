@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, Check, CheckCheck, Trash2, Package, AlertTriangle, X } from 'lucide-react';
+import { useLanguage } from '../../i18n/LanguageContext';
 import {
   getNotifications,
   getUnreadCount,
@@ -9,17 +10,17 @@ import {
   generateSummary,
 } from '../../services/notificationService';
 
-function timeAgo(dateStr) {
+function timeAgo(dateStr, t) {
   const now = new Date();
   const date = new Date(dateStr);
   const seconds = Math.floor((now - date) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return t ? t("notif_just_now") : 'just now';
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return t ? t("notif_mins_ago", { mins: minutes }) : `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t ? t("notif_hours_ago", { hours: hours }) : `${hours}h ago`;
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) return t ? t("notif_days_ago", { days: days }) : `${days}d ago`;
   return date.toLocaleDateString('en-NG', { month: 'short', day: 'numeric' });
 }
 
@@ -28,6 +29,7 @@ function formatCurrency(n) {
 }
 
 export default function NotificationBell() {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -202,21 +204,21 @@ export default function NotificationBell() {
       <div className="notification-summary-data">
         <div className="notification-summary-stats">
           <div className="notification-stat">
-            <span className="notification-stat-label">Total Products</span>
+            <span className="notification-stat-label">{t("notif_stat_products")}</span>
             <span className="notification-stat-value">{data.totalProducts}</span>
           </div>
           <div className="notification-stat">
-            <span className="notification-stat-label">Total Units</span>
+            <span className="notification-stat-label">{t("notif_stat_units")}</span>
             <span className="notification-stat-value">{data.totalUnits?.toLocaleString()}</span>
           </div>
           <div className="notification-stat">
-            <span className="notification-stat-label">Stock Value</span>
+            <span className="notification-stat-label">{t("notif_stat_value")}</span>
             <span className="notification-stat-value">{formatCurrency(data.totalStockValue)}</span>
           </div>
           <div className="notification-stat">
-            <span className="notification-stat-label">Low Stock</span>
+            <span className="notification-stat-label">{t("notif_stat_low_stock")}</span>
             <span className="notification-stat-value" style={{ color: data.lowStockCount > 0 ? '#ef4444' : '#16a34a' }}>
-              {data.lowStockCount} item{data.lowStockCount !== 1 ? 's' : ''}
+              {data.lowStockCount === 1 ? t("notif_item", { count: data.lowStockCount }) : t("notif_items", { count: data.lowStockCount })}
             </span>
           </div>
         </div>
@@ -225,13 +227,13 @@ export default function NotificationBell() {
           <div className="notification-low-stock">
             <h4>
               <AlertTriangle size={14} />
-              Low Stock Items
+              {t("notif_low_stock_title")}
             </h4>
             <ul>
               {data.lowStockItems.map((item, i) => (
                 <li key={i}>
                   <span className="notification-item-name">{item.name}</span>
-                  <span className="notification-item-qty">{item.quantityInStock} left</span>
+                  <span className="notification-item-qty">{t("notif_items_left", { count: item.quantityInStock })}</span>
                 </li>
               ))}
             </ul>
@@ -246,7 +248,7 @@ export default function NotificationBell() {
       <button
         className="notification-bell-btn"
         onClick={handleBellClick}
-        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+        aria-label={`${t("notif_title")}${unreadCount > 0 ? ` (${unreadCount})` : ''}`}
       >
         <Bell size={22} strokeWidth={2} />
         {unreadCount > 0 && (
@@ -266,18 +268,18 @@ export default function NotificationBell() {
           <div
             className="notification-panel"
             role="region"
-            aria-label="Notifications"
+            aria-label={t("notif_title")}
           >
             <div className="notification-panel-header">
-              <h3>Notifications</h3>
+              <h3>{t("notif_title")}</h3>
               <div className="notification-panel-actions">
                 {unreadCount > 0 && (
-                  <button onClick={handleMarkAllRead} className="notification-mark-all" title="Mark all as read">
+                  <button onClick={handleMarkAllRead} className="notification-mark-all" title={t("notif_read_all")}>
                     <CheckCheck size={16} />
-                    <span>Read all</span>
+                    <span>{t("notif_read_all")}</span>
                   </button>
                 )}
-                <button onClick={() => setIsOpen(false)} className="notification-close-btn" title="Close">
+                <button onClick={() => setIsOpen(false)} className="notification-close-btn" title={t("common_close")}>
                   <X size={18} />
                 </button>
               </div>
@@ -287,13 +289,13 @@ export default function NotificationBell() {
               {loading ? (
                 <div className="notification-empty">
                   <div className="notification-spinner" />
-                  <p>Loading...</p>
+                  <p>{t("notif_loading")}</p>
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="notification-empty">
                   <Bell size={40} strokeWidth={1.2} />
-                  <p>No notifications yet</p>
-                  <span>Your inventory alerts will appear here</span>
+                  <p>{t("notif_empty_title")}</p>
+                  <span>{t("notif_empty_desc")}</span>
                 </div>
               ) : (
                 notifications.map((notification) => (
@@ -313,17 +315,21 @@ export default function NotificationBell() {
                         )}
                       </div>
                       <div className="notification-item-content">
-                        <h4>{notification.title}</h4>
-                        <p>{notification.message}</p>
-                        <span className="notification-item-time">{timeAgo(notification.createdAt)}</span>
+                        <h4>{notification.type === 'daily_summary' ? t("notif_daily_summary_title") : notification.title}</h4>
+                        <p>
+                          {notification.type === 'daily_summary' && notification.data?.totalProducts !== undefined
+                            ? t("notif_daily_summary_msg", { products: notification.data.totalProducts, units: (notification.data.totalUnits || 0).toLocaleString() })
+                            : notification.message}
+                        </p>
+                        <span className="notification-item-time">{timeAgo(notification.createdAt, t)}</span>
                       </div>
                       <div className="notification-item-actions">
                         {!notification.read && (
-                          <button onClick={(e) => handleMarkAsRead(notification._id, e)} title="Mark as read">
+                          <button onClick={(e) => handleMarkAsRead(notification._id, e)} title={t("notif_mark_read")}>
                             <Check size={14} />
                           </button>
                         )}
-                        <button onClick={(e) => handleDelete(notification._id, e)} title="Delete" className="notification-delete-btn">
+                        <button onClick={(e) => handleDelete(notification._id, e)} title={t("notif_delete")} className="notification-delete-btn">
                           <Trash2 size={14} />
                         </button>
                       </div>

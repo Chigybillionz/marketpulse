@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { uploadProfilePicture } from "../services/authService";
+import { useLanguage } from "../i18n/LanguageContext";
 import {
   ChevronLeft,
   MapPin,
@@ -22,6 +23,7 @@ export default function StoreProfile({
   businessType,
   setBusinessType
 }) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     businessName: businessName || "My Store",
     location: locationStr || "",
@@ -61,7 +63,7 @@ export default function StoreProfile({
         localStorage.setItem("profilePicture", base64Image);
       } catch (error) {
         console.error("Failed to upload image:", error);
-        alert("Failed to upload image.");
+        alert(t("store_save_error", "Failed to upload image."));
       } finally {
         setIsUploading(false);
       }
@@ -71,7 +73,7 @@ export default function StoreProfile({
 
   const handleSaveChanges = async () => {
     if (!formData.businessName.trim() || !formData.location.trim()) {
-      alert("Business Name and Location cannot be empty.");
+      alert(t("store_validation_empty", "Business Name and Location cannot be empty."));
       return;
     }
 
@@ -110,7 +112,7 @@ export default function StoreProfile({
       }, 2000);
     } catch (error) {
       console.error("Failed to update profile:", error);
-      alert(`Failed to update profile: ${error.message || "Please try again."}`);
+      alert(t("store_save_error", `Failed to update profile: ${error.message || "Please try again."}`));
     } finally {
       setIsSaving(false);
     }
@@ -124,12 +126,12 @@ export default function StoreProfile({
             type="button"
             className="store-profile-back"
             onClick={() => onNavigate && onNavigate("home")}
-            aria-label="Go back"
+            aria-label={t("common_back", "Go back")}
           >
             <ChevronLeft size={30} />
           </button>
 
-          <h1>Store Profile</h1>
+          <h1>{t("store_page_title", "Store Profile")}</h1>
 
           <button
             type="button"
@@ -164,15 +166,14 @@ export default function StoreProfile({
             </div>
 
             <div className="store-profile-hero-copy">
-              <span className="store-profile-kicker">Store identity</span>
+              <span className="store-profile-kicker">{t("store_kicker", "Store identity")}</span>
               <h2>{formData.businessName}</h2>
               <p>
-                Public profile details for customers, delivery partners, and
-                market admins.
+                {t("store_hero_desc", "Public profile details for customers, delivery partners, and market admins.")}
               </p>
               <div className="store-profile-hero-tags">
-                <span>{formData.businessType || "Retail"}</span>
-                <span>{formData.location || "No location set"}</span>
+                <span>{formData.businessType === "Wholesale" ? t("store_type_wholesale", "Wholesale") : formData.businessType === "Wholesale & Retail" ? t("store_type_both", "Wholesale & Retail") : t("store_type_retail", "Retail")}</span>
+                <span>{formData.location || t("store_location_placeholder", "No location set")}</span>
               </div>
             </div>
 
@@ -210,67 +211,67 @@ export default function StoreProfile({
             aria-label="Store overview"
           >
             <article className="store-profile-fact">
-              <span>Merchant tier</span>
+              <span>{t("store_kicker", "Merchant tier")}</span>
               <strong>Tier 1</strong>
-              <small>Verified for high-volume sales</small>
+              <small>{t("store_hero_title", "Verified for high-volume sales")}</small>
             </article>
             <article className="store-profile-fact">
-              <span>Location</span>
-              <strong>{formData.location ? formData.location.split(',')[0] : "Not set"}</strong>
-              <small>{formData.location ? formData.location.split(',').slice(1).join(',').trim() || "Local Market" : "Please set your location"}</small>
+              <span>{t("store_location_label", "Location")}</span>
+              <strong>{formData.location ? formData.location.split(',')[0] : t("store_location_placeholder", "Not set")}</strong>
+              <small>{formData.location ? formData.location.split(',').slice(1).join(',').trim() || "Local Market" : t("store_location_placeholder", "Please set your location")}</small>
             </article>
             <article className="store-profile-fact">
-              <span>Status</span>
-              <strong>Active</strong>
-              <small>Visible to your market network</small>
+              <span>{t("common_status", "Status")}</span>
+              <strong>{t("cat_active", "Active")}</strong>
+              <small>{t("store_page_subtitle", "Visible to your market network")}</small>
             </article>
           </section>
 
           <section className="store-profile-card">
             <div className="store-profile-card-header">
-              <h2>Business Identity</h2>
-              <p>Manage your store&apos;s public facing details</p>
+              <h2>{t("store_kicker", "Business Identity")}</h2>
+              <p>{t("store_page_subtitle", "Manage your store's public facing details")}</p>
             </div>
 
             <div className="store-profile-fields">
               <label className="store-profile-field">
-                <span>Business Name</span>
+                <span>{t("store_name_label", "Business Name")}</span>
                 <div className="store-profile-input-row">
                   <input
                     type="text"
                     value={formData.businessName}
                     onChange={handleFieldChange("businessName")}
-                    aria-label="Business name"
+                    aria-label={t("store_name_label", "Business name")}
                   />
                   <Edit3 size={19} />
                 </div>
               </label>
 
               <label className="store-profile-field">
-                <span>Store Location</span>
+                <span>{t("store_location_label", "Store Location")}</span>
                 <div className="store-profile-input-row">
                   <input
                     type="text"
                     value={formData.location}
                     onChange={handleFieldChange("location")}
-                    aria-label="Store location"
-                    placeholder="Type your location"
+                    aria-label={t("store_location_label", "Store location")}
+                    placeholder={t("store_location_placeholder", "Type your location")}
                   />
                   <MapPin size={19} />
                 </div>
               </label>
 
               <label className="store-profile-field">
-                <span>Business Type</span>
+                <span>{t("store_type_label", "Business Type")}</span>
                 <div className="store-profile-input-row store-profile-select-row">
                   <select
                     value={formData.businessType}
                     onChange={handleFieldChange("businessType")}
-                    aria-label="Business type"
+                    aria-label={t("store_type_label", "Business type")}
                   >
-                    <option value="Retail">Retail</option>
-                    <option value="Wholesale">Wholesale</option>
-                    <option value="Wholesale & Retail">Wholesale & Retail</option>
+                    <option value="Retail">{t("store_type_retail", "Retail")}</option>
+                    <option value="Wholesale">{t("store_type_wholesale", "Wholesale")}</option>
+                    <option value="Wholesale & Retail">{t("store_type_both", "Wholesale & Retail")}</option>
                   </select>
                   <ChevronDown size={19} />
                 </div>
@@ -285,7 +286,7 @@ export default function StoreProfile({
             <section className="store-profile-note">
               <Info size={18} />
               <p>
-                Profile changes are updated across the market network instantly.
+                {t("store_hero_desc", "Profile changes are updated across the market network instantly.")}
               </p>
             </section>
 
@@ -296,7 +297,7 @@ export default function StoreProfile({
               disabled={isSaving}
             >
               <Save size={22} />
-              <span>{isSaving ? "Saving..." : "Save Changes"}</span>
+              <span>{isSaving ? t("store_saving", "Saving...") : t("store_save_btn", "Save Changes")}</span>
             </button>
           </section>
         </main>
@@ -304,7 +305,7 @@ export default function StoreProfile({
 
       <div className={`store-profile-notification ${showNotification ? 'show' : ''}`}>
         <CheckCircle2 size={24} />
-        <span>Changes saved successfully!</span>
+        <span>{t("store_saved_success", "Changes saved successfully!")}</span>
       </div>
     </div>
   );

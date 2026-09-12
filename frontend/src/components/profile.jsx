@@ -218,8 +218,8 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
       active="profile"
       onNavigate={onNavigate}
       businessName={businessName}
-      title="Profile & Settings"
-      subtitle="Manage your store and account"
+      title={t("shell_profile_title", "Profile & Settings")}
+      subtitle={t("shell_profile_subtitle", "Manage your store and account")}
     >
       <main className="profile-page">
         <section className="profile-phone">
@@ -232,7 +232,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
               <Icon name="back" />
             </button>
             <h1>{t("profile_title")}</h1>
-            <button type="button" aria-label="Settings">
+            <button type="button" aria-label={t("shell_profile_title", "Settings")}>
               <Icon name="gear" />
             </button>
           </header>
@@ -256,7 +256,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
               )}
               <button
                 type="button"
-                aria-label="Edit profile photo"
+                aria-label={t("store_photo_change", "Edit profile photo")}
                 onClick={() => setShowAvatarPicker(true)}
                 style={{ position: "absolute", bottom: "4px", right: "4px", zIndex: 2 }}
               >
@@ -308,7 +308,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                           color: "#111827",
                         }}
                       >
-                        Add business photo
+                        {t("store_photo_upload", "Add business photo")}
                       </h2>
                       <p
                         style={{
@@ -319,7 +319,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                           lineHeight: 1.45,
                         }}
                       >
-                        Choose an image from your device.
+                        {t("store_photo_hint", "Choose an image from your device.")}
                       </p>
                     </div>
                     <button
@@ -335,7 +335,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                         padding: 4,
                         color: "#6B7280",
                       }}
-                      aria-label="Close"
+                      aria-label={t("common_close", "Close")}
                     >
                       <svg
                         width="20"
@@ -383,7 +383,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                         fontWeight: 900,
                       }}
                     >
-                      Upload photo
+                      {t("store_photo_upload", "Upload photo")}
                       <input
                         type="file"
                         accept="image/*"
@@ -432,7 +432,7 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
                         boxShadow: "0 14px 24px rgba(5,46,22,0.18)",
                       }}
                     >
-                      Done
+                      {t("common_save", "Done")}
                     </button>
                   </div>
                 </div>
@@ -450,13 +450,13 @@ export default function Profile({ onNavigate, businessName, email, profilePictur
           <section className="profile-insights" aria-label="Quick insights">
             <article>
               <Icon name="trend" />
-              <span>MONTH GROWTH</span>
+              <span>{t("hist_tab_week", "MONTH GROWTH")}</span>
               <strong className="success">+12.4%</strong>
             </article>
             <article>
               <Icon name="box" />
-              <span>ALERTS</span>
-              <strong className="alert">3 Items Low</strong>
+              <span>{t("alert_title", "ALERTS")}</span>
+              <strong className="alert">3 {t("notif_stat_low_stock", "Items Low")}</strong>
             </article>
           </section>
 

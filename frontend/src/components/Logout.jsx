@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 function BackIcon() {
   return (
@@ -39,26 +40,27 @@ function LogoutIcon() {
 }
 
 export default function Logout({ onNavigate }) {
+  const { t } = useLanguage();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const goBack = () => onNavigate && onNavigate("home");
 
   return (
     <>
-      <main className="logout-page" aria-label="Confirm logout">
+      <main className="logout-page" aria-label={t("logout_title", "Confirm logout")}>
         <section className="logout-shell">
           <header className="logout-topbar">
             <button
               className="logout-back"
               type="button"
-              aria-label="Go back"
+              aria-label={t("common_back", "Go back")}
               onClick={goBack}
             >
               <BackIcon />
             </button>
 
             <div className="logout-titleblock">
-              <p>Account</p>
-              <h1>Logout</h1>
+              <p>{t("menu_account", "Account")}</p>
+              <h1>{t("logout_title", "Logout")}</h1>
             </div>
 
             <div style={{ width: 40 }} />
@@ -70,10 +72,9 @@ export default function Logout({ onNavigate }) {
                 <LogoutIcon />
               </span>
 
-              <h2>Are you sure you want to log out?</h2>
+              <h2>{t("logout_confirm_title", "Are you sure you want to log out?")}</h2>
               <p>
-                Logging out will end your current trading session. Make sure all
-                your trades are confirmed.
+                {t("logout_confirm_desc", "Logging out will end your current trading session. Make sure all your trades are confirmed.")}
               </p>
 
               <div className="logout-actions">
@@ -89,10 +90,10 @@ export default function Logout({ onNavigate }) {
                     window.location.href = "/";
                   }}
                 >
-                  {isLoggingOut ? "Logging out..." : "Yes, Log Out"}
+                  {isLoggingOut ? t("common_loading", "Logging out...") : t("logout_btn", "Yes, Log Out")}
                 </button>
                 <button className="logout-cancel" type="button" onClick={goBack}>
-                  No, Stay Logged In
+                  {t("logout_cancel", "No, Stay Logged In")}
                 </button>
               </div>
             </article>
@@ -132,7 +133,7 @@ export default function Logout({ onNavigate }) {
               letterSpacing: "-0.3px",
             }}
           >
-            Logging you out...
+            {t("common_loading", "Logging you out...")}
           </p>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
