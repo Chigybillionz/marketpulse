@@ -191,9 +191,36 @@ export default function Login({
           </div>
         </header>
 
-        <div style={{ width: "100%", height: 330, position: "relative", overflow: "hidden", flexShrink: 0 }}>
-          <div style={{ position: "absolute", inset: 0, backgroundColor: "#F5F5E8" }} />
-          <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(180,198,215,0.45)" }} />
+        <div style={{ width: "100%", height: 330, position: "relative", overflow: "hidden", flexShrink: 0, backgroundColor: "#EAECEF" }}>
+          {/* Vibrant Image Layer */}
+          <img
+            src="/login-welcome-bg.png"
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center 20%",
+              opacity: 0.68,
+              filter: "contrast(1.12) saturate(1.3) brightness(1.02)",
+              pointerEvents: "none",
+            }}
+          />
+
+          {/* Soft natural gradient: transparent at top/center to showcase vibrant colors, smooth fade to white at bottom */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(238,241,245,0.1) 0%, rgba(255,255,255,0.2) 40%, rgba(255,255,255,0.65) 80%, #ffffff 100%)",
+              pointerEvents: "none",
+            }}
+          />
+
+          {/* Top Layer: Wallet icon, Welcome Back text, and Description */}
           <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, zIndex: 5 }}>
             <div
               style={{
