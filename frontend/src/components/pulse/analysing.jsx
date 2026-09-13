@@ -54,15 +54,21 @@ export default function Analysing({ onNavigate, businessName }) {
     if (!onNavigate) return undefined;
 
     let isMounted = true;
+    // Generous safety timeout (60s) strictly for completely dead/hanging connections
     const timeoutId = setTimeout(() => {
       if (isMounted && analysisStatus === 'analyzing') {
         setAnalysisStatus('error');
       }
-    }, ANALYSIS_DURATION_MS + 5000); // Timeout after analysis duration + buffer
+    }, 60000);
 
     const analyzeAudio = async () => {
       const audioBase64 = location.state?.audioBase64;
-      const mimeType = location.state?.mimeType;
+      const mimeType = location.state?.mimeType || "audio/webm";
+      const audioStats = location.state?.audioStats || {
+        duration: 1,
+        size: audioBase64 ? Math.round((audioBase64.length * 3) / 4) : 0,
+        mimeType: mimeType,
+      };
 
       try {
         let transactionData = null;
@@ -75,6 +81,7 @@ export default function Analysing({ onNavigate, businessName }) {
           // Fallback static analysis if no audio provided (simulated delay)
           await new Promise(resolve => setTimeout(resolve, ANALYSIS_DURATION_MS));
           transactionData = {
+            transcript: "",
             type: "Income",
             amount: 0,
             description: "Voice recording not available",
@@ -84,14 +91,14 @@ export default function Analysing({ onNavigate, businessName }) {
         }
 
         if (isMounted) {
-          onNavigate(ANALYSIS_NEXT_PAGE, { transactionData, audioBase64 });
+          onNavigate(ANALYSIS_NEXT_PAGE, { transactionData, audioBase64, mimeType, audioStats });
         }
       } catch (error) {
         console.error("Analysis failed:", error);
         const errorMessage = error.message || error.toString();
 
         // Backend sends retryAfterSec when quota is exhausted.
-        const retryMatch = /retry in about (\\d+)s/i.exec(errorMessage);
+        const retryMatch = /retry in about (\d+)s/i.exec(errorMessage);
         const retrySec = error.retryAfterSec || (retryMatch ? parseInt(retryMatch[1], 10) : null);
 
         // Check if it's a quota error
@@ -114,16 +121,19 @@ export default function Analysing({ onNavigate, businessName }) {
             if (isMounted) {
               onNavigate(ANALYSIS_NEXT_PAGE, { 
                 transactionData: {
+                    transcript: "",
                     type: "UNKNOWN_AMOUNT",
                     amount: 0,
                     description: "AI analysis unavailable - please enter manually",
                     category: "Other",
                     aiError: errorMessage.substring(0, 100)
                 },
-                audioBase64
+                audioBase64,
+                mimeType,
+                audioStats
               });
             }
-          }, 2000);
+          }, 800);
         }
       }
     };

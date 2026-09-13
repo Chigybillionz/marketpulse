@@ -5,12 +5,12 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { getSummary } = require("../services/WeeklySummaryService");
 const Transaction = require("../models/Transaction");
 const WelcomeUser = require("../models/WelcomeUser");
+const { extractAmountFromTranscript } = require("../utils/amountExtractor");
 
 // Initialize with the environment variable from backend, explicitly defining the base URL
 // to avoid routing to broken internal proxies like daily-cloudcode-pa
 const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || "",
-  { baseUrl: "https://generativelanguage.googleapis.com" }
+  process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || ""
 );
 
 /* ------------------------- quota protection layer -------------------------
@@ -73,44 +73,63 @@ function makeModel(modelName) {
 }
 
 function buildAnalysisPrompt() {
-  return `You are analyzing audio from a Nigerian market trader. Extract the transaction details from this audio recording.
+  return `You are analyzing audio spoken by a Nigerian market merchant or trader.
+The merchant may speak Nigerian English, Nigerian Pidgin, Yoruba, Hausa, or Igbo.
 
-CRITICAL INSTRUCTION: If the audio is empty, silent, contains only background noise, or contains NO spoken words whatsoever, you MUST NOT invent or hallucinate a transaction. You MUST immediately respond with the UNKNOWN_AMOUNT JSON format.
-
-Extract and respond ONLY with valid JSON (no markdown, no extra text):
+CRITICAL INSTRUCTION: If the audio is empty, silent, contains only background noise, or contains NO spoken words whatsoever, you MUST respond immediately with:
 {
+  "transcript": "",
+  "type": "UNKNOWN_AMOUNT",
+  "amount": 0,
+  "description": "No speech detected",
+  "category": "Other"
+}
+
+Extract the speech and transaction details and respond ONLY with valid JSON (no markdown formatting, no code fences):
+{
+  "transcript": "Exact or best transcription of what the merchant said",
   "type": "Income",
   "amount": 15000,
   "description": "Sold 2 bags of garri",
   "category": "Dry Goods"
 }
 
-If the transaction is a credit sale (e.g. "I gave Ibrahim 2 cartons of Indomie on credit, he will pay on Friday"), the JSON MUST look like this:
+If the transaction is a credit sale (e.g. "I gave Ibrahim 2 cartons of Indomie on credit, he will pay on Friday" or "Customer owe me 5k"), the JSON MUST look like this:
 {
+  "transcript": "Customer owe me five thousand",
   "type": "CREDIT",
   "amount": 5000,
-  "description": "2 cartons of Indomie",
-  "category": "Produce",
+  "description": "Customer debt",
+  "category": "Other",
   "creditDetails": {
-    "customerName": "Ibrahim",
-    "dueDate": "2023-10-12"
+    "customerName": "Customer",
+    "dueDate": null
   }
 }
 
 Rules:
-- type: must be "Income", "Expense", or "CREDIT"
-- amount: IMPORTANT: You must return a strict number (e.g. 30000). Convert spoken words to digits.
-- description: what was bought/sold
-- category: one of [Dry Goods, Grains, Produce, Textiles, Electronics, Other]
-- creditDetails: ONLY include this if type is "CREDIT". Set customerName to the person's name, and calculate the dueDate in YYYY-MM-DD if they mention a day like "Friday" or "next week" (assuming today is ${new Date().toLocaleDateString()}).
+- transcript: Mandatory. Provide the exact or closest phonetic words spoken in English, Pidgin, Yoruba, Hausa, or Igbo.
+- type: Must be "Income", "Expense", "CREDIT", or "UNKNOWN_AMOUNT".
+  - Use "Income" for sales, goods sold, money received, revenue.
+  - Use "Expense" for purchases, supplies, transport, fuel, bills.
+  - Use "CREDIT" if a customer owes money, bought on credit, or will pay later.
+  - Use "UNKNOWN_AMOUNT" if no monetary amount or trade price was spoken.
+- amount: IMPORTANT: Return a strict integer number (e.g. 5000, 10000). Convert spoken words ("five thousand", "ten thousand", "two million", "dubu biyar", "egberun marun", "puku ise"), abbreviations ("5k", "10k", "20k"), and currency mentions ("₦5000", "5000 naira") into numbers. If no amount was mentioned, set amount to 0 and type to "UNKNOWN_AMOUNT".
+- description: Brief summary of what was bought/sold/owed.
+- category: One of ["Dry Goods", "Grains", "Produce", "Textiles", "Electronics", "Transport", "Utilities", "Other"].
+- creditDetails: ONLY include this if type is "CREDIT". Include customerName and dueDate (in YYYY-MM-DD if mentioned, otherwise null).
 
-If the user does not mention a specific amount or value in the audio, or if you cannot extract clear information, or if the audio is completely silent/unintelligible, you MUST respond exactly with this JSON:
-{
-  "type": "UNKNOWN_AMOUNT",
-  "amount": 0,
-  "description": "No value mentioned",
-  "category": "Other"
-}`;
+Examples of Nigerian Expressions:
+- "I sold items for 5000" -> transcript: "I sold items for 5000", amount: 5000, type: "Income"
+- "Five thousand naira" -> transcript: "Five thousand naira", amount: 5000, type: "Income"
+- "Customer bought goods worth ten thousand" -> transcript: "Customer bought goods worth ten thousand", amount: 10000, type: "Income"
+- "I sell am five k" -> transcript: "I sell am five k", amount: 5000, type: "Income"
+- "Customer owe me two thousand" -> transcript: "Customer owe me two thousand", amount: 2000, type: "CREDIT"
+- "Na 10k" -> transcript: "Na 10k", amount: 10000, type: "Income"
+- "Chidinma bought something" -> transcript: "Chidinma bought something", amount: 0, type: "UNKNOWN_AMOUNT", description: "bought something"
+- "Mo ta aso ni egberun marun" -> transcript: "Mo ta aso ni egberun marun", amount: 5000, type: "Income", description: "aso (cloth)"
+- "Na sayar da shinkafa dubu biyar" -> transcript: "Na sayar da shinkafa dubu biyar", amount: 5000, type: "Income", description: "shinkafa (rice)"
+- "E rere m akwa puku ise" -> transcript: "E rere m akwa puku ise", amount: 5000, type: "Income", description: "akwa (cloth)"`;
 }
 
 /** Build a compact, structured error the frontend can reason about. */
@@ -162,10 +181,11 @@ async function generateWithQuotaHandling(promptParts) {
     throw quotaError(429, "Too many AI requests right now. Please wait a moment and try again.", 10);
   }
 
-  const primaryModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-  const fallbackModel = process.env.GEMINI_FALLBACK_MODEL || null;
+  const primaryModel = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+  const fallbackModel = process.env.GEMINI_FALLBACK_MODEL || "gemini-flash-latest";
 
-  const models = fallbackModel ? [primaryModel, fallbackModel] : [primaryModel];
+  const candidateModels = [primaryModel, fallbackModel, "gemini-3.5-flash", "gemini-3.7-flash"];
+  const models = candidateModels.filter((v, i, a) => v && a.indexOf(v) === i);
 
   for (let i = 0; i < models.length; i += 1) {
     try {
@@ -195,8 +215,18 @@ async function generateWithQuotaHandling(promptParts) {
         );
       }
 
-      if (status === 503 || status === 500) {
-        // Transient upstream error: retry once after a short pause.
+      const isTransientNetwork = !status || error.message?.includes("fetch failed") || error.message?.includes("ECONNRESET") || error.message?.includes("ETIMEDOUT") || error.message?.includes("socket");
+
+      if (isTransientNetwork || status === 503 || status === 500) {
+        console.warn(`Network/transient error on model ${models[i]} (${error.message}). Retrying...`);
+        await new Promise((r) => setTimeout(r, 1000));
+        try {
+          const retryModel = makeModel(models[i]);
+          return await retryModel.generateContent(promptParts);
+        } catch (retryErr) {
+          console.warn(`Retry on model ${models[i]} failed: ${retryErr.message}`);
+          if (i < models.length - 1) continue;
+        }
         if (i < models.length - 1) continue;
         throw quotaError(503, "AI service is temporarily unavailable. Please try again shortly.", 5);
       }
@@ -248,7 +278,37 @@ const transcribeAndAnalyze = async (req, res) => {
       const text = response.response.text();
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("No JSON found in AI response");
-      return JSON.parse(jsonMatch[0]);
+      const parsed = JSON.parse(jsonMatch[0]);
+
+      // Normalize data fields
+      const result = {
+        transcript: (parsed.transcript || "").trim(),
+        type: parsed.type || "Income",
+        amount: typeof parsed.amount === "number" ? parsed.amount : (parseInt(parsed.amount, 10) || 0),
+        description: parsed.description || "Voice trade entry",
+        category: parsed.category || "Other",
+        creditDetails: parsed.creditDetails || null,
+        detectedAmountRaw: parsed.detectedAmountRaw || null,
+      };
+
+      // Fallback deterministic amount extraction if amount was not extracted or is 0
+      if ((result.amount === 0 || result.type === "UNKNOWN_AMOUNT") && result.transcript) {
+        const extracted = extractAmountFromTranscript(result.transcript);
+        if (extracted && extracted.amount > 0) {
+          result.amount = extracted.amount;
+          result.detectedAmountRaw = extracted.raw;
+          if (result.type === "UNKNOWN_AMOUNT") {
+            result.type = "Income";
+          }
+        }
+      }
+
+      // If amount is 0 and no amount detected
+      if (result.amount === 0) {
+        result.type = "UNKNOWN_AMOUNT";
+      }
+
+      return result;
     })();
 
     inFlightRequests.set(payloadHash, analysisPromise);
@@ -272,12 +332,24 @@ const transcribeAndAnalyze = async (req, res) => {
     const statusCode = error.statusCode || 500;
     const retryAfter = error.retryAfterSec || null;
 
-    // structured log without dumping the whole error object
     console.error("Error in AI Controller:", {
       status: statusCode,
       message: error.message,
       retryAfterSec: retryAfter || undefined,
     });
+
+    // If an upstream network or temporary server issue occurred, return a graceful 200
+    // fallback with UNKNOWN_AMOUNT so the merchant sees the options to re-record or enter manually.
+    if (error.message?.includes("fetch failed") || statusCode === 503 || statusCode === 500) {
+      return res.status(200).json({
+        transcript: "",
+        type: "UNKNOWN_AMOUNT",
+        amount: 0,
+        description: "Speech analysis temporarily unavailable",
+        category: "Other",
+        aiError: error.message || "Network issue"
+      });
+    }
 
     return res.status(statusCode).json({
       error: error.message || "Failed to analyze audio",

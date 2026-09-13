@@ -3,8 +3,9 @@ export class VoiceRecorder {
     this.mediaRecorder = null;
     this.audioChunks = [];
     this.stream = null;
-    this.isSupported = !!navigator.mediaDevices?.getUserMedia;
+    this.isSupported = typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
     this.startTime = null;
+    this.selectedMimeType = '';
   }
 
   isRecorderSupported() {
@@ -25,47 +26,49 @@ export class VoiceRecorder {
       this.audioChunks = [];
       this.startTime = new Date();
       
-      // Request microphone access with audio constraints
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 44100,
-          channelCount: 1,
-        },
-      });
+      // Request microphone access with progressive fallback for mobile/Safari compatibility
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        });
+      } catch (constraintErr) {
+        console.warn("High-fidelity audio constraints failed, falling back to basic audio: true", constraintErr);
+        this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
 
-      // Verify the stream has audio tracks
-      if (this.stream.getAudioTracks().length === 0) {
+      // Verify the stream has active audio tracks
+      const audioTracks = this.stream.getAudioTracks();
+      if (!audioTracks || audioTracks.length === 0) {
         throw new Error("No audio tracks available from microphone");
       }
 
-      // Set up MediaRecorder with best available mime type
+      // Detect best supported MIME type across Chrome, Firefox, Safari iOS/macOS
       const mimeTypes = [
         "audio/webm;codecs=opus",
         "audio/webm",
-        "audio/ogg;codecs=opus",
         "audio/mp4",
+        "audio/aac",
+        "audio/ogg;codecs=opus",
+        "audio/wav",
       ];
       
-      let selectedMimeType = mimeTypes.find(mimeType => MediaRecorder.isTypeSupported(mimeType)) || undefined;
+      let selectedMimeType = "";
+      if (typeof MediaRecorder !== 'undefined' && typeof MediaRecorder.isTypeSupported === "function") {
+        selectedMimeType = mimeTypes.find(mimeType => MediaRecorder.isTypeSupported(mimeType)) || "";
+      }
+      this.selectedMimeType = selectedMimeType;
 
-      this.mediaRecorder = new MediaRecorder(this.stream, {
-        mimeType: selectedMimeType,
-      });
+      const options = selectedMimeType ? { mimeType: selectedMimeType } : undefined;
+      this.mediaRecorder = options ? new MediaRecorder(this.stream, options) : new MediaRecorder(this.stream);
 
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data && event.data.size > 0) {
           this.audioChunks.push(event.data);
         }
-      };
-
-      this.mediaRecorder.onstop = () => {
-        // Clean up chunks after stop to free memory
-        setTimeout(() => {
-          this.audioChunks = [];
-        }, 100);
       };
 
       this.mediaRecorder.onerror = (event) => {
@@ -74,18 +77,17 @@ export class VoiceRecorder {
       };
 
       // Start recording with a timeslice to get frequent data events
-      this.mediaRecorder.start(100);
+      this.mediaRecorder.start(250);
       console.log("Recording started at:", this.startTime.toISOString());
-      console.log("Using mime type:", selectedMimeType || "default");
+      console.log("Using mime type:", selectedMimeType || this.mediaRecorder.mimeType || "default");
       return true;
     } catch (error) {
       console.error("Error accessing microphone:", error);
-      // Clean up on error
       if (this.stream) {
         this.stopMediaStream();
         this.stream = null;
       }
-      throw new Error(`Microphone access denied: ${error.message}`, { cause: error });
+      throw new Error(`Microphone access failed: ${error.message || "Permission denied"}`, { cause: error });
     }
   }
 
@@ -103,28 +105,61 @@ export class VoiceRecorder {
 
       this.mediaRecorder.onstop = () => {
         try {
+          const effectiveMimeType = this.mediaRecorder?.mimeType || this.selectedMimeType || "audio/webm";
+
           if (this.audioChunks.length === 0) {
-            reject(new Error("No audio data recorded"));
+            this.stopMediaStream();
+            this.stream = null;
+            this.mediaRecorder = null;
+            reject(new Error("No audio data recorded. Please ensure your microphone is working and speak clearly."));
             return;
           }
           
-          const audioBlob = new Blob(this.audioChunks, { type: this.mediaRecorder.mimeType || "audio/webm" });
-          console.log("Recording stopped. Blob size:", audioBlob.size, "bytes");
-          console.log("Recording duration:", Math.round((new Date() - this.startTime) / 1000), "seconds");
+          const audioBlob = new Blob(this.audioChunks, { type: effectiveMimeType });
+          const duration = Math.max(1, Math.round((new Date() - this.startTime) / 1000));
+          
+          if (audioBlob.size === 0) {
+            this.stopMediaStream();
+            this.stream = null;
+            this.mediaRecorder = null;
+            reject(new Error("Recording resulted in an empty audio file. Please try again."));
+            return;
+          }
+
+          // Attach metadata directly onto the Blob instance for caller convenience
+          audioBlob.actualMimeType = effectiveMimeType;
+          audioBlob.duration = duration;
+          audioBlob.recordedSize = audioBlob.size;
+
+          console.log(`Recording stopped. Format: ${effectiveMimeType}, Size: ${audioBlob.size} bytes, Duration: ${duration}s`);
           
           this.stopMediaStream();
           this.stream = null;
           this.mediaRecorder = null;
           resolve(audioBlob);
         } catch (error) {
+          this.stopMediaStream();
+          this.stream = null;
+          this.mediaRecorder = null;
           reject(error);
         }
       };
 
       this.mediaRecorder.onerror = (event) => {
         this.stopMediaStream();
+        this.stream = null;
+        this.mediaRecorder = null;
         reject(new Error(`Recording error: ${event.error?.message || "Unknown error"}`));
       };
+
+      // Request any buffered data before final stop
+      if (typeof this.mediaRecorder.requestData === 'function' && this.mediaRecorder.state === 'recording') {
+        try {
+          this.mediaRecorder.requestData();
+        } catch (e) {
+          console.warn("requestData warning:", e);
+        }
+      }
 
       this.mediaRecorder.stop();
     });
@@ -137,6 +172,7 @@ export class VoiceRecorder {
           track.stop();
         }
       });
+      this.stream = null;
     }
   }
 

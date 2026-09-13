@@ -1241,7 +1241,7 @@
   stroke-dashoffset: 616;
   transform: rotate(-135deg);
   transform-origin: 120px 120px;
-  animation: analysingProgress var(--analysis-duration, 3500ms) linear forwards;
+  animation: analysingProgress 2.5s ease-in-out infinite alternate;
 }
 
 .analysing-sparkles {
@@ -1319,7 +1319,7 @@
   background: linear-gradient(90deg, rgba(5, 46, 22, 0.2), rgba(5, 46, 22, 0.08));
   transform: scaleX(0);
   transform-origin: left center;
-  animation: analysingBar var(--analysis-duration, 3500ms) linear forwards;
+  animation: analysingBar 2.5s ease-in-out infinite alternate;
 }
 
 .analysing-skeleton-short {
@@ -1352,8 +1352,14 @@
 }
 
 @keyframes analysingBar {
+  0% {
+    transform: scaleX(0.05);
+  }
+  50% {
+    transform: scaleX(0.7);
+  }
   100% {
-    transform: scaleX(1);
+    transform: scaleX(0.96);
   }
 }
 
