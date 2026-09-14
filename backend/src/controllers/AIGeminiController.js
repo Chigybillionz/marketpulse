@@ -10,7 +10,7 @@ const { extractAmountFromTranscript } = require("../utils/amountExtractor");
 // Initialize with the environment variable from backend, explicitly defining the base URL
 // to avoid routing to broken internal proxies like daily-cloudcode-pa
 const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || ""
+  process.env.GEMINI_API_KEY || ""
 );
 
 /* ------------------------- quota protection layer -------------------------
@@ -246,8 +246,8 @@ const transcribeAndAnalyze = async (req, res) => {
       return res.status(400).json({ error: "Missing audioBase64" });
     }
 
-    if (!process.env.GEMINI_API_KEY && !process.env.AGENTROUTER_API_KEY) {
-      return res.status(500).json({ error: "API key not configured on server" });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: "Gemini API key not configured on server" });
     }
 
     const payloadHash = hashPayload(audioBase64, mimeType);

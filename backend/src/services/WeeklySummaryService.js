@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY || process.env.AGENTROUTER_API_KEY || ""
+  process.env.GEMINI_API_KEY || ""
 );
 
 // In-memory cache: one audio per user per period (period is derived from data,
