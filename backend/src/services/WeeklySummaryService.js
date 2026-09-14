@@ -99,18 +99,29 @@ function computeWeeklyStats(transactions, businessName = "your business", period
 
   for (const t of scope) {
     const amount = Number(t.amount) || 0;
+    const isCreditRecovery = Boolean(t.isCreditRecovery || t.category === "Credit Repayment" || t.source?.includes("Credit Payment"));
     const isIncome = t.type === "Income";
-    if (isIncome) {
+
+    if (isCreditRecovery) {
+      moneyOut = Math.max(0, moneyOut - amount);
+      incomeCount += 1;
+    } else if (isIncome) {
       moneyIn += amount;
       incomeCount += 1;
     } else {
       moneyOut += amount;
       expenseCount += 1;
     }
+
     const cat = t.category || "Other";
     byCategory[cat] = byCategory[cat] || { in: 0, out: 0 };
-    if (isIncome) byCategory[cat].in += amount;
-    else byCategory[cat].out += amount;
+    if (isCreditRecovery) {
+      byCategory[cat].out = Math.max(0, byCategory[cat].out - amount);
+    } else if (isIncome) {
+      byCategory[cat].in += amount;
+    } else {
+      byCategory[cat].out += amount;
+    }
 
     const desc = (t.description || "transaction").trim();
     byDescription[desc] = (byDescription[desc] || 0) + amount;

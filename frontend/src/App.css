@@ -1870,6 +1870,20 @@
   color: #bd0010;
 }
 
+.history-money.recovery strong {
+  color: #059669;
+}
+
+.history-money.recovery em {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.history-icon.recovery {
+  background: #d1fae5;
+  color: #065f46;
+}
+
 .history-divider {
   margin: 42px 6px;
   color: #7a817b;

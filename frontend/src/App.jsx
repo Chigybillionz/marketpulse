@@ -146,9 +146,18 @@ function App() {
         
         const formattedTxs = data.map(tx => {
           const isIncome = tx.type === 'Income';
+          const isCreditRecovery = Boolean(
+            tx.isCreditRecovery ||
+            tx.category === 'Credit Repayment' ||
+            tx.source?.includes('Credit Payment')
+          );
           const amountNum = Number(tx.amount);
           
-          if (isIncome) {
+          if (isCreditRecovery) {
+            // Debt Recovery: directly offsets Money Out, restores Balance, does NOT inflate Money In
+            calcMoneyOut = Math.max(0, calcMoneyOut - amountNum);
+            calcBalance += amountNum;
+          } else if (isIncome) {
             calcMoneyIn += amountNum;
             calcBalance += amountNum;
           } else {
@@ -156,16 +165,31 @@ function App() {
             calcBalance -= amountNum;
           }
 
+          let badgeType = isIncome ? "credit" : "debit";
+          let icon = isIncome ? "bag" : "bolt";
+          let iconBg = isIncome ? "bg-green-100" : "bg-red-100";
+          let iconColor = isIncome ? "text-green-800" : "text-red-600";
+          let isPositive = isIncome;
+
+          if (isCreditRecovery) {
+            badgeType = "recovery";
+            icon = "receipt";
+            iconBg = "bg-emerald-100";
+            iconColor = "text-emerald-800";
+            isPositive = true;
+          }
+
           return {
             id: tx._id,
-            type: isIncome ? "credit" : "debit",
-            icon: isIncome ? "bag" : "bolt",
+            type: badgeType,
+            icon: icon,
             title: tx.description,
             meta: new Date(tx.date).toLocaleDateString() + ' ' + new Date(tx.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-            amount: `${isIncome ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
-            isPositive: isIncome,
-            iconBg: isIncome ? "bg-green-100" : "bg-red-100",
-            iconColor: isIncome ? "text-green-800" : "text-red-600",
+            amount: `${isPositive ? '+' : '-'}\u20A6${amountNum.toLocaleString()}`,
+            isPositive: isPositive,
+            isCreditRecovery: isCreditRecovery,
+            iconBg: iconBg,
+            iconColor: iconColor,
             rawDate: new Date(tx.date),
           };
         });

@@ -84,6 +84,25 @@ const addCreditTransaction = async (req, res) => {
       await debtor.save();
     }
 
+    // Create an Expense transaction in Transaction collection to track money out for the merchant
+    try {
+      const merchantUser = await WelcomeUser.findOne({ email: new RegExp(`^${email}$`, 'i') });
+      if (merchantUser) {
+        await Transaction.create({
+          user: merchantUser._id,
+          type: 'Expense',
+          amount: Number(amount),
+          category: 'Credit Given',
+          description: description || `${customerName} - Credit Given`,
+          source: `${customerName} Credit`,
+          relatedCreditId: debtor._id,
+          date: new Date()
+        });
+      }
+    } catch (txErr) {
+      console.error('Failed to create credit outflow transaction:', txErr);
+    }
+
     res.status(201).json(debtor);
   } catch (error) {
     console.error('Error adding credit transaction:', error);
@@ -156,6 +175,7 @@ const resolveCredit = async (req, res) => {
         description: description || `${debtor.customerName} Credit Payment`,
         source: `${debtor.customerName} Credit Payment`,
         relatedCreditId: debtor._id,
+        isCreditRecovery: true,
         date: new Date()
       });
 

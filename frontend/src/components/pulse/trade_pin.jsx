@@ -142,6 +142,27 @@ export default function PulseTradePin({
           transactionData.description || "Voice Input",
           cd.dueDate || null
         );
+
+        if (setBalance) {
+          setBalance((prev) => prev - amountNum);
+        }
+        if (setMoneyOut) {
+          setMoneyOut((prev) => prev + amountNum);
+        }
+        if (setTransactionsList) {
+          const newTx = {
+            id: Date.now(),
+            type: "debit",
+            icon: "bolt",
+            title: `${cd.customerName || "Customer"} - Credit Given`,
+            meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
+            amount: `-\u20A6${amountNum.toLocaleString()}`,
+            isPositive: false,
+            iconBg: "bg-red-100",
+            iconColor: "text-red-600",
+          };
+          setTransactionsList((prev) => [newTx, ...prev]);
+        }
       } else {
         // Normal income/expense
         const apiTx = await createTransaction({

@@ -32,6 +32,10 @@ const transactionSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Debtor',
     },
+    isCreditRecovery: {
+      type: Boolean,
+      default: false,
+    },
     date: {
       type: Date,
       default: Date.now,

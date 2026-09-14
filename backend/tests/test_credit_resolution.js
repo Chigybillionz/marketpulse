@@ -6,7 +6,7 @@ const WelcomeUser = require('../src/models/WelcomeUser');
 const Debtor = require('../src/models/Debtor');
 const Transaction = require('../src/models/Transaction');
 const Notification = require('../src/models/Notification');
-const { resolveCredit, getDebtors } = require('../src/controllers/DebtorController');
+const { resolveCredit, getDebtors, addCreditTransaction } = require('../src/controllers/DebtorController');
 const { getProfileMetrics } = require('../src/services/WelcomeAuthService');
 
 function createMockRes() {
@@ -94,6 +94,7 @@ async function runCreditResolutionTests() {
     console.assert(tx1 !== null, 'Income transaction should exist in MongoDB');
     console.assert(tx1.type === 'Income', 'Transaction type should be Income');
     console.assert(tx1.category === 'Credit Repayment', 'Transaction category should be Credit Repayment');
+    console.assert(tx1.isCreditRecovery === true, 'Transaction isCreditRecovery should be true');
     console.assert(tx1.source.includes('Chidinma'), 'Transaction source should mention customer');
     console.log('PASS: Income transaction created:', tx1.description, '₦' + tx1.amount);
 
@@ -173,8 +174,33 @@ async function runCreditResolutionTests() {
     console.assert(foundDebtor.status === 'RESOLVED', `Expected status RESOLVED, got ${foundDebtor.status}`);
     console.log('PASS: getDebtors returns debtor with status RESOLVED');
 
+    // 11. addCreditTransaction creates Expense transaction
+    console.log('\n--- Test 11: addCreditTransaction creates Expense outflow transaction ---');
+    const addCreditReq = {
+      body: {
+        email: testEmail,
+        customerName: 'Emeka',
+        phoneNumber: '08099887766',
+        amount: 15000,
+        description: 'Lent cash ₦15,000'
+      }
+    };
+    const addCreditRes = createMockRes();
+    await addCreditTransaction(addCreditReq, addCreditRes);
+    console.assert(addCreditRes.statusCode === 201, `Expected 201, got ${addCreditRes.statusCode}`);
+    const expenseTx = await Transaction.findOne({
+      user: merchant._id,
+      amount: 15000,
+      type: 'Expense',
+      category: 'Credit Given'
+    });
+    console.assert(expenseTx !== null, 'Expense outflow transaction should be created for credit given');
+    console.assert(expenseTx.type === 'Expense', 'Outflow transaction type should be Expense');
+    console.assert(expenseTx.category === 'Credit Given', 'Outflow category should be Credit Given');
+    console.log('PASS: Credit outflow transaction created (Expense: ₦15,000)');
+
     console.log('\n=============================================');
-    console.log('ALL 10 CREDIT RESOLUTION INTEGRATION TESTS PASSED!');
+    console.log('ALL 11 CREDIT RESOLUTION & NETTING TESTS PASSED!');
     console.log('=============================================\n');
 
   } finally {

@@ -59,7 +59,13 @@ function TransactionCard({ item, t }) {
       </span>
       <span className={`history-money ${item.type}`}>
         <strong>{item.amount}</strong>
-        <em>{item.type === "income" ? t("hist_income", "SALE") : t("hist_expense", "EXPENSE")}</em>
+        <em>
+          {item.type === "recovery" || item.isCreditRecovery
+            ? t("hist_debt_recovered", "DEBT RECOVERED")
+            : item.type === "credit" || item.type === "income"
+            ? t("hist_income", "SALE")
+            : t("hist_expense", "EXPENSE")}
+        </em>
       </span>
     </button>
   );
