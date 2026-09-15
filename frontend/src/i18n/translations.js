@@ -119,6 +119,7 @@ const translations = {
     "home_recent_transactions": "Recent Transactions",
     "home_no_transactions": "No transactions yet. Record your first sale!",
     "home_view_all": "View All",
+    "home_view_less": "View Less",
     "home_this_week": "This Week",
     "home_low_stock": "Low Stock",
     "home_items_low": "{count} Items Low",

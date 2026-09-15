@@ -1,8 +1,11 @@
 import { ShoppingBag, CreditCard, Zap } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { useState } from 'react';
 
 export default function TransactionList({ transactionsList, onNavigate }) {
   const { t } = useLanguage();
+  const [showAll, setShowAll] = useState(false);
+
   const getIcon = (type) => {
     switch (type) {
       case 'bag':     return <ShoppingBag size={18} strokeWidth={2} />;
@@ -19,6 +22,12 @@ export default function TransactionList({ transactionsList, onNavigate }) {
     bolt:    { background: '#ffebee', color: '#c62828' },
   };
 
+  const MAX_INITIAL_ITEMS = 5;
+  const hasMoreThanMax = transactionsList.length > MAX_INITIAL_ITEMS;
+  const displayedTransactions = showAll 
+    ? transactionsList 
+    : transactionsList.slice(0, MAX_INITIAL_ITEMS);
+
   return (
     <section style={{ padding: '8px 20px 16px 20px' }}>
 
@@ -34,25 +43,27 @@ export default function TransactionList({ transactionsList, onNavigate }) {
         <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1a1a1a', margin: 0, letterSpacing: '-0.3px' }}>
           {t('home_recent_transactions')}
         </h3>
-        <button
-          onClick={() => onNavigate('history')}
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color: '#1a7a3f',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-          }}
-        >
-          {t('home_view_all')}
-        </button>
+        {hasMoreThanMax && (
+          <button
+            onClick={() => setShowAll(!showAll)}
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: '#1a7a3f',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            {showAll ? t('home_view_less') || 'View Less' : t('home_view_all')}
+          </button>
+        )}
       </div>
 
       {/* Transaction items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {transactionsList.map((item) => {
+        {displayedTransactions.map((item) => {
           const iStyle = iconStyles[item.icon] || iconStyles.bag;
 
           return (
