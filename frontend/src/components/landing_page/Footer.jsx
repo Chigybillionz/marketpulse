@@ -24,13 +24,10 @@ export default function Footer({ onNavigate }) {
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="/mylogo.png"
-                alt="MarketPulse AI logo"
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full grayscale opacity-70 object-cover"
+                src="/stockpile-logo-transparent.png"
+                alt="Stockpile Logo"
+                className="h-8 md:h-9 w-auto object-contain"
               />
-              <span className="text-lg md:text-xl font-bold text-gray-800">
-                MarketPulse AI
-              </span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
               {t('landing_footer_desc') || 'Voice-first bookkeeping for Nigerian market traders. Track your business in seconds, not hours.'}

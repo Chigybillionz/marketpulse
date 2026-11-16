@@ -49,26 +49,26 @@ export default function WeeklyPulseSection() {
     <section
       ref={sectionRef}
       data-reveal="fade-up"
-      className="bg-[#F9FAFB] py-16 md:py-24"
+      className="bg-white py-20 md:py-28 border-t border-gray-200/60"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
         <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20">
           <div
             data-reveal="data-entrance"
-            className="mb-6 inline-flex items-center gap-2 rounded-full bg-purple-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-purple-700"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 shadow-sm"
           >
-            <Calendar size={14} />
-            {t('landing_weekly_title1') || 'Weekly Pulse'}
+            <Calendar size={13} className="text-emerald-600" />
+            <span>Weekly Trading Rhythm</span>
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
-            className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
+            className="mb-6 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl font-['Inter_Tight',sans-serif]"
           >
-            {t('landing_weekly_title2') || 'Your Week at a'}
+            Your Week at a Glance.
             <br />
-            <span className="text-[#064E3B]">{t('landing_weekly_title3') || 'Glance'}</span>
+            <span className="text-emerald-800">Every Kobo Accounted For.</span>
           </h2>
           <p
             data-reveal="data-entrance"

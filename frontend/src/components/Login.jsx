@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { login } from "../services/authService";
 import { useLanguage } from "../i18n/LanguageContext";
 import FlowLayout from "./layout/FlowLayout";
@@ -15,6 +16,7 @@ export default function Login({
   setLocationStr,
   setBusinessType
 }) {
+  const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [password, setPassword] = useState("");
@@ -62,8 +64,9 @@ export default function Login({
 
       setIsNewUser(false);
       setIsTransitioning(true);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      onNavigate("home");
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const target = location.state?.from || location.state?.returnTo || "home";
+      onNavigate(target);
     } catch (err) {
       setError(err.message || t("login_error_failed"));
     } finally {
@@ -95,28 +98,20 @@ export default function Login({
             zIndex: 10,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div 
+            style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
+            onClick={() => onNavigate("landing")}
+          >
             <img
-              src="/mylogo.png"
-              alt={t("flow_brand_title") || "MarketPulse AI logo"}
+              src="/stockpile-logo-transparent.png"
+              alt="Stockpile Logo"
               style={{
-                width: 32,
-                height: 32,
+                height: 28,
+                width: "auto",
                 objectFit: "contain",
-                borderRadius: "50%",
                 flexShrink: 0,
               }}
             />
-            <span
-              style={{
-                fontSize: 18,
-                fontWeight: 800,
-                color: "#111827",
-                letterSpacing: "-0.4px",
-              }}
-            >
-              {t("flow_brand_title") || "MarketPulse AI"}
-            </span>
           </div>
 
           <div style={{ position: "relative" }}>

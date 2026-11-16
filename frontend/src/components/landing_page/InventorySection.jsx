@@ -64,26 +64,26 @@ export default function InventorySection() {
     <section
       ref={sectionRef}
       data-reveal="fade-up"
-      className="bg-white py-16 md:py-24"
+      className="bg-white py-20 md:py-28 border-t border-gray-200/60"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
         <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20">
           <div
             data-reveal="data-entrance"
-            className="mb-6 inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-700"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 shadow-sm"
           >
-            <Package size={14} />
-            {t('landing_inventory_title1') || 'Inventory'}
+            <Package size={13} className="text-emerald-600" />
+            <span>Smart Inventory Control</span>
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
-            className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
+            className="mb-6 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl font-['Inter_Tight',sans-serif]"
           >
-            {t('landing_inventory_title2') || 'Never Run Out of'}
+            Never Run Low on
             <br />
-            <span className="text-[#064E3B]">{t('landing_inventory_title3') || 'Best-Selling Stock'}</span>
+            <span className="text-emerald-800">Your Fast-Moving Stock</span>
           </h2>
           <p
             data-reveal="data-entrance"

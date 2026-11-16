@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stockpile — Speak, Track, Collect on Your Terms</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --u: min(calc(100vw / 1440), calc(100vh / 960));
+      --ink: #0D0D0C;
+      --ink-56: rgba(13, 13, 12, 0.56);
+      --ink-42: rgba(13, 13, 12, 0.42);
+      --ink-09: rgba(13, 13, 12, 0.09);
+      --cream: #FBF6EF;
+      --font: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--cream);
+      font-family: var(--font);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Outer Container */
+    #root-frame {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── Hero Panel (Top 75%) ─── */
+    #hero-panel {
+      position: relative;
+      width: 100%;
+      height: 75%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* 4 Stacked Gradient Layers */
+    .gradient-layer {
+      position: absolute;
+      inset: -4%;
+      width: 108%;
+      height: 108%;
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+      transform: scale(1.08);
+      transition: opacity 0.77s ease;
+    }
+
+    /* Speak: Lemon Cream */
+    .gl-speak {
+      background:
+        radial-gradient(circle at 86% 76%, rgb(246, 222, 104) 0%, transparent 65%),
+        radial-gradient(circle at 32% 105%, rgb(246, 222, 104) 0%, transparent 70%),
+        linear-gradient(180deg, #F2ECDF 0%, #F4EBC6 100%);
+    }
+
+    /* Track: Peach and Apricot */
+    .gl-track {
+      background:
+        radial-gradient(circle at 86% 76%, rgb(249, 150, 84) 0%, transparent 65%),
+        radial-gradient(circle at 32% 105%, rgb(249, 150, 84) 0%, transparent 70%),
+        linear-gradient(180deg, #F8DCC7 0%, #F9CBA9 100%);
+    }
+
+    /* Collect: Warm Sage Mint */
+    .gl-collect {
+      background:
+        radial-gradient(circle at 86% 76%, rgb(150, 206, 150) 0%, transparent 65%),
+        radial-gradient(circle at 32% 105%, rgb(150, 206, 150) 0%, transparent 70%),
+        linear-gradient(180deg, #E9EBE0 0%, #DFE9D4 100%);
+    }
+
+    /* Stockpile: Rose Lilac */
+    .gl-stockpile {
+      background:
+        radial-gradient(circle at 86% 76%, rgb(222, 150, 200) 0%, transparent 65%),
+        radial-gradient(circle at 32% 105%, rgb(222, 150, 200) 0%, transparent 70%),
+        linear-gradient(180deg, #F0E4E6 0%, #ECD6E2 100%);
+    }
+
+    /* SVG Grain Texture Overlay */
+    .grain-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.18;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* ─── Navigation (80u Tall) ─── */
+    #nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: calc(80 * var(--u));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 calc(112 * var(--u));
+      border-bottom: 1px solid var(--ink-09);
+      z-index: 10;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: calc(12 * var(--u));
+      cursor: pointer;
+    }
+
+    .brand-logo-img {
+      height: calc(38 * var(--u));
+      max-height: 44px;
+      min-height: 28px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-logo-fallback {
+      width: calc(26 * var(--u));
+      height: calc(26 * var(--u));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-name {
+      font-weight: 600;
+      font-size: calc(25 * var(--u));
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: calc(42 * var(--u));
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(7 * var(--u));
+      font-size: calc(17 * var(--u));
+      font-weight: 400;
+      color: var(--ink);
+      transition: opacity 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      opacity: 0.7;
+    }
+
+    .nav-chevron {
+      width: calc(5 * var(--u));
+      height: calc(5 * var(--u));
+      border-right: 1.4px solid currentColor;
+      border-bottom: 1.4px solid currentColor;
+      transform: translateY(-1px) rotate(45deg);
+    }
+
+    .btn-open-ledger {
+      height: calc(48 * var(--u));
+      padding: 0 calc(24 * var(--u));
+      border: 1.4px solid var(--ink);
+      border-radius: calc(7 * var(--u));
+      background: transparent;
+      font-family: var(--font);
+      font-size: calc(16 * var(--u));
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+
+    .btn-open-ledger:hover {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    /* ─── Hero Headline (Top: 190u, Left: 112u) ─── */
+    .hero-content {
+      position: absolute;
+      top: calc(190 * var(--u));
+      left: calc(112 * var(--u));
+      z-index: 8;
+    }
+
+    .hero-headline {
+      font-size: calc(172 * var(--u));
+      line-height: 0.86;
+      letter-spacing: -0.032em;
+      font-weight: 500;
+      color: var(--ink);
+      user-select: none;
+    }
+
+    /* Line 1: Cycling Slot (Icon + Word) */
+    .headline-line-1 {
+      display: flex;
+      align-items: center;
+      min-height: calc(150 * var(--u));
+    }
+
+    .slot-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      will-change: transform, opacity, filter;
+    }
+
+    /* Icon Tint Container */
+    .icon-box {
+      position: relative;
+      width: 1.02em;
+      height: 1.02em;
+      margin-right: 0.1em;
+      display: inline-block;
+      vertical-align: middle;
+      isolation: isolate;
+      flex-shrink: 0;
+      will-change: transform;
+    }
+
+    .icon-img-base {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: grayscale(1) brightness(1.1) contrast(1.08);
+      pointer-events: none;
+    }
+
+    .icon-tint-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--tint, #E9C22E);
+      mix-blend-mode: color;
+      mask-size: contain;
+      mask-position: center;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    .slot-word {
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    /* Line 2: Static "on your terms" */
+    .headline-line-2 {
+      display: block;
+      margin-top: calc(12 * var(--u));
+      white-space: nowrap;
+    }
+
+    /* ─── Hero Action Row (Top: 578u, Left: 112u) ─── */
+    .hero-action-row {
+      position: absolute;
+      top: calc(578 * var(--u));
+      left: calc(112 * var(--u));
+      right: calc(112 * var(--u));
+      display: flex;
+      align-items: center;
+      gap: calc(36 * var(--u));
+      z-index: 8;
+    }
+
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: calc(14 * var(--u));
+      flex-shrink: 0;
+    }
+
+    .btn-action {
+      height: calc(58 * var(--u));
+      padding: 0 calc(26 * var(--u));
+      border: 1.4px solid var(--ink);
+      border-radius: calc(10 * var(--u));
+      background: transparent;
+      font-family: var(--font);
+      font-size: calc(17 * var(--u));
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: calc(11 * var(--u));
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .btn-action:hover {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .btn-action svg {
+      width: calc(18 * var(--u));
+      height: calc(18 * var(--u));
+      stroke-width: 1.6;
+      stroke: currentColor;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    /* Primary CTA pulse effect during Stockpile slot */
+    #btn-start-voice {
+      transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+    }
+
+    .hero-caption {
+      font-size: calc(18.5 * var(--u));
+      line-height: 1.45;
+      color: var(--ink-56);
+      max-width: calc(620 * var(--u));
+    }
+
+    /* ─── Stats Strip (Bottom 25%) ─── */
+    #stats-strip {
+      position: relative;
+      width: 100%;
+      height: 25%;
+      background: var(--cream);
+      display: flex;
+      flex-direction: column;
+      z-index: 5;
+    }
+
+    /* Notch S-Curve Canvas/SVG on Top Edge */
+    .notch-container {
+      position: absolute;
+      top: calc(-61 * var(--u));
+      left: 0;
+      width: 100%;
+      height: calc(62 * var(--u));
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .notch-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Scroll Hint on the Raised Notch */
+    .scroll-hint {
+      position: absolute;
+      top: calc(-42 * var(--u));
+      right: calc(112 * var(--u));
+      font-size: calc(15 * var(--u));
+      color: var(--ink-42);
+      font-weight: 400;
+      z-index: 8;
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: calc(6 * var(--u));
+      transition: opacity 0.2s ease;
+    }
+
+    .scroll-hint:hover {
+      opacity: 0.8;
+    }
+
+    /* Stats Content Grid */
+    .stats-content {
+      width: 100%;
+      height: 100%;
+      padding: 0 calc(112 * var(--u));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stats-lead {
+      font-size: calc(29 * var(--u));
+      line-height: 1.15;
+      font-weight: 500;
+      color: var(--ink);
+      max-width: calc(220 * var(--u));
+    }
+
+    .stats-metrics-group {
+      display: flex;
+      align-items: center;
+      gap: calc(64 * var(--u));
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: calc(54 * var(--u));
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .stat-label {
+      font-size: calc(16.5 * var(--u));
+      color: var(--ink-56);
+      margin-top: calc(7 * var(--u));
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    /* Sprout Line Art */
+    .sprout-art {
+      width: calc(48 * var(--u));
+      height: calc(48 * var(--u));
+      flex-shrink: 0;
+      opacity: 0.8;
+    }
+
+    /* ─── Responsive for Phones (≤ 760px) ─── */
+    @media (max-width: 760px) {
+      body {
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      #root-frame {
+        height: auto;
+        min-height: 100svh;
+      }
+
+      #hero-panel {
+        height: auto;
+        min-height: 100svh;
+        padding-bottom: 40px;
+      }
+
+      #nav {
+        height: 68px;
+        padding: 0 20px;
+      }
+
+      .nav-right .nav-link {
+        display: none;
+      }
+
+      .brand-logo-img {
+        height: 28px;
+      }
+
+      .hero-content {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin-top: 100px;
+        padding: 0 20px;
+      }
+
+      .hero-headline {
+        font-size: clamp(52px, 15.5vw, 88px);
+        line-height: 0.94;
+      }
+
+      .headline-line-1 {
+        min-height: auto;
+      }
+
+      .hero-action-row {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin-top: 36px;
+        padding: 0 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+      }
+
+      .action-buttons {
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .btn-action {
+        height: 48px;
+        padding: 0 18px;
+        font-size: 15px;
+      }
+
+      .hero-caption {
+        font-size: 15px;
+        max-width: 100%;
+      }
+
+      #stats-strip {
+        height: auto;
+        padding: 40px 20px 50px;
+      }
+
+      .notch-container {
+        display: none;
+      }
+
+      .scroll-hint {
+        position: static;
+        margin-bottom: 24px;
+      }
+
+      .stats-content {
+        padding: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+      }
+
+      .stats-metrics-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px 24px;
+        width: 100%;
+      }
+
+      .stat-value {
+        font-size: 38px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+      }
+
+      .sprout-art {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="root-frame">
+
+    <!-- Hero Panel (Top 75%) -->
+    <section id="hero-panel">
+
+      <!-- 4 Stacked Gradient Layers -->
+      <div class="gradient-layer gl-speak" id="gl-0" style="opacity: 1;"></div>
+      <div class="gradient-layer gl-track" id="gl-1" style="opacity: 0;"></div>
+      <div class="gradient-layer gl-collect" id="gl-2" style="opacity: 0;"></div>
+      <div class="gradient-layer gl-stockpile" id="gl-3" style="opacity: 0;"></div>
+
+      <!-- SVG Fractal Grain Texture -->
+      <svg class="grain-overlay" xmlns="http://www.w3.org/2000/svg">
+        <filter id="grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#grain)" />
+      </svg>
+
+      <!-- Fixed Navigation (80u) -->
+      <header id="nav">
+        <div class="nav-left" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+          <div id="brand-logo-slot">
+            <img src="/stockpile-logo-transparent.png" alt="Stockpile" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('logo-svg-fallback').style.display='flex';" />
+            <div id="logo-svg-fallback" class="brand-logo-fallback" style="display: none;">
+              <svg viewBox="0 0 32 32" width="26" height="26" fill="none">
+                <rect x="4" y="4" width="24" height="24" rx="5" fill="#0D0D0C" />
+                <path d="M8 11h16v3H8z M8 16h11v3H8z M8 21h14v3H8z" fill="#22e584" />
+              </svg>
+              <span class="brand-name">stockpile</span>
+            </div>
+          </div>
+        </div>
+
+        <nav class="nav-right">
+          <a class="nav-link" href="#voice">Voice Ledger <span class="nav-chevron"></span></a>
+          <a class="nav-link" href="#inventory">Inventory <span class="nav-chevron"></span></a>
+          <a class="nav-link" href="#debtors">Debtors <span class="nav-chevron"></span></a>
+          <button class="btn-open-ledger" onclick="window.location.assign('/login')">Log in</button>
+          <button class="btn-open-ledger" style="background:#0D0D0C; color:#FBF6EF;" onclick="window.location.assign('/signup')">Get Started</button>
+        </nav>
+      </header>
+
+      <!-- Headline Block (Top: 190u, Left: 112u) -->
+      <div class="hero-content">
+        <h1 class="hero-headline">
+          <div class="headline-line-1">
+            <div class="slot-wrapper" id="slot-wrapper">
+              <span class="icon-box" id="icon-box">
+                <img class="icon-img-base" id="icon-img-base" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/83de7c35-dd91-4e56-bfb8-0ffafc83d0e0.webp" alt="Speak Icon" />
+                <span class="icon-tint-layer" id="icon-tint-layer"></span>
+              </span>
+              <span class="slot-word" id="slot-word">Speak</span>
+            </div>
+          </div>
+          <div class="headline-line-2">on your terms</div>
+        </h1>
+      </div>
+
+      <!-- Action Row (Top: 578u) -->
+      <div class="hero-action-row">
+        <div class="action-buttons">
+          <button class="btn-action" id="btn-start-voice" onclick="window.location.assign('/record')">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+              <line x1="8" y1="22" x2="16" y2="22"/>
+            </svg>
+            <span>Start Voice Log</span>
+          </button>
+          <button class="btn-action" onclick="window.location.assign('/home')">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+            <span>Web Dashboard</span>
+          </button>
+        </div>
+        <p class="hero-caption">
+          Stockpile is a voice-first inventory, sales ledger, and<br>debtor tracker built for fast-moving shops and traders.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- Stats Strip (Bottom 25%) -->
+    <footer id="stats-strip">
+      <!-- Curved Top Notch (Smooth S-curve Path) -->
+      <div class="notch-container">
+        <svg class="notch-svg" viewBox="0 0 1440 62" preserveAspectRatio="none">
+          <path d="M0 62 H1062 C1092 62 1098 54 1116 34 C1138 9 1146 1 1178 1 H1440 V62 Z" fill="#FBF6EF" />
+        </svg>
+      </div>
+
+      <!-- Scroll Hint positioned on the raised notch -->
+      <div class="scroll-hint" onclick="window.scrollBy({ top: 400, behavior: 'smooth' })">
+        <span>↓ Scroll to learn more</span>
+      </div>
+
+      <!-- Stats Content -->
+      <div class="stats-content">
+        <div class="stats-lead">
+          Every naira<br>accounted for
+        </div>
+
+        <div class="stats-metrics-group">
+          <div class="stat-item">
+            <span class="stat-value">&lt; 2.5s</span>
+            <span class="stat-label">Voice sale entry</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-value">₦0</span>
+            <span class="stat-label">Lost to forgotten debts</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-value">100%</span>
+            <span class="stat-label">Offline-ready sync</span>
+          </div>
+        </div>
+
+        <!-- Sprout Line Art (Far Right) -->
+        <svg class="sprout-art" viewBox="0 0 50 50" fill="none" stroke="#0D0D0C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M25 44 V24" />
+          <path d="M25 34 C16 34 11 26 14 18 C22 17 25 26 25 34 Z" />
+          <path d="M25 24 C34 24 39 16 36 8 C28 7 25 16 25 24 Z" />
+          <path d="M8 44 H42" />
+        </svg>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // 4 cycling words & icons
+      const WORDS = [
+        {
+          word: "Speak",
+          icon: "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/83de7c35-dd91-4e56-bfb8-0ffafc83d0e0.webp",
+          tint: "#E9C22E" // yellow
+        },
+        {
+          word: "Track",
+          icon: "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/4d952211-0474-48cc-af48-58f68b3b7525.webp",
+          tint: "#F2772F" // orange
+        },
+        {
+          word: "Collect",
+          icon: "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/e2e91fca-5b3f-4e0e-a437-8a581592e407.webp",
+          tint: "#3FB874" // green
+        },
+        {
+          word: "Stockpile",
+          icon: "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/6b32bb47-4ad6-4938-a637-c997b373c68b.webp",
+          tint: "#C564C4" // rose violet
+        }
+      ];
+
+      // Preload icons
+      WORDS.forEach(w => {
+        const img = new Image();
+        img.src = w.icon;
+      });
+
+      const slotWrapper = document.getElementById('slot-wrapper');
+      const iconBox = document.getElementById('icon-box');
+      const iconImgBase = document.getElementById('icon-img-base');
+      const iconTintLayer = document.getElementById('icon-tint-layer');
+      const slotWord = document.getElementById('slot-word');
+      const btnStartVoice = document.getElementById('btn-start-voice');
+      const gradientLayers = [
+        document.getElementById('gl-0'),
+        document.getElementById('gl-1'),
+        document.getElementById('gl-2'),
+        document.getElementById('gl-3')
+      ];
+
+      // Setup initial tint mask
+      function setIcon(index) {
+        const item = WORDS[index];
+        iconImgBase.src = item.icon;
+        iconTintLayer.style.setProperty('--tint', item.tint);
+        iconTintLayer.style.maskImage = `url(${item.icon})`;
+        iconTintLayer.style.webkitMaskImage = `url(${item.icon})`;
+        slotWord.textContent = item.word;
+      }
+      setIcon(0);
+
+      // Check reduced motion
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) {
+        setIcon(1); // Still "Track" state
+        gradientLayers.forEach((gl, i) => gl.style.opacity = i === 1 ? '1' : '0');
+        return;
+      }
+
+      function clamp(v, min, max) {
+        return Math.min(max, Math.max(min, v));
+      }
+
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function easeInCubic(t) {
+        return t * t * t;
+      }
+
+      const SLOT_DUR = 1.75; // 1.75s per word
+      const TOTAL_DUR = SLOT_DUR * 4; // 7.0s total cycle
+
+      let startTime = performance.now();
+      let isPaused = false;
+      let pausedAt = 0;
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          isPaused = true;
+          pausedAt = performance.now();
+        } else {
+          isPaused = false;
+          startTime += (performance.now() - pausedAt);
+        }
+      });
+
+      let currentSlotIndex = -1;
+
+      function tick(now) {
+        if (isPaused) {
+          requestAnimationFrame(tick);
+          return;
+        }
+
+        const elapsedSec = (now - startTime) / 1000;
+        const cycleTime = (elapsedSec % TOTAL_DUR + TOTAL_DUR) % TOTAL_DUR;
+        const slotIdx = Math.floor(cycleTime / SLOT_DUR);
+        const localTime = cycleTime % SLOT_DUR;
+
+        // Change text & icon upon entering slot
+        if (slotIdx !== currentSlotIndex) {
+          currentSlotIndex = slotIdx;
+          setIcon(slotIdx);
+        }
+
+        // 1. Enter (over 0.5s): opacity 0→1, rise from +0.32em, blur 10px→0, scale 0.96→1
+        // 2. Hold (0.5s to 1.33s)
+        // 3. Leave (the last 0.42s): fade out, drift up 0.16em, blur to 8px
+        let opacity = 1;
+        let translateY = 0;
+        let blur = 0;
+        let scale = 1;
+
+        let iconScale = 1;
+        let iconRotate = 0;
+
+        if (localTime < 0.5) {
+          const t = easeOutCubic(localTime / 0.5);
+          opacity = t;
+          translateY = (1 - t) * 0.32; // em
+          blur = (1 - t) * 10; // px
+          scale = 0.96 + 0.04 * t;
+
+          // Icon follows 60ms later, scaling 0.7→1, untwisting -14°→0°
+          const it = clamp((localTime - 0.06) / 0.44, 0, 1);
+          const iEase = easeOutCubic(it);
+          iconScale = 0.7 + 0.3 * iEase;
+          iconRotate = -14 * (1 - iEase);
+        } else if (localTime >= 1.33) {
+          const t = easeInCubic((localTime - 1.33) / 0.42);
+          opacity = 1 - t;
+          translateY = -0.16 * t; // em
+          blur = 8 * t; // px
+          scale = 1;
+        }
+
+        // Idle motion: icon floats gently (±0.028em, ±3°)
+        const idleY = Math.sin(elapsedSec * 2.2) * 0.028;
+        const idleRot = Math.cos(elapsedSec * 1.8) * 3;
+
+        slotWrapper.style.opacity = opacity;
+        slotWrapper.style.transform = `translate3d(0, ${translateY}em, 0) scale(${scale})`;
+        slotWrapper.style.filter = blur > 0.1 ? `blur(${blur}px)` : 'none';
+
+        iconBox.style.transform = `scale(${iconScale}) rotate(${iconRotate + idleRot}deg) translateY(${idleY}em)`;
+
+        // 4. Panel crossfade over 0.77s window straddling each word change
+        // Window is [-0.385s, +0.385s] around each boundary
+        for (let i = 0; i < 4; i++) {
+          const slotCenter = i * SLOT_DUR + SLOT_DUR / 2;
+          let diff = Math.abs(cycleTime - slotCenter);
+          if (diff > TOTAL_DUR / 2) diff = TOTAL_DUR - diff;
+
+          // Boundary crossfade
+          const distFromStart = (cycleTime - i * SLOT_DUR + TOTAL_DUR) % TOTAL_DUR;
+          let layerOpacity = 0;
+          if (distFromStart < 0.385) {
+            layerOpacity = 0.5 + 0.5 * (distFromStart / 0.385);
+          } else if (distFromStart < SLOT_DUR - 0.385) {
+            layerOpacity = 1;
+          } else if (distFromStart < SLOT_DUR + 0.385) {
+            const leaveT = (distFromStart - (SLOT_DUR - 0.385)) / 0.77;
+            layerOpacity = 1 - leaveT;
+          }
+          gradientLayers[i].style.opacity = clamp(layerOpacity, 0, 1);
+
+          // Subtle background gradient drift (±2.2% / ±1.6% at scale 1.08)
+          const driftX = Math.sin(elapsedSec * 0.35 + i) * 2.2;
+          const driftY = Math.cos(elapsedSec * 0.4 + i) * 1.6;
+          gradientLayers[i].style.transform = `translate3d(${driftX}%, ${driftY}%, 0) scale(1.08)`;
+        }
+
+        // 5. Primary CTA pulse: during "Stockpile" (slot 3), "Start Voice Log" fills black then releases
+        if (slotIdx === 3 && localTime >= 0.4 && localTime <= 1.4) {
+          const pulseT = Math.sin(((localTime - 0.4) / 1.0) * Math.PI);
+          btnStartVoice.style.background = '#0D0D0C';
+          btnStartVoice.style.color = '#FBF6EF';
+          btnStartVoice.style.transform = `scale(${1 + pulseT * 0.03})`;
+        } else {
+          btnStartVoice.style.background = 'transparent';
+          btnStartVoice.style.color = '#0D0D0C';
+          btnStartVoice.style.transform = 'scale(1)';
+        }
+
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { signup } from "../services/authService";
 import { useLanguage } from "../i18n/LanguageContext";
 import FlowLayout from "./layout/FlowLayout";
@@ -14,6 +15,7 @@ export default function Signup({
   setIsNewUser,
   setProfilePicture,
 }) {
+  const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [password, setPassword] = useState("");
@@ -40,8 +42,9 @@ export default function Signup({
       
       setIsNewUser(true);
       setIsTransitioning(true);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      onNavigate("login");
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const returnTo = location.state?.from || location.state?.returnTo;
+      onNavigate("login", { returnTo });
     } catch (err) {
       setError(err.message || t("signup_error_failed"));
     } finally {
@@ -73,28 +76,20 @@ export default function Signup({
             zIndex: 10,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div 
+            style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
+            onClick={() => onNavigate("landing")}
+          >
             <img
-              src="/mylogo.png"
-              alt="MarketPulse AI logo"
+              src="/stockpile-logo-transparent.png"
+              alt="Stockpile Logo"
               style={{
-                width: 32,
-                height: 32,
+                height: 28,
+                width: "auto",
                 objectFit: "contain",
-                borderRadius: "50%",
                 flexShrink: 0,
               }}
             />
-            <span
-              style={{
-                fontSize: 18,
-                fontWeight: 800,
-                color: "#111827",
-                letterSpacing: "-0.4px",
-              }}
-            >
-              MarketPulse AI
-            </span>
           </div>
 
           <div style={{ position: "relative" }}>

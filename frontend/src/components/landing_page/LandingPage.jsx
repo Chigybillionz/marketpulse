@@ -1,51 +1,53 @@
-import { useLayoutEffect } from 'react';
-import MarketingNavbar from './MarketingNavbar';
-import HeroSection from './HeroSection';
-import MarketStorySection from './MarketStorySection';
-import VoiceAISection from './VoiceAISection';
-import IntelligenceSection from './IntelligenceSection';
-import InventorySection from './InventorySection';
-import WeeklyPulseSection from './WeeklyPulseSection';
+import React, { useLayoutEffect } from 'react';
+import StockpileHero from './StockpileHero';
 import ProductShowcaseSection from './ProductShowcaseSection';
+import VoiceAISection from './VoiceAISection';
+import MarketStorySection from './MarketStorySection';
+import InventorySection from './InventorySection';
+import IntelligenceSection from './IntelligenceSection';
+import WeeklyPulseSection from './WeeklyPulseSection';
 import FinalCTA from './FinalCTA';
 import Footer from './Footer';
 import { initScrollReveal } from './landingAnimations';
 
 export default function LandingPage({ onNavigate }) {
-  // Initialize scroll reveal animations before first paint (avoids a
-  // flash of visible content), and disconnect the observer on unmount.
   useLayoutEffect(() => initScrollReveal(), []);
 
   return (
-    <div className="mp-motion min-h-screen w-full overflow-x-hidden bg-[#F9FAFB] font-sans text-gray-900">
-      {/* Navbar */}
-      <MarketingNavbar onNavigate={onNavigate} activeTab="landing" />
+    <div className="mp-motion min-h-screen w-full bg-[#FBF6EF] font-sans text-gray-900 overflow-x-hidden">
+      {/* 1. Stockpile "on your terms" Hero */}
+      <StockpileHero onNavigate={onNavigate} />
 
-      {/* Hero Section */}
-      <HeroSection onNavigate={onNavigate} />
+      {/* 2. Product Showcase */}
+      <div id="product-showcase">
+        <ProductShowcaseSection />
+      </div>
 
-      {/* Product Showcase Section */}
-      <ProductShowcaseSection />
+      {/* 3. Live Voice AI & Bookkeeping Section */}
+      <div id="voice-section">
+        <VoiceAISection onNavigate={onNavigate} />
+      </div>
 
-      {/* Market Story Section */}
+      {/* 4. Market Hustle Story */}
       <MarketStorySection />
 
-      {/* Voice AI Section */}
-      <VoiceAISection onNavigate={onNavigate} />
+      {/* 5. Inventory Management Section */}
+      <div id="inventory-section">
+        <InventorySection />
+      </div>
 
-      {/* Intelligence Section */}
+      {/* 6. Financial Intelligence Section */}
       <IntelligenceSection />
 
-      {/* Inventory Section */}
-      <InventorySection />
+      {/* 7. Debtors Tracking & Weekly Pulse */}
+      <div id="debtors-section">
+        <WeeklyPulseSection />
+      </div>
 
-      {/* Weekly Pulse Section */}
-      <WeeklyPulseSection />
-
-      {/* Final CTA */}
+      {/* 8. Final CTA */}
       <FinalCTA onNavigate={onNavigate} />
 
-      {/* Footer */}
+      {/* 9. Product & Resources Footer */}
       <Footer onNavigate={onNavigate} />
     </div>
   );

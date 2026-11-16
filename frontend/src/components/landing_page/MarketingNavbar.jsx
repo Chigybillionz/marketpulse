@@ -63,8 +63,7 @@ export default function MarketingNavbar({ onNavigate, activeTab }) {
           className="flex items-center gap-2 md:gap-3 cursor-pointer"
           onClick={() => handleNavClick('landing')}
         >
-          <img src="/mylogo.png" alt="MarketPulse AI logo" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
-          <span className="text-xl md:text-2xl font-bold tracking-tight text-[#064E3B]">MarketPulse AI</span>
+          <img src="/stockpile-logo-transparent.png" alt="Stockpile Logo" className="h-8 md:h-10 w-auto object-contain" />
         </div>
         
         {/* Desktop Links */}

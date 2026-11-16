@@ -256,11 +256,25 @@ function App() {
 
   // Navigate by page id (keeps the existing onNavigate("id") API across the app).
   const handleNavigate = (page, state) => {
+    if (!page) return;
     if (page.startsWith("credit/")) {
       navigate(`/${page}`, { state });
+    } else if (PATHS[page]) {
+      navigate(PATHS[page], { state });
+    } else if (page.startsWith("/")) {
+      navigate(page, { state });
     } else {
-      navigate(PATHS[page] ?? "/home", { state });
+      navigate("/home", { state });
     }
+  };
+
+  // Auth guard wrapper to protect internal application routes
+  const RequireAuth = ({ children }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    }
+    return children;
   };
 
   // "Back" uses context-aware navigation:
@@ -341,73 +355,87 @@ function App() {
       <Route
         path={PATHS.ledger}
         element={
-          <Ledger onNavigate={handleNavigate} email={email} />
+          <RequireAuth>
+            <Ledger onNavigate={handleNavigate} email={email} />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.home}
         element={
-          <Homepage
-            onNavigate={handleNavigate}
-            businessName={businessName}
-            balance={balance}
-            moneyIn={moneyIn}
-            moneyOut={moneyOut}
-            transactionsList={transactionsList}
-          />
+          <RequireAuth>
+            <Homepage
+              onNavigate={handleNavigate}
+              businessName={businessName}
+              balance={balance}
+              moneyIn={moneyIn}
+              moneyOut={moneyOut}
+              transactionsList={transactionsList}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.listeng}
         element={
-          <AppShell
-            active="pulse"
-            onNavigate={handleNavigate}
-            businessName={businessName}
-            title="MarketPulse AI"
-            subtitle="Record a trade update for analysis"
-          >
-            <Listeng onNavigate={handleNavigate} businessName={businessName} />
-          </AppShell>
+          <RequireAuth>
+            <AppShell
+              active="pulse"
+              onNavigate={handleNavigate}
+              businessName={businessName}
+              title="MarketPulse AI"
+              subtitle="Record a trade update for analysis"
+            >
+              <Listeng onNavigate={handleNavigate} businessName={businessName} />
+            </AppShell>
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.analysing}
         element={
-          <AppShell
-            active="pulse"
-            onNavigate={handleNavigate}
-            businessName={businessName}
-            title="MarketPulse AI"
-            subtitle="Sorting your voice note into ledger details"
-          >
-            <Analysing onNavigate={handleNavigate} businessName={businessName} />
-          </AppShell>
+          <RequireAuth>
+            <AppShell
+              active="pulse"
+              onNavigate={handleNavigate}
+              businessName={businessName}
+              title="MarketPulse AI"
+              subtitle="Sorting your voice note into ledger details"
+            >
+              <Analysing onNavigate={handleNavigate} businessName={businessName} />
+            </AppShell>
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.ai_confirmation}
-        element={<AIConfirmation onNavigate={handleNavigate} />}
+        element={
+          <RequireAuth>
+            <AIConfirmation onNavigate={handleNavigate} />
+          </RequireAuth>
+        }
       />
       <Route
         path={PATHS.pulse_trade_pin}
         element={
-          <PulseTradePin
-            onNavigate={handleNavigate}
-            onBack={() =>
-              handleBack(
-                location.state?.pinMode === "change" || location.state?.from === "profile"
-                  ? "profile"
-                  : "ai_confirmation"
-              )
-            }
-            businessName={businessName}
-            email={email}
-            setBalance={setBalance}
-            setMoneyIn={setMoneyIn}
-            setMoneyOut={setMoneyOut}
-            setTransactionsList={setTransactionsList}
-          />
+          <RequireAuth>
+            <PulseTradePin
+              onNavigate={handleNavigate}
+              onBack={() =>
+                handleBack(
+                  location.state?.pinMode === "change" || location.state?.from === "profile"
+                    ? "profile"
+                    : "ai_confirmation"
+                )
+              }
+              businessName={businessName}
+              email={email}
+              setBalance={setBalance}
+              setMoneyIn={setMoneyIn}
+              setMoneyOut={setMoneyOut}
+              setTransactionsList={setTransactionsList}
+            />
+          </RequireAuth>
         }
       />
       <Route
@@ -432,105 +460,125 @@ function App() {
       <Route
         path={PATHS.history}
         element={
-          <History
-            onNavigate={handleNavigate}
-            balance={balance}
-            transactionsList={transactionsList}
-            businessName={businessName}
-          />
+          <RequireAuth>
+            <History
+              onNavigate={handleNavigate}
+              balance={balance}
+              transactionsList={transactionsList}
+              businessName={businessName}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.credit}
         element={
-          <Credit onNavigate={handleNavigate} businessName={businessName} email={email} />
+          <RequireAuth>
+            <Credit onNavigate={handleNavigate} businessName={businessName} email={email} />
+          </RequireAuth>
         }
       />
       <Route
         path="/credit/:id"
         element={
-          <DebtorProfile onNavigate={handleNavigate} businessName={businessName} email={email} />
+          <RequireAuth>
+            <DebtorProfile onNavigate={handleNavigate} businessName={businessName} email={email} />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.weekly_pulse}
         element={
-          <WeeklyPulse
-            onNavigate={handleNavigate}
-            businessName={businessName}
-            initialPeriod={location.state?.period}
-          />
+          <RequireAuth>
+            <WeeklyPulse
+              onNavigate={handleNavigate}
+              businessName={businessName}
+              initialPeriod={location.state?.period}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.profile}
         element={
-          <Profile
-            onNavigate={handleNavigate}
-            businessName={businessName}
-            email={email}
-            profilePicture={profilePicture}
-            locationStr={locationStr}
-            setLocationStr={setLocationStr}
-          />
+          <RequireAuth>
+            <Profile
+              onNavigate={handleNavigate}
+              businessName={businessName}
+              email={email}
+              profilePicture={profilePicture}
+              locationStr={locationStr}
+              setLocationStr={setLocationStr}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.storeProfile}
         element={
-          <StoreProfile
-            onNavigate={handleNavigate}
-            onBack={() => handleBack("profile")}
-            businessName={businessName}
-            setBusinessName={setBusinessName}
-            email={email}
-            profilePicture={profilePicture}
-            setProfilePicture={setProfilePicture}
-            locationStr={locationStr}
-            setLocationStr={setLocationStr}
-            businessType={businessType}
-            setBusinessType={setBusinessType}
-          />
+          <RequireAuth>
+            <StoreProfile
+              onNavigate={handleNavigate}
+              onBack={() => handleBack("profile")}
+              businessName={businessName}
+              setBusinessName={setBusinessName}
+              email={email}
+              profilePicture={profilePicture}
+              setProfilePicture={setProfilePicture}
+              locationStr={locationStr}
+              setLocationStr={setLocationStr}
+              businessType={businessType}
+              setBusinessType={setBusinessType}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.inventoryAlert}
         element={
-          <InventoryAlert
-            onNavigate={handleNavigate}
-            onBack={() => handleBack("profile")}
-          />
+          <RequireAuth>
+            <InventoryAlert
+              onNavigate={handleNavigate}
+              onBack={() => handleBack("profile")}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.email}
         element={
-          <Email
-            onNavigate={handleNavigate}
-            onBack={() => handleBack("profile")}
-            email={email}
-            setEmail={setEmail}
-          />
+          <RequireAuth>
+            <Email
+              onNavigate={handleNavigate}
+              onBack={() => handleBack("profile")}
+              email={email}
+              setEmail={setEmail}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.market_category}
         element={
-          <MarketCategory
-            onNavigate={handleNavigate}
-            onBack={() => handleBack("profile")}
-            profilePicture={profilePicture}
-          />
+          <RequireAuth>
+            <MarketCategory
+              onNavigate={handleNavigate}
+              onBack={() => handleBack("profile")}
+              profilePicture={profilePicture}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.language_setting}
         element={
-          <LanguageSetting
-            onNavigate={handleNavigate}
-            onBack={() => handleBack("profile")}
-            businessName={businessName}
-          />
+          <RequireAuth>
+            <LanguageSetting
+              onNavigate={handleNavigate}
+              onBack={() => handleBack("profile")}
+              businessName={businessName}
+            />
+          </RequireAuth>
         }
       />
       <Route
@@ -574,31 +622,37 @@ function App() {
       <Route
         path={PATHS.delete_data}
         element={
-          <DeleteData
-            onNavigate={handleNavigate}
-            onBack={() => handleBack("privacy_policy")}
-            email={email}
-          />
+          <RequireAuth>
+            <DeleteData
+              onNavigate={handleNavigate}
+              onBack={() => handleBack("privacy_policy")}
+              email={email}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.data_portability}
         element={
-          <DataPortability
-            onNavigate={handleNavigate}
-            onBack={() => handleBack("privacy_policy")}
-            profilePicture={profilePicture}
-            email={email}
-          />
+          <RequireAuth>
+            <DataPortability
+              onNavigate={handleNavigate}
+              onBack={() => handleBack("privacy_policy")}
+              profilePicture={profilePicture}
+              email={email}
+            />
+          </RequireAuth>
         }
       />
       <Route
         path={PATHS.logout}
         element={
-          <Logout
-            onNavigate={handleNavigate}
-            onBack={() => handleBack(location.state?.from || "profile")}
-          />
+          <RequireAuth>
+            <Logout
+              onNavigate={handleNavigate}
+              onBack={() => handleBack(location.state?.from || "profile")}
+            />
+          </RequireAuth>
         }
       />
 

@@ -10,17 +10,17 @@ import { useLanguage } from '../../i18n/LanguageContext';
 export default function MarketStorySection() {
   const { t } = useLanguage();
   return (
-    <section data-reveal="story-reveal" className="bg-[#F9FAFB] py-16 md:py-24">
+    <section data-reveal="story-reveal" className="bg-[#FBF6EF] py-20 md:py-28 border-t border-gray-200/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         <div className="grid items-center gap-12 md:grid-cols-2 lg:gap-16">
           {/* Left - Story content */}
           <div className="relative space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green-700">
-              {t('landing_story_title1') || 'The Story'}
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 shadow-sm">
+              <span>Why We Built Stockpile</span>
             </div>
-            <h2 className="text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl">
-              {t('landing_story_title2') || 'Built for the'}
-              <span className="text-[#064E3B]"> {t('landing_story_title3') || 'Market Hustle'}</span>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl font-['Inter_Tight',sans-serif]">
+              Built for the Reality of
+              <span className="text-emerald-800"> Market Commerce</span>
             </h2>
             {/* Accent rule (positioned relative to this container) */}
             <div

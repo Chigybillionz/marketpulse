@@ -1,0 +1,593 @@
+:root {
+  --u: min(calc(100vw / 1440), calc(100vh / 960));
+  --ink: #0D0D0C;
+  --ink-56: rgba(13, 13, 12, 0.56);
+  --ink-42: rgba(13, 13, 12, 0.42);
+  --ink-09: rgba(13, 13, 12, 0.09);
+  --cream: #FBF6EF;
+  --font: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.stockpile-hero-root {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 680px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--cream);
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.stockpile-hero-root * {
+  box-sizing: border-box;
+}
+
+.stockpile-hero-root a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── Hero Panel (Top 75%) ─── */
+.stockpile-hero-root #hero-panel {
+  position: relative;
+  width: 100%;
+  height: 75%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* 4 Stacked Gradient Layers */
+.stockpile-hero-root .gradient-layer {
+  position: absolute;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: scale(1.08);
+  transition: opacity 0.77s ease;
+}
+
+/* Speak: Lemon Cream */
+.stockpile-hero-root .gl-speak {
+  background:
+    radial-gradient(circle at 86% 76%, rgb(246, 222, 104) 0%, transparent 65%),
+    radial-gradient(circle at 32% 105%, rgb(246, 222, 104) 0%, transparent 70%),
+    linear-gradient(180deg, #F2ECDF 0%, #F4EBC6 100%);
+}
+
+/* Track: Peach and Apricot */
+.stockpile-hero-root .gl-track {
+  background:
+    radial-gradient(circle at 86% 76%, rgb(249, 150, 84) 0%, transparent 65%),
+    radial-gradient(circle at 32% 105%, rgb(249, 150, 84) 0%, transparent 70%),
+    linear-gradient(180deg, #F8DCC7 0%, #F9CBA9 100%);
+}
+
+/* Collect: Warm Sage Mint */
+.stockpile-hero-root .gl-collect {
+  background:
+    radial-gradient(circle at 86% 76%, rgb(150, 206, 150) 0%, transparent 65%),
+    radial-gradient(circle at 32% 105%, rgb(150, 206, 150) 0%, transparent 70%),
+    linear-gradient(180deg, #E9EBE0 0%, #DFE9D4 100%);
+}
+
+/* Stockpile: Rose Lilac */
+.stockpile-hero-root .gl-stockpile {
+  background:
+    radial-gradient(circle at 86% 76%, rgb(222, 150, 200) 0%, transparent 65%),
+    radial-gradient(circle at 32% 105%, rgb(222, 150, 200) 0%, transparent 70%),
+    linear-gradient(180deg, #F0E4E6 0%, #ECD6E2 100%);
+}
+
+/* SVG Grain Texture Overlay */
+.stockpile-hero-root .grain-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─── Navigation (80u Tall) ─── */
+.stockpile-hero-root #nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(80 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 calc(112 * var(--u));
+  border-bottom: 1px solid var(--ink-09);
+  z-index: 10;
+}
+
+.stockpile-hero-root .nav-left {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.stockpile-hero-root .brand-logo-img {
+  height: calc(38 * var(--u));
+  max-height: 44px;
+  min-height: 28px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.stockpile-hero-root .brand-logo-fallback {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+}
+
+.stockpile-hero-root .brand-name {
+  font-weight: 600;
+  font-size: calc(24 * var(--u));
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.stockpile-hero-root .nav-right {
+  display: flex;
+  align-items: center;
+  gap: calc(32 * var(--u));
+}
+
+.stockpile-hero-root .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(7 * var(--u));
+  font-size: calc(16.5 * var(--u));
+  font-weight: 450;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.stockpile-hero-root .nav-link:hover {
+  opacity: 0.7;
+}
+
+.stockpile-hero-root .nav-chevron {
+  width: calc(5 * var(--u));
+  height: calc(5 * var(--u));
+  border-right: 1.4px solid currentColor;
+  border-bottom: 1.4px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+.stockpile-hero-root .nav-actions {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+}
+
+.stockpile-hero-root .btn-nav-login {
+  background: transparent;
+  border: none;
+  font-family: var(--font);
+  font-size: calc(16 * var(--u));
+  font-weight: 500;
+  color: var(--ink);
+  padding: calc(8 * var(--u)) calc(14 * var(--u));
+  border-radius: calc(6 * var(--u));
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.stockpile-hero-root .btn-nav-login:hover {
+  opacity: 0.65;
+}
+
+.stockpile-hero-root .btn-open-ledger {
+  height: calc(46 * var(--u));
+  padding: 0 calc(22 * var(--u));
+  border: 1.4px solid var(--ink);
+  border-radius: calc(7 * var(--u));
+  background: transparent;
+  font-family: var(--font);
+  font-size: calc(15.5 * var(--u));
+  font-weight: 550;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.stockpile-hero-root .btn-open-ledger:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+/* ─── Hero Headline (Top: 190u, Left: 112u) ─── */
+.stockpile-hero-root .hero-content {
+  position: absolute;
+  top: calc(190 * var(--u));
+  left: calc(112 * var(--u));
+  z-index: 8;
+}
+
+.stockpile-hero-root .hero-headline {
+  font-size: calc(172 * var(--u));
+  line-height: 0.86;
+  letter-spacing: -0.032em;
+  font-weight: 500;
+  color: var(--ink);
+  user-select: none;
+}
+
+/* Line 1: Cycling Slot (Icon + Word) */
+.stockpile-hero-root .headline-line-1 {
+  display: flex;
+  align-items: center;
+  min-height: calc(150 * var(--u));
+}
+
+.stockpile-hero-root .slot-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  will-change: transform, opacity, filter;
+}
+
+/* Icon Tint Container */
+.stockpile-hero-root .icon-box {
+  position: relative;
+  width: 1.02em;
+  height: 1.02em;
+  margin-right: 0.1em;
+  display: inline-block;
+  vertical-align: middle;
+  isolation: isolate;
+  flex-shrink: 0;
+  will-change: transform;
+}
+
+.stockpile-hero-root .icon-img-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) brightness(1.1) contrast(1.08);
+  pointer-events: none;
+}
+
+.stockpile-hero-root .icon-tint-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--tint, #E9C22E);
+  mix-blend-mode: color;
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.stockpile-hero-root .slot-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Line 2: Static "on your terms" */
+.stockpile-hero-root .headline-line-2 {
+  display: block;
+  margin-top: calc(12 * var(--u));
+  white-space: nowrap;
+}
+
+/* ─── Hero Action Row (Top: 578u, Left: 112u) ─── */
+.stockpile-hero-root .hero-action-row {
+  position: absolute;
+  top: calc(578 * var(--u));
+  left: calc(112 * var(--u));
+  right: calc(112 * var(--u));
+  display: flex;
+  align-items: center;
+  gap: calc(36 * var(--u));
+  z-index: 8;
+}
+
+.stockpile-hero-root .action-buttons {
+  display: flex;
+  align-items: center;
+  gap: calc(14 * var(--u));
+  flex-shrink: 0;
+}
+
+.stockpile-hero-root .btn-action {
+  height: calc(58 * var(--u));
+  padding: 0 calc(26 * var(--u));
+  border: 1.4px solid var(--ink);
+  border-radius: calc(10 * var(--u));
+  background: transparent;
+  font-family: var(--font);
+  font-size: calc(17 * var(--u));
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(11 * var(--u));
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.stockpile-hero-root .btn-action:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.stockpile-hero-root .btn-action svg {
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  stroke-width: 1.6;
+  stroke: currentColor;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.stockpile-hero-root #btn-start-voice {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+.stockpile-hero-root .hero-caption {
+  font-size: calc(18.5 * var(--u));
+  line-height: 1.45;
+  color: var(--ink-56);
+  max-width: calc(620 * var(--u));
+}
+
+/* ─── Stats Strip (Bottom 25%) ─── */
+.stockpile-hero-root #stats-strip {
+  position: relative;
+  width: 100%;
+  height: 25%;
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+}
+
+/* Notch S-Curve Canvas/SVG on Top Edge */
+.stockpile-hero-root .notch-container {
+  position: absolute;
+  top: calc(-61 * var(--u));
+  left: 0;
+  width: 100%;
+  height: calc(62 * var(--u));
+  pointer-events: none;
+  z-index: 6;
+}
+
+.stockpile-hero-root .notch-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Scroll Hint on the Raised Notch */
+.stockpile-hero-root .scroll-hint {
+  position: absolute;
+  top: calc(-42 * var(--u));
+  right: calc(112 * var(--u));
+  font-size: calc(15 * var(--u));
+  color: var(--ink-42);
+  font-weight: 400;
+  z-index: 8;
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  transition: opacity 0.2s ease;
+}
+
+.stockpile-hero-root .scroll-hint:hover {
+  opacity: 0.8;
+}
+
+/* Stats Content Grid */
+.stockpile-hero-root .stats-content {
+  width: 100%;
+  height: 100%;
+  padding: 0 calc(112 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stockpile-hero-root .stats-lead {
+  font-size: calc(29 * var(--u));
+  line-height: 1.15;
+  font-weight: 500;
+  color: var(--ink);
+  max-width: calc(220 * var(--u));
+}
+
+.stockpile-hero-root .stats-metrics-group {
+  display: flex;
+  align-items: center;
+  gap: calc(64 * var(--u));
+}
+
+.stockpile-hero-root .stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stockpile-hero-root .stat-value {
+  font-size: calc(54 * var(--u));
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.stockpile-hero-root .stat-label {
+  font-size: calc(16.5 * var(--u));
+  color: var(--ink-56);
+  margin-top: calc(7 * var(--u));
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Sprout Line Art */
+.stockpile-hero-root .sprout-art {
+  width: calc(48 * var(--u));
+  height: calc(48 * var(--u));
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* ─── Responsive for Phones (≤ 760px) ─── */
+@media (max-width: 760px) {
+  .stockpile-hero-root {
+    height: auto;
+    min-height: 100svh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .stockpile-hero-root #hero-panel {
+    height: auto;
+    min-height: 100svh;
+    padding-bottom: 40px;
+  }
+
+  .stockpile-hero-root #nav {
+    height: 68px;
+    padding: 0 20px;
+  }
+
+  .stockpile-hero-root .nav-right .nav-link {
+    display: none;
+  }
+
+  .stockpile-hero-root .brand-logo-img {
+    height: 28px;
+  }
+
+  .stockpile-hero-root .nav-actions {
+    gap: 8px;
+  }
+
+  .stockpile-hero-root .btn-nav-login {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+
+  .stockpile-hero-root .btn-open-ledger {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 13.5px;
+  }
+
+  .stockpile-hero-root .hero-content {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-top: 100px;
+    padding: 0 20px;
+  }
+
+  .stockpile-hero-root .hero-headline {
+    font-size: clamp(52px, 15.5vw, 88px);
+    line-height: 0.94;
+  }
+
+  .stockpile-hero-root .headline-line-1 {
+    min-height: auto;
+  }
+
+  .stockpile-hero-root .hero-action-row {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-top: 36px;
+    padding: 0 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .stockpile-hero-root .action-buttons {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .stockpile-hero-root .btn-action {
+    height: 48px;
+    padding: 0 18px;
+    font-size: 15px;
+  }
+
+  .stockpile-hero-root .hero-caption {
+    font-size: 15px;
+    max-width: 100%;
+  }
+
+  .stockpile-hero-root #stats-strip {
+    height: auto;
+    padding: 40px 20px 50px;
+  }
+
+  .stockpile-hero-root .notch-container {
+    display: none;
+  }
+
+  .stockpile-hero-root .scroll-hint {
+    position: static;
+    margin-bottom: 24px;
+  }
+
+  .stockpile-hero-root .stats-content {
+    padding: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  .stockpile-hero-root .stats-metrics-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 24px;
+    width: 100%;
+  }
+
+  .stockpile-hero-root .stat-value {
+    font-size: 38px;
+  }
+
+  .stockpile-hero-root .stat-label {
+    font-size: 14px;
+  }
+
+  .stockpile-hero-root .sprout-art {
+    display: none;
+  }
+}

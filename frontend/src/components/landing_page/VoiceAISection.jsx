@@ -138,32 +138,32 @@ export default function VoiceAISection({ onNavigate }) {
     : 'Start voice recording demo';
 
   return (
-    <section className="bg-white py-16 md:py-24">
+    <section className="bg-[#FBF6EF] py-20 md:py-28 border-t border-gray-200/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Section header */}
         <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20">
           <div
             data-reveal="data-entrance"
-            className="mb-6 inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green-700"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 shadow-sm"
           >
-            <Mic size={14} />
-            {t('landing_voice_title1') || 'Voice AI'}
+            <Mic size={13} className="text-emerald-600" />
+            <span>Voice-First Ledger Protocol</span>
           </div>
           <h2
             data-reveal="data-entrance"
             data-reveal-delay="80"
-            className="mb-6 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl lg:text-5xl"
+            className="mb-6 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl font-['Inter_Tight',sans-serif]"
           >
-            {t('landing_voice_title2') || 'Just Speak.'}
+            Just Speak Your Sales.
             <br />
-            <span className="text-[#064E3B]">{t('landing_voice_title3') || 'We Handle the Rest.'}</span>
+            <span className="text-emerald-800">We Balance Every Kobo.</span>
           </h2>
           <p
             data-reveal="data-entrance"
             data-reveal-delay="160"
-            className="mx-auto max-w-2xl text-base font-medium text-gray-600 md:text-lg"
+            className="mx-auto max-w-2xl text-base font-normal leading-relaxed text-gray-600 md:text-lg"
           >
-            {t('landing_voice_subtitle') || "MarketPulse's voice AI understands natural Nigerian English, Pidgin, and market lingo. Say something like \"I sold 3 bags of rice for 150k\" and watch it become a structured transaction instantly."}
+            Stockpile understands authentic Nigerian English, Pidgin, and local market terms. Try speaking a transaction below to test the live voice recognition in real time.
           </p>
         </div>
 
