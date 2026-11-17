@@ -1020,7 +1020,7 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 100,
+            zIndex: 1100,
             background: 'rgba(0, 0, 0, 0.6)',
             backdropFilter: 'blur(4px)',
             display: 'flex',
@@ -1159,7 +1159,7 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 100,
+            zIndex: 1100,
             background: 'rgba(0, 0, 0, 0.6)',
             backdropFilter: 'blur(4px)',
             display: 'flex',

@@ -8,8 +8,10 @@ export default function FloatingMic({ onNavigate, variant }) {
         position: 'fixed',
         bottom: 100,
         left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 100,
+        WebkitTransform: 'translateX(-50%) translateZ(0)',
+        transform: 'translateX(-50%) translateZ(0)',
+        willChange: 'transform',
+        zIndex: 1001,
       }}
     >
       <button

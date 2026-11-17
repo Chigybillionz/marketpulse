@@ -19,16 +19,19 @@ export default function Header({ businessName, onNavigate, profilePicture }) {
           left: 0,
           right: 0,
           width: '100%',
-          zIndex: 80,
+          zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: 'max(44px, env(safe-area-inset-top, 44px)) 20px 12px 20px',
-          background: 'rgba(238, 241, 247, 0.94)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+          padding: 'max(14px, env(safe-area-inset-top, 14px)) 20px 12px 20px',
+          background: 'rgba(238, 241, 247, 0.98)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)',
+          willChange: 'transform',
         }}
       >
         {/* Left icon — opens the slide-in navigation menu */}
@@ -109,7 +112,7 @@ export default function Header({ businessName, onNavigate, profilePicture }) {
         className="mobile-only-header-spacer"
         aria-hidden="true"
         style={{
-          height: 'calc(max(44px, env(safe-area-inset-top, 44px)) + 48px)',
+          height: 'calc(max(14px, env(safe-area-inset-top, 14px)) + 50px)',
           width: '100%',
           flexShrink: 0,
         }}

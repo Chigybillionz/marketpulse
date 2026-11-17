@@ -357,8 +357,10 @@
   /* Topbar + sidebar replace the in-screen chrome on desktop */
   .mp-shell .history-header,
   .mp-shell .credit-header,
-  .mp-shell .profile-nav {
-    display: none;
+  .mp-shell .profile-nav,
+  .mobile-only-header,
+  .mobile-only-header-spacer {
+    display: none !important;
   }
 
   .mp-shell .mp-bottom-nav {
@@ -7460,7 +7462,7 @@
 .mp-menu {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 2000;
   pointer-events: none;
 }
 

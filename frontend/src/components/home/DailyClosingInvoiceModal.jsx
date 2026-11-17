@@ -80,7 +80,7 @@ Tracked securely on Stockpile`;
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 200,
+        zIndex: 1100,
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
         backdropFilter: 'blur(5px)',
         display: 'flex',
