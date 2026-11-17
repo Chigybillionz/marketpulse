@@ -11,39 +11,154 @@ import {
   ArrowRight,
   PackagePlus,
   AlertCircle,
-  Volume2
+  Volume2,
+  Eye,
+  EyeOff,
+  Lock,
+  Unlock,
+  PackageCheck,
+  ChevronDown,
+  ChevronUp,
+  Clock
 } from 'lucide-react';
 import {
   getTotalGoodsValuation,
   setTotalGoodsValuation,
   adjustTotalGoodsValuation,
+  getRestockHistory,
+  addRestockRecord,
+  INITIAL_PRODUCTS,
 } from '../../services/productService';
 import { useLanguage } from '../../i18n/LanguageContext';
 
+/**
+ * Intelligent helper to extract both monetary amount and item details from spoken transcript
+ */
+function parseVoiceRestock(transcript) {
+  const text = (transcript || '').toLowerCase();
+
+  // 1. Amount parsing (detect "50 thousand", "50k", "1.5 million", or plain numbers)
+  let detectedAmount = 0;
+  const millionMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:million|m)\b/i);
+  const thousandMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:thousand|k)\b/i);
+  const rawNumMatch = text.match(/(\d[\d,]*)/);
+
+  if (millionMatch) {
+    detectedAmount = Math.round(parseFloat(millionMatch[1]) * 1000000);
+  } else if (thousandMatch) {
+    detectedAmount = Math.round(parseFloat(thousandMatch[1]) * 1000);
+  } else if (rawNumMatch) {
+    detectedAmount = Number(rawNumMatch[1].replace(/,/g, ''));
+  }
+
+  // 2. Quantity parsing (e.g., "5 bags", "2 cartons", "10 tins")
+  const qtyMatch = text.match(/(\d+)\s*(bags?|cartons?|tins?|packs?|kegs?|sachets?|pieces?|units?|crates?|bottles?)/i);
+  const detectedQty = qtyMatch ? Number(qtyMatch[1]) : 1;
+  let detectedUnit = qtyMatch ? qtyMatch[2] : 'units';
+
+  // 3. Match against known products in shop inventory
+  let matchedProduct = null;
+  const catalog = Array.isArray(INITIAL_PRODUCTS) ? INITIAL_PRODUCTS : [];
+  for (const p of catalog) {
+    const base = p.name.toLowerCase().split('(')[0].trim();
+    if (text.includes(base) || (p.category && text.includes(p.category.toLowerCase()))) {
+      matchedProduct = p;
+      break;
+    }
+  }
+
+  let itemName = '';
+  if (matchedProduct) {
+    itemName = matchedProduct.name;
+    if (!qtyMatch && matchedProduct.unit) {
+      detectedUnit = matchedProduct.unit;
+    }
+  } else {
+    // Strip restock helper words to leave the clean spoken item name
+    let clean = transcript
+      .replace(/restock(ed)?/gi, '')
+      .replace(/i\s+(bought|added|purchased|got|took)/gi, '')
+      .replace(/naira|ngn|\#/gi, '')
+      .replace(/thousand|million/gi, '')
+      .replace(/\d+[\d,]*/g, '')
+      .replace(/(bags?|cartons?|tins?|packs?|kegs?|sachets?|pieces?|units?|crates?|bottles?)/gi, '')
+      .replace(/\b(for|of|worth|and|with|to)\b/gi, '')
+      .trim();
+    itemName = clean ? (clean.charAt(0).toUpperCase() + clean.slice(1)) : 'Restocked Merchandise';
+  }
+
+  return { detectedAmount, itemName, detectedQty, detectedUnit, matchedProduct };
+}
+
 export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavigate, onOpenInvoice }) {
   const { t } = useLanguage();
+
+  // Card 1 (Daily Profit/Loss): Dedicated Lock (only locks) and Open (only opens)
+  const [isCardLocked, setIsCardLocked] = useState(() => {
+    return localStorage.getItem('stockpile_daily_profit_locked') === 'true';
+  });
+
+  const handleLockCard = (e) => {
+    e?.stopPropagation();
+    setIsCardLocked(true);
+    localStorage.setItem('stockpile_daily_profit_locked', 'true');
+  };
+
+  const handleOpenCard = (e) => {
+    e?.stopPropagation();
+    setIsCardLocked(false);
+    localStorage.setItem('stockpile_daily_profit_locked', 'false');
+  };
+
+  // Card 2 (Total Goods in My Shop): Dedicated Lock (only locks) and Open (only opens) for amount
+  const [isGoodsAmountLocked, setIsGoodsAmountLocked] = useState(() => {
+    return localStorage.getItem('stockpile_goods_amount_locked') === 'true';
+  });
+
+  const handleLockGoodsAmount = (e) => {
+    e?.stopPropagation();
+    setIsGoodsAmountLocked(true);
+    localStorage.setItem('stockpile_goods_amount_locked', 'true');
+  };
+
+  const handleOpenGoodsAmount = (e) => {
+    e?.stopPropagation();
+    setIsGoodsAmountLocked(false);
+    localStorage.setItem('stockpile_goods_amount_locked', 'false');
+  };
 
   // Total Goods Valuation state
   const [totalGoods, setTotalGoods] = useState(getTotalGoodsValuation());
   const [showValuationModal, setShowValuationModal] = useState(false);
   const [newValuationInput, setNewValuationInput] = useState('');
 
-  // Restock modal state
+  // Restock modal & history state
   const [showRestockModal, setShowRestockModal] = useState(false);
   const [restockAmount, setRestockAmount] = useState('');
   const [restockItemName, setRestockItemName] = useState('');
+  const [restockHistory, setRestockHistory] = useState(() => getRestockHistory());
+  const [showAllRestocks, setShowAllRestocks] = useState(false);
 
   // Voice restock state
   const [isListening, setIsListening] = useState(false);
   const [voiceNotice, setVoiceNotice] = useState(null);
 
-  // Sync valuation updates across tabs/events
+  // Sync valuation & restock history updates across tabs/events
   useEffect(() => {
     const handleValuationUpdate = (e) => {
       setTotalGoods(e.detail !== undefined ? e.detail : getTotalGoodsValuation());
     };
+    const handleRestockHistoryUpdate = (e) => {
+      setRestockHistory(e.detail !== undefined ? e.detail : getRestockHistory());
+    };
+
     window.addEventListener('goodsValuationUpdated', handleValuationUpdate);
-    return () => window.removeEventListener('goodsValuationUpdated', handleValuationUpdate);
+    window.addEventListener('restockHistoryUpdated', handleRestockHistoryUpdate);
+
+    return () => {
+      window.removeEventListener('goodsValuationUpdated', handleValuationUpdate);
+      window.removeEventListener('restockHistoryUpdated', handleRestockHistoryUpdate);
+    };
   }, []);
 
   // Simple Plain Math: Gain or Loss
@@ -59,10 +174,17 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
     if (!amount || isNaN(amount) || amount <= 0) return;
 
     adjustTotalGoodsValuation(amount);
+    const itemName = restockItemName.trim() || 'Restocked Merchandise';
+    addRestockRecord({
+      name: itemName,
+      amount: amount,
+      source: 'manual',
+    });
+
     setShowRestockModal(false);
     setRestockAmount('');
     setRestockItemName('');
-    setVoiceNotice(`Added ₦${amount.toLocaleString()} worth of goods to your shop!`);
+    setVoiceNotice(`Added ₦${amount.toLocaleString()} of "${itemName}" to shop goods!`);
     setTimeout(() => setVoiceNotice(null), 4000);
   };
 
@@ -102,27 +224,23 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
         const transcript = event.results[0][0].transcript;
         setIsListening(false);
 
-        // Try extracting numbers from transcript
-        const numbersMatch = transcript.match(/\d+[\d,]*/);
-        let detectedAmount = 0;
-
-        if (numbersMatch) {
-          detectedAmount = Number(numbersMatch[0].replace(/,/g, ''));
-        } else if (transcript.toLowerCase().includes('thousand') || transcript.toLowerCase().includes('k')) {
-          const words = transcript.match(/\d+/);
-          if (words) {
-            detectedAmount = Number(words[0]) * 1000;
-          }
-        }
+        const { detectedAmount, itemName, detectedQty, detectedUnit } = parseVoiceRestock(transcript);
 
         if (detectedAmount > 0) {
           adjustTotalGoodsValuation(detectedAmount);
-          setVoiceNotice(`Heard: "${transcript}" — Added ₦${detectedAmount.toLocaleString()} to shop goods!`);
+          addRestockRecord({
+            name: itemName,
+            amount: detectedAmount,
+            quantity: detectedQty,
+            unit: detectedUnit,
+            source: 'voice',
+          });
+          setVoiceNotice(`🎙️ Heard: "${transcript}" — Logged ${itemName} (+₦${detectedAmount.toLocaleString()})!`);
         } else {
           // Open modal prefilled with transcript
-          setRestockItemName(transcript);
+          setRestockItemName(itemName || transcript);
           setShowRestockModal(true);
-          setVoiceNotice(`Heard: "${transcript}". Please confirm the restock amount.`);
+          setVoiceNotice(`🎙️ Heard: "${transcript}". Please confirm or enter the restock amount.`);
         }
         setTimeout(() => setVoiceNotice(null), 5000);
       };
@@ -207,7 +325,7 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
         />
 
         {/* Section Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isCardLocked ? 0 : 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span
               style={{
@@ -232,126 +350,255 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
             </span>
           </div>
 
-          {onOpenInvoice && (
-            <button
-              onClick={onOpenInvoice}
-              style={{
-                background: 'rgba(255, 255, 255, 0.15)',
-                border: 'none',
-                color: '#fff',
-                borderRadius: 20,
-                padding: '4px 10px',
-                fontSize: 11,
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
-            >
-              View Invoice <ArrowRight size={12} />
-            </button>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* ── Eye Close / Padlock Button (Lock only locks, Open only opens) ── */}
+            {isCardLocked ? (
+              <button
+                type="button"
+                onClick={handleOpenCard}
+                aria-label="Open daily profit card"
+                title="Click to open daily profit card"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  color: '#fff',
+                  borderRadius: 20,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <Eye size={13} />
+                <span>Open Card</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleLockCard}
+                aria-label="Hide daily profit card"
+                title="Click to hide and lock daily profit card"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#fff',
+                  borderRadius: 20,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <EyeOff size={13} />
+                <span>Hide Card</span>
+              </button>
+            )}
+
+            {onOpenInvoice && (
+              <button
+                onClick={onOpenInvoice}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  border: 'none',
+                  color: '#fff',
+                  borderRadius: 20,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
+              >
+                View Invoice <ArrowRight size={12} />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Big Profit / Loss Result */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-            <h2
-              style={{
-                fontSize: 34,
-                fontWeight: 900,
-                letterSpacing: '-1px',
-                margin: 0,
-                lineHeight: 1.1,
-                color: isProfit ? '#4ade80' : '#fca5a5',
-              }}
-            >
-              {isProfit ? '+' : '-'}{fmtCurrency(netDaily)}
-            </h2>
-            <span
-              style={{
-                background: isProfit ? '#14532d' : '#7f1d1d',
-                color: isProfit ? '#86efac' : '#fecaca',
-                padding: '3px 8px',
-                borderRadius: 8,
-                fontSize: 11,
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
-              }}
-            >
-              {isProfit ? t('home_profit_verdict', 'PROFIT (GAIN) TODAY 🎉') : t('home_loss_verdict', 'OUTFLOW / LOSS TODAY ⚠️')}
-            </span>
-          </div>
-
-          <p
+        {/* ── CARD CONTENT: FULL CARD PRIVACY LOCK TOGGLE ── */}
+        {isCardLocked ? (
+          /* LOCKED STATE: Entire card content is closed / hidden */
+          <div
+            onClick={handleOpenCard}
+            role="button"
+            tabIndex={0}
+            aria-label="Daily profit card is locked. Click to open and reveal details."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleOpenCard();
+              }
+            }}
             style={{
-              fontSize: 13,
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.85)',
-              margin: '6px 0 0',
-              lineHeight: 1.4,
+              marginTop: 12,
+              background: 'rgba(0, 0, 0, 0.28)',
+              borderRadius: 16,
+              padding: '18px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              cursor: 'pointer',
+              border: '1px dashed rgba(255, 255, 255, 0.25)',
             }}
           >
-            {isProfit
-              ? `You took in ${fmtCurrency(moneyIn)} and spent ${fmtCurrency(moneyOut)}. You keep ${fmtCurrency(netDaily)} in pocket!`
-              : `Spending of ${fmtCurrency(moneyOut)} passed your sales of ${fmtCurrency(moneyIn)} today by ${fmtCurrency(Math.abs(netDaily))}.`}
-          </p>
-        </div>
-
-        {/* 1-2-3 Plain Math Breakdown (Easy for anyone to verify without charts) */}
-        <div
-          style={{
-            background: 'rgba(0, 0, 0, 0.25)',
-            borderRadius: 14,
-            padding: '12px 14px',
-            display: 'grid',
-            gridTemplateColumns: '1fr auto 1fr auto 1.2fr',
-            alignItems: 'center',
-            gap: 6,
-            textAlign: 'center',
-          }}
-        >
-          {/* Step 1: Money In */}
-          <div style={{ textAlign: 'left' }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-              1. Money In
-            </span>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#4ade80' }}>
-              +{fmtCurrency(moneyIn)}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#a7f3d0',
+                  flexShrink: 0,
+                }}
+              >
+                <Lock size={20} />
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.2px' }}>
+                  Daily Profit Figures Locked
+                </div>
+                <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.75)', marginTop: 2 }}>
+                  Entire card is closed for privacy • Tap to open and reveal
+                </div>
+              </div>
             </div>
-            <span style={{ fontSize: 10, color: '#cbd5e1' }}>Sales & Cash</span>
-          </div>
 
-          <span style={{ fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>−</span>
-
-          {/* Step 2: Money Out */}
-          <div style={{ textAlign: 'left' }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-              2. Money Out
-            </span>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#f87171' }}>
-              -{fmtCurrency(moneyOut)}
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: 8,
+                padding: '6px 12px',
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#ffffff',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                flexShrink: 0,
+              }}
+            >
+              <Eye size={13} />
+              <span>Open Card</span>
             </div>
-            <span style={{ fontSize: 10, color: '#cbd5e1' }}>Expenses & Restock</span>
           </div>
+        ) : (
+          /* OPEN STATE: Entire card content is visible */
+          <>
+            {/* Big Profit / Loss Result */}
+            <div style={{ marginBottom: 16, marginTop: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                <h2
+                  style={{
+                    fontSize: 34,
+                    fontWeight: 900,
+                    letterSpacing: '-1px',
+                    margin: 0,
+                    lineHeight: 1.1,
+                    color: isProfit ? '#4ade80' : '#fca5a5',
+                  }}
+                >
+                  {isProfit ? '+' : '-'}{fmtCurrency(netDaily)}
+                </h2>
+                <span
+                  style={{
+                    background: isProfit ? '#14532d' : '#7f1d1d',
+                    color: isProfit ? '#86efac' : '#fecaca',
+                    padding: '3px 8px',
+                    borderRadius: 8,
+                    fontSize: 11,
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                  }}
+                >
+                  {isProfit ? t('home_profit_verdict', 'PROFIT (GAIN) TODAY 🎉') : t('home_loss_verdict', 'OUTFLOW / LOSS TODAY ⚠️')}
+                </span>
+              </div>
 
-          <span style={{ fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>=</span>
-
-          {/* Step 3: Gain or Loss */}
-          <div style={{ textAlign: 'left' }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: isProfit ? '#86efac' : '#fca5a5', textTransform: 'uppercase' }}>
-              3. Result
-            </span>
-            <div style={{ fontSize: 15, fontWeight: 900, color: isProfit ? '#34d399' : '#f87171' }}>
-              {isProfit ? `+${fmtCurrency(netDaily)}` : `-${fmtCurrency(netDaily)}`}
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  margin: '6px 0 0',
+                  lineHeight: 1.4,
+                }}
+              >
+                {isProfit
+                  ? `You took in ${fmtCurrency(moneyIn)} and spent ${fmtCurrency(moneyOut)}. You keep ${fmtCurrency(netDaily)} in pocket!`
+                  : `Spending of ${fmtCurrency(moneyOut)} passed your sales of ${fmtCurrency(moneyIn)} today by ${fmtCurrency(Math.abs(netDaily))}.`}
+              </p>
             </div>
-            <span style={{ fontSize: 10, fontWeight: 700, color: isProfit ? '#86efac' : '#fca5a5' }}>
-              {isProfit ? 'Gain' : 'Loss'}
-            </span>
-          </div>
-        </div>
+
+            {/* 1-2-3 Plain Math Breakdown (Easy for anyone to verify without charts) */}
+            <div
+              style={{
+                background: 'rgba(0, 0, 0, 0.25)',
+                borderRadius: 14,
+                padding: '12px 14px',
+                display: 'grid',
+                gridTemplateColumns: '1fr auto 1fr auto 1.2fr',
+                alignItems: 'center',
+                gap: 6,
+                textAlign: 'center',
+              }}
+            >
+              {/* Step 1: Money In */}
+              <div style={{ textAlign: 'left' }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
+                  1. Money In
+                </span>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#4ade80' }}>
+                  +{fmtCurrency(moneyIn)}
+                </div>
+                <span style={{ fontSize: 10, color: '#cbd5e1' }}>Sales & Cash</span>
+              </div>
+
+              <span style={{ fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>−</span>
+
+              {/* Step 2: Money Out */}
+              <div style={{ textAlign: 'left' }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
+                  2. Money Out
+                </span>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#f87171' }}>
+                  -{fmtCurrency(moneyOut)}
+                </div>
+                <span style={{ fontSize: 10, color: '#cbd5e1' }}>Expenses & Restock</span>
+              </div>
+
+              <span style={{ fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>=</span>
+
+              {/* Step 3: Gain or Loss */}
+              <div style={{ textAlign: 'left' }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: isProfit ? '#86efac' : '#fca5a5', textTransform: 'uppercase' }}>
+                  3. Result
+                </span>
+                <div style={{ fontSize: 15, fontWeight: 900, color: isProfit ? '#34d399' : '#f87171' }}>
+                  {isProfit ? `+${fmtCurrency(netDaily)}` : `-${fmtCurrency(netDaily)}`}
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 700, color: isProfit ? '#86efac' : '#fca5a5' }}>
+                  {isProfit ? 'Gain' : 'Loss'}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── CARD 2: TOTAL GOODS IN SHOP / BUSINESS VALUATION ── */}
@@ -390,36 +637,104 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
             </p>
           </div>
 
-          {/* Quick Edit Total Goods button */}
-          <button
-            onClick={() => {
-              setNewValuationInput(totalGoods.toString());
-              setShowValuationModal(true);
-            }}
-            aria-label="Edit total shop goods valuation"
-            style={{
-              background: '#f1f5f9',
-              border: 'none',
-              padding: '6px 10px',
-              borderRadius: 8,
-              fontSize: 11,
-              fontWeight: 700,
-              color: '#334155',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
-          >
-            <Edit3 size={12} /> Edit Value
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {/* Eye / Padlock for Goods Amount (Lock only locks, Open only opens) */}
+            {isGoodsAmountLocked ? (
+              <button
+                type="button"
+                onClick={handleOpenGoodsAmount}
+                aria-label="Show goods amount"
+                title="Click to open and show goods amount"
+                style={{
+                  background: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: '#064e3b',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <Eye size={12} /> Show Amount
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleLockGoodsAmount}
+                aria-label="Hide goods amount"
+                title="Click to lock and hide goods amount"
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: '#64748b',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <EyeOff size={12} /> Hide Amount
+              </button>
+            )}
+
+            {/* Quick Edit Total Goods button */}
+            <button
+              onClick={() => {
+                setNewValuationInput(totalGoods.toString());
+                setShowValuationModal(true);
+              }}
+              aria-label="Edit total shop goods valuation"
+              style={{
+                background: '#f1f5f9',
+                border: 'none',
+                padding: '6px 10px',
+                borderRadius: 8,
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#334155',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              <Edit3 size={12} /> Edit Value
+            </button>
+          </div>
         </div>
 
         {/* Current Total Value */}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 14 }}>
-          <span style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.5px' }}>
-            ₦{totalGoods.toLocaleString('en-NG')}
-          </span>
+          {isGoodsAmountLocked ? (
+            <span
+              onClick={handleOpenGoodsAmount}
+              title="Click to reveal goods amount"
+              style={{
+                fontSize: 28,
+                fontWeight: 900,
+                color: '#64748b',
+                letterSpacing: '2px',
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
+            >
+              ₦••••••••
+            </span>
+          ) : (
+            <span style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.5px' }}>
+              ₦{totalGoods.toLocaleString('en-NG')}
+            </span>
+          )}
           <span
             style={{
               fontSize: 11,
@@ -481,6 +796,209 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
             <PackagePlus size={15} />
             + Add Goods Amount
           </button>
+        </div>
+
+        {/* ── RECENTLY RESTOCKED GOODS LOG ── */}
+        <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #f1f5f9' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <PackageCheck size={15} color="#059669" />
+              <span style={{ fontSize: 12, fontWeight: 800, color: '#1e293b' }}>
+                Recently Restocked Goods
+              </span>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  background: '#ecfdf5',
+                  color: '#064e3b',
+                  padding: '2px 7px',
+                  borderRadius: 10,
+                }}
+              >
+                {restockHistory.length}
+              </span>
+            </div>
+
+            {restockHistory.length > 5 && (
+              <button
+                type="button"
+                onClick={() => setShowAllRestocks((prev) => !prev)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#059669',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 3,
+                  padding: '2px 4px',
+                }}
+              >
+                {showAllRestocks ? (
+                  <>Show Less <ChevronUp size={13} /></>
+                ) : (
+                  <>See More ({restockHistory.length}) <ChevronDown size={13} /></>
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* List items */}
+          {restockHistory.length === 0 ? (
+            <div
+              style={{
+                padding: '14px',
+                background: '#f8fafc',
+                borderRadius: 12,
+                fontSize: 12,
+                color: '#64748b',
+                textAlign: 'center',
+              }}
+            >
+              No goods restocked yet today. Tap <strong>Speak Restock</strong> or <strong>+ Add Goods Amount</strong> to record items.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {(showAllRestocks ? restockHistory : restockHistory.slice(0, 5)).map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 10px',
+                    borderRadius: 10,
+                    background: '#f8fafc',
+                    border: '1px solid #f1f5f9',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <div
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 8,
+                        background: item.source === 'voice' ? '#ecfdf5' : '#eff6ff',
+                        color: item.source === 'voice' ? '#059669' : '#2563eb',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                      title={item.source === 'voice' ? 'Voice Restock' : 'Manual Restock'}
+                    >
+                      {item.source === 'voice' ? <Mic size={13} /> : <PackagePlus size={13} />}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>
+                        {item.name}
+                      </div>
+                      <div style={{ fontSize: 10, color: '#64748b', marginTop: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span>{item.timestamp}</span>
+                        {item.quantity && item.quantity > 1 && (
+                          <>
+                            <span>•</span>
+                            <span>{item.quantity} {item.unit || 'units'}</span>
+                          </>
+                        )}
+                        {item.source === 'voice' && (
+                          <span
+                            style={{
+                              background: '#d1fae5',
+                              color: '#065f46',
+                              fontSize: 9,
+                              fontWeight: 700,
+                              padding: '1px 5px',
+                              borderRadius: 4,
+                            }}
+                          >
+                            Voice 🎙️
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    {isGoodsAmountLocked ? (
+                      <span
+                        onClick={handleOpenGoodsAmount}
+                        title="Click to reveal amounts"
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 800,
+                          color: '#64748b',
+                          letterSpacing: '1px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        +₦••••
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: 12, fontWeight: 800, color: '#059669' }}>
+                        +₦{Number(item.amount || 0).toLocaleString('en-NG')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Bottom "See More" toggle when list > 5 */}
+          {restockHistory.length > 5 && !showAllRestocks && (
+            <button
+              type="button"
+              onClick={() => setShowAllRestocks(true)}
+              style={{
+                width: '100%',
+                marginTop: 8,
+                padding: '7px 0',
+                background: '#f1f5f9',
+                border: 'none',
+                borderRadius: 8,
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#334155',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4,
+              }}
+            >
+              See More ({restockHistory.length - 5} older restocks) <ChevronDown size={13} />
+            </button>
+          )}
+
+          {restockHistory.length > 5 && showAllRestocks && (
+            <button
+              type="button"
+              onClick={() => setShowAllRestocks(false)}
+              style={{
+                width: '100%',
+                marginTop: 8,
+                padding: '7px 0',
+                background: '#f1f5f9',
+                border: 'none',
+                borderRadius: 8,
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#334155',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4,
+              }}
+            >
+              Show Recent 5 Only <ChevronUp size={13} />
+            </button>
+          )}
         </div>
       </div>
 

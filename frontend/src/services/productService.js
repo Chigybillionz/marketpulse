@@ -1,7 +1,7 @@
 import apiClient from './api';
 
 // Initial realistic Nigerian market inventory items
-const INITIAL_PRODUCTS = [
+export const INITIAL_PRODUCTS = [
   {
     _id: 'prod_1',
     name: 'Garri (50g packs)',
@@ -163,11 +163,21 @@ export async function restockProduct(id, unitsToAdd, unitCost = 0) {
   const newQty = (product.quantityInStock || 0) + Number(unitsToAdd);
   const updated = await updateProductStock(id, newQty);
 
-  // If cost was provided, increase total goods valuation
-  if (unitCost > 0) {
-    const totalAdded = unitCost * Number(unitsToAdd);
+  const totalAdded = unitCost > 0 ? Number(unitCost) * Number(unitsToAdd) : (product.price || 0) * Number(unitsToAdd);
+
+  // If cost was provided or calculated, increase total goods valuation
+  if (totalAdded > 0) {
     adjustTotalGoodsValuation(totalAdded);
   }
+
+  // Record this restock in the restock log
+  addRestockRecord({
+    name: product.name,
+    quantity: Number(unitsToAdd),
+    unit: product.unit || 'units',
+    amount: totalAdded,
+    source: 'manual',
+  });
 
   return updated;
 }
@@ -211,4 +221,114 @@ export function adjustTotalGoodsValuation(delta) {
   localStorage.setItem(GOODS_VALUATION_KEY, updated.toString());
   window.dispatchEvent(new CustomEvent('goodsValuationUpdated', { detail: updated }));
   return updated;
+}
+
+/**
+ * ── RESTOCK HISTORY / LOG SERVICE ──
+ */
+const RESTOCK_LOG_KEY = 'stockpile_restock_log';
+
+const INITIAL_RESTOCKS = [
+  {
+    id: 'rst_1',
+    name: 'Dangote Sugar (50kg bag)',
+    quantity: 2,
+    unit: 'bags',
+    amount: 164000,
+    source: 'voice',
+    timestamp: 'Today, 09:30 AM',
+    rawDate: new Date().toISOString(),
+  },
+  {
+    id: 'rst_2',
+    name: 'Golden Penny Spaghetti (Carton)',
+    quantity: 5,
+    unit: 'cartons',
+    amount: 72500,
+    source: 'manual',
+    timestamp: 'Today, 08:15 AM',
+    rawDate: new Date(Date.now() - 3600000 * 2).toISOString(),
+  },
+  {
+    id: 'rst_3',
+    name: 'Kings Vegetable Oil (5L Keg)',
+    quantity: 4,
+    unit: 'kegs',
+    amount: 44000,
+    source: 'voice',
+    timestamp: 'Yesterday, 05:40 PM',
+    rawDate: new Date(Date.now() - 3600000 * 20).toISOString(),
+  },
+  {
+    id: 'rst_4',
+    name: 'Indomie Hungryman (Carton)',
+    quantity: 3,
+    unit: 'cartons',
+    amount: 38400,
+    source: 'manual',
+    timestamp: 'Yesterday, 02:10 PM',
+    rawDate: new Date(Date.now() - 3600000 * 24).toISOString(),
+  },
+  {
+    id: 'rst_5',
+    name: 'Gino Tomato Paste (70g sachet)',
+    quantity: 20,
+    unit: 'sachets',
+    amount: 7000,
+    source: 'voice',
+    timestamp: '15 Nov, 04:30 PM',
+    rawDate: new Date(Date.now() - 3600000 * 48).toISOString(),
+  },
+  {
+    id: 'rst_6',
+    name: 'Peak Evaporated Milk (Tin)',
+    quantity: 24,
+    unit: 'tins',
+    amount: 18000,
+    source: 'manual',
+    timestamp: '14 Nov, 11:00 AM',
+    rawDate: new Date(Date.now() - 3600000 * 72).toISOString(),
+  },
+];
+
+/**
+ * Retrieve the array of all restocked records
+ */
+export function getRestockHistory() {
+  const stored = localStorage.getItem(RESTOCK_LOG_KEY);
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+      // fallback
+    }
+  }
+  localStorage.setItem(RESTOCK_LOG_KEY, JSON.stringify(INITIAL_RESTOCKS));
+  return INITIAL_RESTOCKS;
+}
+
+/**
+ * Append a new restock item to the history log
+ */
+export function addRestockRecord(record) {
+  const current = getRestockHistory();
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const newEntry = {
+    id: 'rst_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+    name: record.name || 'Restocked Merchandise',
+    quantity: Number(record.quantity) || 1,
+    unit: record.unit || 'units',
+    amount: Math.max(0, Number(record.amount) || 0),
+    source: record.source || 'voice', // 'voice' | 'manual'
+    timestamp: `Today, ${timeStr}`,
+    rawDate: now.toISOString(),
+    ...record,
+  };
+
+  const updated = [newEntry, ...current];
+  localStorage.setItem(RESTOCK_LOG_KEY, JSON.stringify(updated));
+  window.dispatchEvent(new CustomEvent('restockHistoryUpdated', { detail: updated }));
+  return newEntry;
 }

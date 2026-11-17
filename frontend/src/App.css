@@ -4361,6 +4361,7 @@
 
 @media (min-width: 1024px) {
   .mobile-only-header,
+  .mobile-only-header-spacer,
   .mobile-only-nav {
     display: none !important;
   }
