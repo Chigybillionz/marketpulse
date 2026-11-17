@@ -137,7 +137,7 @@ export default function Logout({ onNavigate, onBack }) {
               letterSpacing: "-0.3px",
             }}
           >
-            {t("common_loading", "Logging you out...")}
+            Logging out...
           </p>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>

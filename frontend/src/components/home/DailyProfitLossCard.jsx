@@ -56,10 +56,16 @@ function parseVoiceRestock(transcript) {
   const detectedQty = qtyMatch ? Number(qtyMatch[1]) : 1;
   let detectedUnit = qtyMatch ? qtyMatch[2] : 'units';
 
-  // 3. Match against known products in shop inventory
+  // 3. Match against current products in shop inventory
   let matchedProduct = null;
-  const catalog = Array.isArray(INITIAL_PRODUCTS) ? INITIAL_PRODUCTS : [];
-  for (const p of catalog) {
+  let catalog = [];
+  try {
+    const raw = localStorage.getItem('stockpile_products');
+    if (raw) catalog = JSON.parse(raw);
+  } catch (e) {}
+
+  for (const p of (Array.isArray(catalog) ? catalog : [])) {
+    if (!p?.name) continue;
     const base = p.name.toLowerCase().split('(')[0].trim();
     if (text.includes(base) || (p.category && text.includes(p.category.toLowerCase()))) {
       matchedProduct = p;

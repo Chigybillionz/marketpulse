@@ -1,78 +1,62 @@
 import apiClient from './api';
 
-// Initial realistic Nigerian market inventory items
-export const INITIAL_PRODUCTS = [
-  {
-    _id: 'prod_1',
-    name: 'Garri (50g packs)',
-    category: 'Dry Goods',
-    price: 500,
-    quantityInStock: 2,
-    lowStockThreshold: 10,
-    unit: 'packs',
-  },
-  {
-    _id: 'prod_2',
-    name: 'Peak Evaporated Milk (Tin)',
-    category: 'Dairy & Beverages',
-    price: 750,
-    quantityInStock: 0,
-    lowStockThreshold: 12,
-    unit: 'tins',
-  },
-  {
-    _id: 'prod_3',
-    name: 'Gino Tomato Paste (70g sachet)',
-    category: 'Provisions',
-    price: 350,
-    quantityInStock: 4,
-    lowStockThreshold: 15,
-    unit: 'sachets',
-  },
-  {
-    _id: 'prod_4',
-    name: 'Dangote Sugar (50kg bag)',
-    category: 'Dry Goods',
-    price: 82000,
-    quantityInStock: 24,
-    lowStockThreshold: 5,
-    unit: 'bags',
-  },
-  {
-    _id: 'prod_5',
-    name: 'Golden Penny Spaghetti (Carton)',
-    category: 'Packaged Food',
-    price: 14500,
-    quantityInStock: 45,
-    lowStockThreshold: 8,
-    unit: 'cartons',
-  },
-  {
-    _id: 'prod_6',
-    name: 'Indomie Hungryman (Carton)',
-    category: 'Packaged Food',
-    price: 12800,
-    quantityInStock: 60,
-    lowStockThreshold: 10,
-    unit: 'cartons',
-  },
-  {
-    _id: 'prod_7',
-    name: 'Kings Vegetable Oil (5L Keg)',
-    category: 'Oils & Fats',
-    price: 11000,
-    quantityInStock: 32,
-    lowStockThreshold: 6,
-    unit: 'kegs',
-  },
-];
+// Brand new users start with an empty shelf and clean dashboard
+export const INITIAL_PRODUCTS = [];
 
 const STORAGE_KEY = 'stockpile_products';
 const GOODS_VALUATION_KEY = 'stockpile_total_goods_val';
+const RESTOCK_LOG_KEY = 'stockpile_restock_log';
+
+// Automatic migration: strip out old hardcoded demo seed items so dashboards are clean
+try {
+  const restocks = localStorage.getItem(RESTOCK_LOG_KEY);
+  if (restocks) {
+    const parsed = JSON.parse(restocks);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const userOnly = parsed.filter(
+        (r) => !['rst_1', 'rst_2', 'rst_3', 'rst_4', 'rst_5', 'rst_6'].includes(r?.id)
+      );
+      if (userOnly.length !== parsed.length) {
+        localStorage.setItem(RESTOCK_LOG_KEY, JSON.stringify(userOnly));
+      }
+    }
+  }
+
+  const products = localStorage.getItem(STORAGE_KEY);
+  if (products) {
+    const parsed = JSON.parse(products);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const userOnly = parsed.filter(
+        (p) => !(typeof p?._id === 'string' && /^prod_[1-7]$/.test(p._id))
+      );
+      if (userOnly.length !== parsed.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userOnly));
+      }
+    }
+  }
+
+  // Clear demo valuation defaults (2150000, 4742900, 4772900) so merchants start at 0 or real items
+  const val = localStorage.getItem(GOODS_VALUATION_KEY);
+  if (val === '2150000' || val === '4742900' || val === '4772900') {
+    const storedProducts = localStorage.getItem(STORAGE_KEY);
+    let realSum = 0;
+    if (storedProducts) {
+      try {
+        const pList = JSON.parse(storedProducts);
+        if (Array.isArray(pList)) {
+          realSum = pList.reduce((acc, p) => acc + (p.quantityInStock || 0) * (p.price || 0), 0);
+        }
+      } catch (e) {}
+    }
+    localStorage.setItem(GOODS_VALUATION_KEY, realSum.toString());
+  }
+} catch (e) {
+  // Ignore migration errors
+}
 
 /**
  * Get all products.
- * Tries the API first; falls back to localStorage or initial seed data.
+ * Tries the API first; falls back to localStorage.
  */
 export async function getProducts() {
   try {
@@ -89,7 +73,7 @@ export async function getProducts() {
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed;
       }
     } catch (e) {
@@ -97,9 +81,9 @@ export async function getProducts() {
     }
   }
 
-  // Seed default items
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS));
-  return INITIAL_PRODUCTS;
+  // Brand new starter shelf is clean and empty
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+  return [];
 }
 
 /**
@@ -219,8 +203,6 @@ export function adjustTotalGoodsValuation(delta) {
 /**
  * ── RESTOCK HISTORY / LOG SERVICE ──
  */
-const RESTOCK_LOG_KEY = 'stockpile_restock_log';
-
 const INITIAL_RESTOCKS = [];
 
 /**

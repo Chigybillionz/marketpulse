@@ -310,7 +310,43 @@ export default function GoodsStockIndicator({ onNavigate }) {
 
         {/* ── GOODS LIST ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 360, overflowY: 'auto' }}>
-          {filteredProducts.length === 0 ? (
+          {products.length === 0 ? (
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '28px 16px',
+                background: '#f8fafc',
+                borderRadius: 14,
+                border: '1px dashed #cbd5e1',
+              }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#1e293b' }}>
+                Your shelf is clean and ready
+              </div>
+              <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 14px' }}>
+                No goods added yet. Tap "+ Add Item" to start tracking what is plenty and what needs restock.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                style={{
+                  background: '#064e3b',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '8px 16px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Plus size={14} /> + Add Your First Item
+              </button>
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '24px 12px', color: '#94a3b8', fontSize: 13 }}>
               No items match this filter.
             </div>
