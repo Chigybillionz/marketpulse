@@ -318,7 +318,7 @@ export default function DataPortability({ onNavigate, onBack, profilePicture, em
                 <h3 className="portability-format-title">CSV</h3>
                 <p className="portability-format-desc">
                   {format === "csv" ? (
-                    "Download a comprehensive archive of your Stockpile AI activity history, credit logs, performance analytics, and profile data in machine-readable formats for external audits or personal backups."
+                    "Download a comprehensive archive of your Stockpile activity history, credit logs, performance analytics, and profile data in machine-readable formats for external audits or personal backups."
                   ) : (
                     "Spreadsheets & tabular analysis formatted for Excel or Google Sheets."
                   )}

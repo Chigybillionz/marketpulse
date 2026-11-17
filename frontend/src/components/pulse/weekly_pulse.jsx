@@ -293,8 +293,8 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
       : status === "error"
         ? (errorMsg || t("pulse_error_gen", "Could not load your summary."))
         : ttsUsed
-          ? `Stockpile AI • ${t("pulse_listen", "Tap play to listen")}`
-          : `Stockpile AI • Voice preview`;
+          ? `Stockpile • ${t("pulse_listen", "Tap play to listen")}`
+          : `Stockpile • Voice preview`;
 
   return (
     <AppShell

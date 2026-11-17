@@ -383,7 +383,7 @@ function App() {
               active="pulse"
               onNavigate={handleNavigate}
               businessName={businessName}
-              title="Stockpile AI"
+              title="Stockpile"
               subtitle="Record a trade update for analysis"
             >
               <Listeng onNavigate={handleNavigate} businessName={businessName} />
@@ -399,7 +399,7 @@ function App() {
               active="pulse"
               onNavigate={handleNavigate}
               businessName={businessName}
-              title="Stockpile AI"
+              title="Stockpile"
               subtitle="Sorting your voice note into ledger details"
             >
               <Analysing onNavigate={handleNavigate} businessName={businessName} />

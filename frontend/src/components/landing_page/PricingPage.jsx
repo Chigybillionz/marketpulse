@@ -170,7 +170,7 @@ export default function PricingPage({ onNavigate }) {
       <footer className="border-t border-gray-200 bg-white pt-10 pb-10 mt-auto">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-               <span className="text-lg md:text-xl font-extrabold text-[#064E3B]">Stockpile AI</span>
+               <span className="text-lg md:text-xl font-extrabold text-[#064E3B]">Stockpile</span>
             </div>
             
             <div className="flex items-center gap-8 text-sm font-bold text-gray-500">
@@ -180,7 +180,7 @@ export default function PricingPage({ onNavigate }) {
             </div>
 
             <div className="text-sm font-semibold text-gray-400">
-               © 2026 Stockpile AI. All rights reserved.
+               © 2026 Stockpile. All rights reserved.
             </div>
          </div>
       </footer>

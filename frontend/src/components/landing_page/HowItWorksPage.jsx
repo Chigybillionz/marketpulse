@@ -32,7 +32,7 @@ export default function HowItWorksPage({ onNavigate }) {
           From Voice to Value in Seconds
         </h1>
         <p className="text-base md:text-lg text-gray-600 font-medium leading-relaxed max-w-2xl mx-auto">
-          Stockpile AI simplifies your bookkeeping. Just tell us about your transactions, and our AI handles the categorization, tracking, and insights automatically.
+          Stockpile simplifies your bookkeeping. Just tell us about your transactions, and our AI handles the categorization, tracking, and insights automatically.
         </p>
       </section>
 
@@ -124,7 +124,7 @@ export default function HowItWorksPage({ onNavigate }) {
          <div className="bg-[#EBF3FF] rounded-[2.5rem] py-20 px-8 text-center border border-blue-100 shadow-sm">
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">Ready to streamline your finances?</h2>
             <p className="text-gray-600 font-medium mb-10 max-w-lg mx-auto leading-relaxed">
-               Join thousands of micro-entrepreneurs who are saving hours every week with Stockpile AI.
+               Join thousands of micro-entrepreneurs who are saving hours every week with Stockpile.
             </p>
             <button onClick={handleGetStarted} className="bg-[#064E3B] text-white px-8 py-3.5 rounded-xl font-bold inline-flex items-center gap-2 hover:bg-[#043d2e] transition-colors shadow-lg">
                Start for Free <ArrowRight size={18} strokeWidth={2.5} />
@@ -136,7 +136,7 @@ export default function HowItWorksPage({ onNavigate }) {
       <footer className="border-t border-gray-200 bg-white pt-10 pb-10">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-               <span className="text-lg md:text-xl font-extrabold text-[#064E3B]">Stockpile AI</span>
+               <span className="text-lg md:text-xl font-extrabold text-[#064E3B]">Stockpile</span>
             </div>
             
             <div className="flex items-center gap-8 text-sm font-bold text-gray-500">
@@ -146,7 +146,7 @@ export default function HowItWorksPage({ onNavigate }) {
             </div>
 
             <div className="text-sm font-semibold text-gray-400">
-               © 2026 Stockpile AI. All rights reserved.
+               © 2026 Stockpile. All rights reserved.
             </div>
          </div>
       </footer>

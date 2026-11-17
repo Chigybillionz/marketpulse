@@ -92,7 +92,7 @@ async function collectUserData(userId, email) {
 function buildJsonExport(data) {
   const payload = {
     metadata: {
-      application: 'Stockpile AI',
+      application: 'Stockpile',
       export_version: '2.0',
       export_timestamp: new Date().toISOString(),
       account_email: data.user.email,
@@ -167,7 +167,7 @@ function buildCsvExport(data) {
 
   // Header & Metadata
   lines.push('# =====================================================================');
-  lines.push('# STOCKPILE AI — USER DATA EXPORT ARCHIVE');
+  lines.push('# STOCKPILE — USER DATA EXPORT ARCHIVE');
   lines.push(`# Export Generated: ${new Date().toISOString()}`);
   lines.push(`# Account Email: ${data.user.email}`);
   lines.push(`# Store / Business: ${data.user.businessName}`);

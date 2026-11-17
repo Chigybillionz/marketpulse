@@ -12,10 +12,10 @@ export default function BalanceCard({ balance, moneyIn, moneyOut }) {
   return (
     <section style={{ padding: '8px 20px 12px 20px' }}>
 
-      {/* ── Stockpile AI sub-heading ── */}
+      {/* ── Stockpile sub-heading ── */}
       <div style={{ marginBottom: 16 }}>
         <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', margin: 0, letterSpacing: '-0.3px' }}>
-          Stockpile AI
+          Stockpile
         </h2>
         <p style={{ fontSize: 13, color: '#777', margin: '2px 0 0', fontWeight: 500 }}>
           Real-time trading insights

@@ -111,7 +111,7 @@ export default function Listeng({ onNavigate, businessName }) {
   };
 
   return (
-    <main className="listening-page" aria-label="Stockpile AI voice listening screen">
+    <main className="listening-page" aria-label="Stockpile voice listening screen">
       <Header businessName={businessName} onNavigate={onNavigate} />
 
       <section className="listening-main" aria-labelledby="listening-title">

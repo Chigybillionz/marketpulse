@@ -254,7 +254,7 @@ export default function HeroSection({ onNavigate, onVoiceStateChange }) {
   return (
     <section
       ref={sectionRef}
-      aria-label="Stockpile AI introduction"
+      aria-label="Stockpile introduction"
       className="relative w-full overflow-hidden bg-white"
     >
       {/* ── Ambient atmosphere (parallax: slowest layer) ── */}
@@ -717,7 +717,7 @@ export default function HeroSection({ onNavigate, onVoiceStateChange }) {
             <div className="pointer-events-none absolute left-0 right-0 top-0 z-10 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent p-4">
               <div className="flex items-center gap-2 text-white">
                 <Play size={20} fill="currentColor" />
-                <span className="text-sm font-bold md:text-base">Stockpile AI Demo</span>
+                <span className="text-sm font-bold md:text-base">Stockpile Demo</span>
               </div>
               <button
                 onClick={() => setShowDemoVideo(false)}

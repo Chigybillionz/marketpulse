@@ -65,7 +65,7 @@ ${isProfit ? '🎉 *VERDICT: TODAY IS PROFIT!*' : '⚠️ *VERDICT: OUTFLOW / RE
 • Net Result: ${isProfit ? '+' : '-'}₦${Math.abs(Math.round(net)).toLocaleString('en-NG')}
 • Shop Goods In Store: ₦${totalGoods.toLocaleString('en-NG')}
 ----------------------------------
-Tracked securely on Stockpile AI`;
+Tracked securely on Stockpile`;
 
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');

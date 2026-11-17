@@ -1,4 +1,4 @@
-import { Home, Mic2, History, CreditCard, User } from "lucide-react";
+import { Home, Mic2, History, CreditCard, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../../i18n/LanguageContext";
 
 const NAV_ITEMS = [
@@ -11,9 +11,10 @@ const NAV_ITEMS = [
 
 /**
  * Desktop-only left navigation rail for the dashboard app shell.
- * Rendered inside AppShell and hidden on mobile via CSS.
+ * Spans the full height of the viewport (top-to-bottom edge flush).
+ * Supports movable / collapsible toggle between full width and compact rail.
  */
-export default function Sidebar({ active, onNavigate, businessName }) {
+export default function Sidebar({ active, onNavigate, businessName, collapsed, onToggleCollapse }) {
   const { t } = useLanguage();
   const initials = businessName
     ? businessName
@@ -25,35 +26,62 @@ export default function Sidebar({ active, onNavigate, businessName }) {
     : "MS";
 
   return (
-    <aside className="mp-shell__sidebar">
-      <div className="mp-side-brand">
+    <aside className={`mp-shell__sidebar ${collapsed ? "is-collapsed" : ""}`}>
+      {/* ── Movable / Collapsible Edge Handle ── */}
+      <button
+        type="button"
+        className="mp-side-edge-toggle"
+        onClick={onToggleCollapse}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+      </button>
+
+      {/* ── Brand Header ── */}
+      <div className="mp-side-brand" onClick={collapsed ? onToggleCollapse : undefined} style={{ cursor: collapsed ? "pointer" : "default" }}>
         <img
           className="mp-side-brand__logo"
           src="/stockpile-mark.png"
           alt="Stockpile logo"
         />
-        Stockpile
+        {!collapsed && <span className="mp-side-brand__title">Stockpile</span>}
       </div>
 
+      {/* ── Navigation Links ── */}
       <nav className="mp-side-nav">
-        {NAV_ITEMS.map(({ key, labelKey, target, Icon }) => (
-          <button
-            key={key}
-            type="button"
-            className={`mp-side-link${active === key ? " active" : ""}`}
-            onClick={() => onNavigate && onNavigate(target)}
-          >
-            <Icon size={21} strokeWidth={2} />
-            {t(labelKey)}
-          </button>
-        ))}
+        {NAV_ITEMS.map(({ key, labelKey, target, Icon }) => {
+          const label = t(labelKey);
+          return (
+            <button
+              key={key}
+              type="button"
+              className={`mp-side-link${active === key ? " active" : ""}`}
+              onClick={() => onNavigate && onNavigate(target)}
+              title={collapsed ? label : undefined}
+            >
+              <Icon size={21} strokeWidth={2} />
+              {!collapsed && <span className="mp-side-link__label">{label}</span>}
+            </button>
+          );
+        })}
       </nav>
 
       <div className="mp-side-spacer" />
 
-      <div className="mp-side-foot">
+      {/* ── Footer Profile Pill ── */}
+      <div
+        className="mp-side-foot"
+        onClick={() => onNavigate && onNavigate("profile")}
+        title={businessName || t("common_my_store")}
+        style={{ cursor: "pointer" }}
+      >
         <span className="mp-side-avatar">{initials}</span>
-        <span>{businessName || t("common_my_store")}</span>
+        {!collapsed && (
+          <span className="mp-side-foot__name">
+            {businessName || t("common_my_store")}
+          </span>
+        )}
       </div>
     </aside>
   );

@@ -190,7 +190,7 @@ export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
               How We Use Your Data
             </h3>
             <p className="privacy-lead">
-              Stockpile AI leverages your information to create a bespoke
+              Stockpile leverages your information to create a bespoke
               trading environment. Our proprietary AI models analyze
               high-frequency data to provide you with a competitive edge in the
               Nigerian markets.
