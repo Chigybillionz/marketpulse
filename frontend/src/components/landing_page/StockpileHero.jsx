@@ -246,6 +246,103 @@ export default function StockpileHero({ onNavigate }) {
 
   return (
     <div className="stockpile-hero-root">
+      {/* ─── Fixed Navigation (Stagnant Top Bar) ─── */}
+      <header id="nav">
+        <div
+          className="nav-left brand-logo-container"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          role="button"
+          tabIndex={0}
+          aria-label="Stockpile home"
+        >
+          {!useFallbackLogo ? (
+            <img
+              src="/stockpile-logo-transparent.png"
+              alt="Stockpile Logo"
+              className="brand-logo-img"
+              onError={() => setUseFallbackLogo(true)}
+            />
+          ) : (
+            <div className="brand-logo-fallback">
+              <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+                <rect x="4" y="4" width="24" height="24" rx="5" fill="#0D0D0C" />
+                <path d="M8 11h16v3H8z M8 16h11v3H8z M8 21h14v3H8z" fill="#22e584" />
+              </svg>
+              <span className="brand-name">stockpile</span>
+            </div>
+          )}
+        </div>
+
+        <nav className="nav-right">
+          <button
+            type="button"
+            className="nav-link"
+            onClick={() => handleNavLink('voice-section', 'listeng')}
+          >
+            Voice Ledger <span className="nav-chevron" />
+          </button>
+          <button
+            type="button"
+            className="nav-link"
+            onClick={() => handleNavLink('inventory-section', 'home')}
+          >
+            Inventory <span className="nav-chevron" />
+          </button>
+          <button
+            type="button"
+            className="nav-link"
+            onClick={() => handleNavLink('debtors-section', 'credit')}
+          >
+            Debtors <span className="nav-chevron" />
+          </button>
+          <button
+            type="button"
+            className="nav-link"
+            onClick={() => handleNav('pricing')}
+          >
+            Pricing <span className="nav-chevron" />
+          </button>
+
+          <div className="nav-actions">
+            {!isLoggedIn ? (
+              <>
+                <button
+                  type="button"
+                  className="btn-nav-login"
+                  onClick={() => handleNav('login')}
+                >
+                  Log in
+                </button>
+                <button
+                  type="button"
+                  className="btn-open-ledger"
+                  onClick={() => handleNav('signup')}
+                >
+                  Get Started
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="btn-open-ledger"
+                  onClick={() => handleNav('home')}
+                >
+                  Open Ledger
+                </button>
+                <button
+                  type="button"
+                  className="btn-nav-login"
+                  onClick={() => handleNav('logout')}
+                >
+                  Log out
+                </button>
+              </>
+            )}
+          </div>
+        </nav>
+      </header>
+
       {/* ─── Hero Panel (Top 75%) ─── */}
       <section id="hero-panel">
         {/* 4 Stacked Gradient Layers */}
@@ -262,103 +359,6 @@ export default function StockpileHero({ onNavigate }) {
           </filter>
           <rect width="100%" height="100%" filter="url(#stockpile-grain)" />
         </svg>
-
-        {/* Fixed Navigation (80u) */}
-        <header id="nav">
-          <div
-            className="nav-left brand-logo-container"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            role="button"
-            tabIndex={0}
-            aria-label="Stockpile home"
-          >
-            {!useFallbackLogo ? (
-              <img
-                src="/stockpile-logo-transparent.png"
-                alt="Stockpile Logo"
-                className="brand-logo-img"
-                onError={() => setUseFallbackLogo(true)}
-              />
-            ) : (
-              <div className="brand-logo-fallback">
-                <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
-                  <rect x="4" y="4" width="24" height="24" rx="5" fill="#0D0D0C" />
-                  <path d="M8 11h16v3H8z M8 16h11v3H8z M8 21h14v3H8z" fill="#22e584" />
-                </svg>
-                <span className="brand-name">stockpile</span>
-              </div>
-            )}
-          </div>
-
-          <nav className="nav-right">
-            <button
-              type="button"
-              className="nav-link"
-              onClick={() => handleNavLink('voice-section', 'listeng')}
-            >
-              Voice Ledger <span className="nav-chevron" />
-            </button>
-            <button
-              type="button"
-              className="nav-link"
-              onClick={() => handleNavLink('inventory-section', 'home')}
-            >
-              Inventory <span className="nav-chevron" />
-            </button>
-            <button
-              type="button"
-              className="nav-link"
-              onClick={() => handleNavLink('debtors-section', 'credit')}
-            >
-              Debtors <span className="nav-chevron" />
-            </button>
-            <button
-              type="button"
-              className="nav-link"
-              onClick={() => handleNav('pricing')}
-            >
-              Pricing <span className="nav-chevron" />
-            </button>
-
-            <div className="nav-actions">
-              {!isLoggedIn ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn-nav-login"
-                    onClick={() => handleNav('login')}
-                  >
-                    Log in
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-open-ledger"
-                    onClick={() => handleNav('signup')}
-                  >
-                    Get Started
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    className="btn-open-ledger"
-                    onClick={() => handleNav('home')}
-                  >
-                    Open Ledger
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-nav-login"
-                    onClick={() => handleNav('logout')}
-                  >
-                    Log out
-                  </button>
-                </>
-              )}
-            </div>
-          </nav>
-        </header>
 
         {/* Headline Block (Top: 190u, Left: 112u) */}
         <div className="hero-content">

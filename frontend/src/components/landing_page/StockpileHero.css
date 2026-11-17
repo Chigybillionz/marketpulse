@@ -15,7 +15,7 @@
   min-height: 680px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: clip;
   background: var(--cream);
   font-family: var(--font);
   color: var(--ink);
@@ -97,19 +97,28 @@
   z-index: 2;
 }
 
-/* ─── Navigation (80u Tall) ─── */
+/* ─── Navigation (Stagnant / Fixed at Top) ─── */
 .stockpile-hero-root #nav {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: calc(80 * var(--u));
+  width: 100%;
+  height: calc(76 * var(--u));
+  min-height: 60px;
+  max-height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 calc(112 * var(--u));
-  border-bottom: 1px solid var(--ink-09);
-  z-index: 10;
+  background: rgba(251, 246, 239, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(13, 13, 12, 0.08);
+  z-index: 1000;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .stockpile-hero-root .nav-left {
@@ -464,24 +473,37 @@
   opacity: 0.8;
 }
 
-/* ─── Responsive for Phones (≤ 760px) ─── */
-@media (max-width: 760px) {
+/* ─── Responsive for Phones & Tablets (≤ 860px) ─── */
+@media (max-width: 860px) {
   .stockpile-hero-root {
     height: auto;
-    min-height: 100svh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .stockpile-hero-root #nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 62px;
+    min-height: 62px;
+    padding: 0 16px;
+    background: rgba(251, 246, 239, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(13, 13, 12, 0.08);
+    z-index: 1000;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   .stockpile-hero-root #hero-panel {
     height: auto;
-    min-height: 100svh;
-    padding-bottom: 40px;
-  }
-
-  .stockpile-hero-root #nav {
-    height: 68px;
-    padding: 0 20px;
+    min-height: auto;
+    padding-top: 74px;
+    padding-bottom: 24px;
   }
 
   .stockpile-hero-root .nav-right .nav-link {
@@ -497,8 +519,8 @@
   }
 
   .stockpile-hero-root .btn-nav-login {
-    font-size: 13px;
-    padding: 6px 8px;
+    font-size: 13.5px;
+    padding: 6px 10px;
   }
 
   .stockpile-hero-root .btn-open-ledger {
@@ -511,12 +533,12 @@
     position: relative;
     top: 0;
     left: 0;
-    margin-top: 100px;
+    margin-top: 4px;
     padding: 0 20px;
   }
 
   .stockpile-hero-root .hero-headline {
-    font-size: clamp(52px, 15.5vw, 88px);
+    font-size: clamp(42px, 12.5vw, 76px);
     line-height: 0.94;
   }
 
@@ -528,32 +550,34 @@
     position: relative;
     top: 0;
     left: 0;
-    margin-top: 36px;
+    margin-top: 22px;
     padding: 0 20px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 20px;
+    gap: 16px;
   }
 
   .stockpile-hero-root .action-buttons {
     flex-wrap: wrap;
     width: 100%;
+    gap: 10px;
   }
 
   .stockpile-hero-root .btn-action {
-    height: 48px;
-    padding: 0 18px;
-    font-size: 15px;
+    height: 44px;
+    padding: 0 16px;
+    font-size: 14.5px;
   }
 
   .stockpile-hero-root .hero-caption {
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 1.45;
     max-width: 100%;
   }
 
   .stockpile-hero-root #stats-strip {
     height: auto;
-    padding: 40px 20px 50px;
+    padding: 28px 20px 36px;
   }
 
   .stockpile-hero-root .notch-container {
@@ -562,29 +586,29 @@
 
   .stockpile-hero-root .scroll-hint {
     position: static;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
   }
 
   .stockpile-hero-root .stats-content {
     padding: 0;
     flex-direction: column;
     align-items: flex-start;
-    gap: 32px;
+    gap: 24px;
   }
 
   .stockpile-hero-root .stats-metrics-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 28px 24px;
+    gap: 20px 16px;
     width: 100%;
   }
 
   .stockpile-hero-root .stat-value {
-    font-size: 38px;
+    font-size: 34px;
   }
 
   .stockpile-hero-root .stat-label {
-    font-size: 14px;
+    font-size: 13.5px;
   }
 
   .stockpile-hero-root .sprout-art {
