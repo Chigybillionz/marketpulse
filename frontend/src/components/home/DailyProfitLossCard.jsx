@@ -509,15 +509,15 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
                     letterSpacing: '-1px',
                     margin: 0,
                     lineHeight: 1.1,
-                    color: isProfit ? '#4ade80' : '#fca5a5',
+                    color: (moneyIn === 0 && moneyOut === 0) ? '#a7f3d0' : isProfit ? '#4ade80' : '#fca5a5',
                   }}
                 >
-                  {isProfit ? '+' : '-'}{fmtCurrency(netDaily)}
+                  {(moneyIn === 0 && moneyOut === 0) ? '₦0' : `${isProfit ? '+' : '-'}${fmtCurrency(netDaily)}`}
                 </h2>
                 <span
                   style={{
-                    background: isProfit ? '#14532d' : '#7f1d1d',
-                    color: isProfit ? '#86efac' : '#fecaca',
+                    background: (moneyIn === 0 && moneyOut === 0) ? '#064e3b' : isProfit ? '#14532d' : '#7f1d1d',
+                    color: (moneyIn === 0 && moneyOut === 0) ? '#a7f3d0' : isProfit ? '#86efac' : '#fecaca',
                     padding: '3px 8px',
                     borderRadius: 8,
                     fontSize: 11,
@@ -526,7 +526,11 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
                     letterSpacing: 1,
                   }}
                 >
-                  {isProfit ? t('home_profit_verdict', 'PROFIT (GAIN) TODAY 🎉') : t('home_loss_verdict', 'OUTFLOW / LOSS TODAY ⚠️')}
+                  {(moneyIn === 0 && moneyOut === 0)
+                    ? 'READY FOR TODAY 🏁'
+                    : isProfit
+                    ? t('home_profit_verdict', 'PROFIT (GAIN) TODAY 🎉')
+                    : t('home_loss_verdict', 'OUTFLOW / LOSS TODAY ⚠️')}
                 </span>
               </div>
 
@@ -539,7 +543,9 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
                   lineHeight: 1.4,
                 }}
               >
-                {isProfit
+                {(moneyIn === 0 && moneyOut === 0)
+                  ? 'No sales or expenses logged yet today. Tap the mic or Speak Restock to start tracking your daily profit!'
+                  : isProfit
                   ? `You took in ${fmtCurrency(moneyIn)} and spent ${fmtCurrency(moneyOut)}. You keep ${fmtCurrency(netDaily)} in pocket!`
                   : `Spending of ${fmtCurrency(moneyOut)} passed your sales of ${fmtCurrency(moneyIn)} today by ${fmtCurrency(Math.abs(netDaily))}.`}
               </p>

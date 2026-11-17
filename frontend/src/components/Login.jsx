@@ -89,13 +89,17 @@ export default function Login({
       >
         <header
           style={{
-            backgroundColor: "#EEF1F5",
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+            backgroundColor: "rgba(238, 241, 245, 0.95)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "20px 20px 12px",
-            position: "relative",
-            zIndex: 10,
+            padding: "max(14px, env(safe-area-inset-top, 14px)) 20px 12px",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
           }}
         >
           <div 

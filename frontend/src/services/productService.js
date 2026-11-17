@@ -191,15 +191,8 @@ export function getTotalGoodsValuation() {
     return Number(val);
   }
 
-  // Calculate from seed products
-  const defaultTotal = INITIAL_PRODUCTS.reduce(
-    (acc, p) => acc + (p.quantityInStock || 0) * (p.price || 0),
-    0
-  );
-  // Give a solid realistic default of ₦2,150,000 if calculated sum is lower
-  const initial = Math.max(defaultTotal, 2150000);
-  localStorage.setItem(GOODS_VALUATION_KEY, initial.toString());
-  return initial;
+  // Starter value for brand new accounts is 0
+  return 0;
 }
 
 /**
@@ -228,68 +221,7 @@ export function adjustTotalGoodsValuation(delta) {
  */
 const RESTOCK_LOG_KEY = 'stockpile_restock_log';
 
-const INITIAL_RESTOCKS = [
-  {
-    id: 'rst_1',
-    name: 'Dangote Sugar (50kg bag)',
-    quantity: 2,
-    unit: 'bags',
-    amount: 164000,
-    source: 'voice',
-    timestamp: 'Today, 09:30 AM',
-    rawDate: new Date().toISOString(),
-  },
-  {
-    id: 'rst_2',
-    name: 'Golden Penny Spaghetti (Carton)',
-    quantity: 5,
-    unit: 'cartons',
-    amount: 72500,
-    source: 'manual',
-    timestamp: 'Today, 08:15 AM',
-    rawDate: new Date(Date.now() - 3600000 * 2).toISOString(),
-  },
-  {
-    id: 'rst_3',
-    name: 'Kings Vegetable Oil (5L Keg)',
-    quantity: 4,
-    unit: 'kegs',
-    amount: 44000,
-    source: 'voice',
-    timestamp: 'Yesterday, 05:40 PM',
-    rawDate: new Date(Date.now() - 3600000 * 20).toISOString(),
-  },
-  {
-    id: 'rst_4',
-    name: 'Indomie Hungryman (Carton)',
-    quantity: 3,
-    unit: 'cartons',
-    amount: 38400,
-    source: 'manual',
-    timestamp: 'Yesterday, 02:10 PM',
-    rawDate: new Date(Date.now() - 3600000 * 24).toISOString(),
-  },
-  {
-    id: 'rst_5',
-    name: 'Gino Tomato Paste (70g sachet)',
-    quantity: 20,
-    unit: 'sachets',
-    amount: 7000,
-    source: 'voice',
-    timestamp: '15 Nov, 04:30 PM',
-    rawDate: new Date(Date.now() - 3600000 * 48).toISOString(),
-  },
-  {
-    id: 'rst_6',
-    name: 'Peak Evaporated Milk (Tin)',
-    quantity: 24,
-    unit: 'tins',
-    amount: 18000,
-    source: 'manual',
-    timestamp: '14 Nov, 11:00 AM',
-    rawDate: new Date(Date.now() - 3600000 * 72).toISOString(),
-  },
-];
+const INITIAL_RESTOCKS = [];
 
 /**
  * Retrieve the array of all restocked records

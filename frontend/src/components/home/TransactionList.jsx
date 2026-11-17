@@ -63,6 +63,26 @@ export default function TransactionList({ transactionsList, onNavigate }) {
 
       {/* Transaction items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {transactionsList.length === 0 && (
+          <div
+            style={{
+              padding: '24px 16px',
+              textAlign: 'center',
+              background: '#fff',
+              borderRadius: 18,
+              border: '1px dashed #cbd5e1',
+              color: '#64748b',
+            }}
+          >
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#334155' }}>
+              No transactions recorded yet
+            </p>
+            <p style={{ margin: '4px 0 0', fontSize: 11, color: '#94a3b8' }}>
+              Tap the microphone to speak your first trade or sale
+            </p>
+          </div>
+        )}
+
         {displayedTransactions.map((item) => {
           const iStyle = iconStyles[item.icon] || iconStyles.bag;
 

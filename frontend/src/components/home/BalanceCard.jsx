@@ -1,12 +1,15 @@
 import { TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-export default function BalanceCard({ balance, moneyIn, moneyOut }) {
+export default function BalanceCard({ balance = 0, moneyIn = 0, moneyOut = 0 }) {
   const { t } = useLanguage();
   const fmt = (n) => {
-    if (n >= 1_000_000) return `₦${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}m`;
-    if (n >= 1_000)     return `₦${Math.round(n / 1_000)}k`;
-    return `₦${n}`;
+    const val = Number(n) || 0;
+    const abs = Math.abs(val);
+    const sign = val < 0 ? '-' : '';
+    if (abs >= 1_000_000) return `${sign}₦${(abs / 1_000_000).toFixed(1).replace(/\.0$/, '')}m`;
+    if (abs >= 1_000)     return `${sign}₦${Math.round(abs / 1_000)}k`;
+    return `${sign}₦${abs}`;
   };
 
   return (
@@ -105,7 +108,7 @@ export default function BalanceCard({ balance, moneyIn, moneyOut }) {
             {t('home_balance')}
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
-            {fmt(balance || 142500)}
+            {fmt(balance)}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 'auto' }}>
             <BarChart2 size={13} strokeWidth={2.5} color="#888" />

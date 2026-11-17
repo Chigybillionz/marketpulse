@@ -76,7 +76,7 @@ export default function DailyInvoiceNotificationBanner({
                   textTransform: 'uppercase',
                 }}
               >
-                {isProfit ? 'PROFIT TODAY 🎉' : 'OUTFLOW TODAY'}
+                {(moneyIn === 0 && moneyOut === 0) ? 'STARTING SLIP' : isProfit ? 'PROFIT TODAY 🎉' : 'OUTFLOW TODAY'}
               </span>
             </div>
 
@@ -90,11 +90,17 @@ export default function DailyInvoiceNotificationBanner({
                 textOverflow: 'ellipsis',
               }}
             >
-              In: <strong style={{ color: '#16a34a' }}>+{fmtCurrency(moneyIn)}</strong> • Out:{' '}
-              <strong style={{ color: '#dc2626' }}>-{fmtCurrency(moneyOut)}</strong> • Conclusion:{' '}
-              <strong style={{ color: isProfit ? '#16a34a' : '#dc2626' }}>
-                {isProfit ? '+' : '-'}{fmtCurrency(net)} {isProfit ? 'Gain' : 'Outflow'}
-              </strong>
+              {(moneyIn === 0 && moneyOut === 0) ? (
+                <span>No trades recorded today • Slip updates live as you record sales</span>
+              ) : (
+                <>
+                  In: <strong style={{ color: '#16a34a' }}>+{fmtCurrency(moneyIn)}</strong> • Out:{' '}
+                  <strong style={{ color: '#dc2626' }}>-{fmtCurrency(moneyOut)}</strong> • Conclusion:{' '}
+                  <strong style={{ color: isProfit ? '#16a34a' : '#dc2626' }}>
+                    {isProfit ? '+' : '-'}{fmtCurrency(net)} {isProfit ? 'Gain' : 'Outflow'}
+                  </strong>
+                </>
+              )}
             </div>
           </div>
         </div>
