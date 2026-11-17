@@ -216,7 +216,8 @@ const hasTradePin = async (email) => {
  * Generates a 4-digit reset code and sends it via email
  */
 const generateResetPinCode = async (email) => {
-  const user = await WelcomeUser.findOne({ email });
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const user = await WelcomeUser.findOne({ email: normalizedEmail });
   if (!user) {
     throw new Error('User not found');
   }
@@ -234,22 +235,24 @@ const generateResetPinCode = async (email) => {
   user.resetPinExpires = new Date(Date.now() + 10 * 60 * 1000);
   await user.save();
 
-  // Send the email
-  await EmailService.sendResetCodeEmail(email, code);
+  // Send the email (safe delivery check)
+  const delivery = await EmailService.sendResetCodeEmail(normalizedEmail, code);
 
-  return true;
+  return { success: true, code, delivery };
 };
 
 /**
  * Verifies if the reset code is valid and not expired
  */
 const verifyResetPinCode = async (email, code) => {
-  const user = await WelcomeUser.findOne({ email });
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const normalizedCode = String(code || '').trim();
+  const user = await WelcomeUser.findOne({ email: normalizedEmail });
   if (!user) {
     throw new Error('User not found');
   }
 
-  if (!user.resetPinCode || user.resetPinCode !== code) {
+  if (!user.resetPinCode || user.resetPinCode !== normalizedCode) {
     throw new Error('Invalid reset code');
   }
 
@@ -264,10 +267,11 @@ const verifyResetPinCode = async (email, code) => {
  * Overwrites the trade PIN using a verified reset code
  */
 const resetTradePin = async (email, code, newPin) => {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
   // First verify the code is still valid
-  await verifyResetPinCode(email, code);
+  await verifyResetPinCode(normalizedEmail, code);
 
-  const user = await WelcomeUser.findOne({ email });
+  const user = await WelcomeUser.findOne({ email: normalizedEmail });
 
   user.tradePin = newPin;
   // Clear the reset fields
@@ -282,9 +286,10 @@ const resetTradePin = async (email, code, newPin) => {
  * Overwrites the account password using a verified reset code
  */
 const resetPassword = async (email, code, newPassword) => {
-  await verifyResetPinCode(email, code);
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  await verifyResetPinCode(normalizedEmail, code);
 
-  const user = await WelcomeUser.findOne({ email });
+  const user = await WelcomeUser.findOne({ email: normalizedEmail });
   user.password = newPassword;
   user.resetPinCode = undefined;
   user.resetPinExpires = undefined;
@@ -297,7 +302,8 @@ const resetPassword = async (email, code, newPassword) => {
  * Generates a 4-digit reset code for password reset and sends it via email
  */
 const generateResetPasswordCode = async (email) => {
-  const user = await WelcomeUser.findOne({ email });
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const user = await WelcomeUser.findOne({ email: normalizedEmail });
   if (!user) {
     throw new Error('User not found');
   }
@@ -313,9 +319,9 @@ const generateResetPasswordCode = async (email) => {
   user.resetPinExpires = new Date(Date.now() + 10 * 60 * 1000);
   await user.save();
 
-  await EmailService.sendPasswordResetCodeEmail(email, code);
+  const delivery = await EmailService.sendPasswordResetCodeEmail(normalizedEmail, code);
 
-  return true;
+  return { success: true, code, delivery };
 };
 
 /**

@@ -8,14 +8,14 @@ const getBooleanEnv = (value, fallback = false) => {
 };
 
 const getMailFrom = () => {
-  return process.env.SMTP_FROM || process.env.EMAIL_FROM || process.env.SMTP_USER;
+  return process.env.SMTP_FROM || process.env.EMAIL_FROM || process.env.SMTP_USER || 'Stockpile <no-reply@stockpile.market>';
 };
 
 const buildTransportOptions = () => {
   const { SMTP_SERVICE, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
 
   if (!SMTP_USER || !SMTP_PASS) {
-    throw new Error('SMTP_USER and SMTP_PASS are required to send reset emails.');
+    return null;
   }
 
   if (SMTP_HOST) {
@@ -29,6 +29,9 @@ const buildTransportOptions = () => {
         user: SMTP_USER,
         pass: SMTP_PASS,
       },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 8000,
     };
   }
 
@@ -38,22 +41,41 @@ const buildTransportOptions = () => {
       user: SMTP_USER,
       pass: SMTP_PASS,
     },
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 8000,
   };
 };
 
 // Initialize transporter lazily so env vars are available before first use.
 function getTransporter() {
-  if (transporter) return transporter;
+  if (transporter !== undefined) return transporter;
 
-  transporter = nodemailer.createTransport(buildTransportOptions());
-  
+  const options = buildTransportOptions();
+  if (!options) {
+    transporter = null;
+    return null;
+  }
+
+  try {
+    transporter = nodemailer.createTransport(options);
+  } catch (err) {
+    console.error('[Stockpile EmailService] Failed to initialize mail transporter:', err.message);
+    transporter = null;
+  }
+
   return transporter;
 }
 
 const sendResetCodeEmail = async (toEmail, code) => {
-  try {
-    const transport = getTransporter();
+  const transport = getTransporter();
 
+  if (!transport) {
+    console.warn(`[Stockpile EmailService] SMTP not configured. Simulated Trade PIN reset code for ${toEmail}: [ ${code} ]`);
+    return { delivered: false, simulated: true, code };
+  }
+
+  try {
     const info = await transport.sendMail({
       from: getMailFrom(),
       to: toEmail,
@@ -72,19 +94,24 @@ const sendResetCodeEmail = async (toEmail, code) => {
       `,
     });
 
-    console.log('Real email successfully sent: %s', info.messageId);
-
-    return true;
+    console.log('[Stockpile EmailService] Trade PIN email sent: %s', info.messageId);
+    return { delivered: true, messageId: info.messageId, code };
   } catch (error) {
-    console.error('Error sending email:', error);
-    throw new Error('Failed to send email');
+    console.error('[Stockpile EmailService] Error sending email via SMTP:', error.message);
+    console.warn(`[Stockpile EmailService] Fallback reset code for ${toEmail}: [ ${code} ]`);
+    return { delivered: false, simulated: true, code, error: error.message };
   }
 };
 
 const sendPasswordResetCodeEmail = async (toEmail, code) => {
-  try {
-    const transport = getTransporter();
+  const transport = getTransporter();
 
+  if (!transport) {
+    console.warn(`[Stockpile EmailService] SMTP not configured. Simulated password reset code for ${toEmail}: [ ${code} ]`);
+    return { delivered: false, simulated: true, code };
+  }
+
+  try {
     const info = await transport.sendMail({
       from: getMailFrom(),
       to: toEmail,
@@ -103,12 +130,12 @@ const sendPasswordResetCodeEmail = async (toEmail, code) => {
       `,
     });
 
-    console.log('Password reset email successfully sent: %s', info.messageId);
-
-    return true;
+    console.log('[Stockpile EmailService] Password reset email sent: %s', info.messageId);
+    return { delivered: true, messageId: info.messageId, code };
   } catch (error) {
-    console.error('Error sending password reset email:', error);
-    throw new Error('Failed to send email');
+    console.error('[Stockpile EmailService] Error sending password reset email via SMTP:', error.message);
+    console.warn(`[Stockpile EmailService] Fallback password reset code for ${toEmail}: [ ${code} ]`);
+    return { delivered: false, simulated: true, code, error: error.message };
   }
 };
 

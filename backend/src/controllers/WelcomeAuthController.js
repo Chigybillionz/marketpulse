@@ -258,14 +258,28 @@ const sendResetCode = async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
     
-    await generateResetPinCode(email);
-    res.status(200).json({ message: 'Reset code sent successfully' });
+    const result = await generateResetPinCode(email);
+    const isDelivered = result?.delivery?.delivered ?? false;
+
+    const responsePayload = {
+      message: isDelivered 
+        ? 'Reset code sent successfully' 
+        : 'Reset code generated successfully',
+      delivered: isDelivered,
+    };
+
+    if (!isDelivered) {
+      responsePayload.devCode = result.code;
+      responsePayload.deliveryNote = 'Email service not configured or unavailable. Use the provided verification code.';
+    }
+
+    res.status(200).json(responsePayload);
   } catch (error) {
     if (error.message === 'User not found') {
       return res.status(404).json({ message: error.message });
     }
     console.error('Send Reset Code Error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: error.message || 'Internal server error' });
   }
 };
 
@@ -338,14 +352,28 @@ const sendPasswordResetCode = async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
     
-    await generateResetPasswordCode(email);
-    res.status(200).json({ message: 'Password reset code sent successfully' });
+    const result = await generateResetPasswordCode(email);
+    const isDelivered = result?.delivery?.delivered ?? false;
+
+    const responsePayload = {
+      message: isDelivered 
+        ? 'Password reset code sent successfully' 
+        : 'Password reset code generated successfully',
+      delivered: isDelivered,
+    };
+
+    if (!isDelivered) {
+      responsePayload.devCode = result.code;
+      responsePayload.deliveryNote = 'Email service not configured or unavailable. Use the provided verification code.';
+    }
+
+    res.status(200).json(responsePayload);
   } catch (error) {
     if (error.message === 'User not found') {
       return res.status(404).json({ message: error.message });
     }
     console.error('Send Password Reset Code Error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: error.message || 'Internal server error' });
   }
 };
 

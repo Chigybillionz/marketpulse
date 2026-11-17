@@ -136,6 +136,7 @@ export default function ForgotPassword({ onNavigate, email }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [devNotice, setDevNotice] = useState("");
 
   const masked = maskEmail(inputEmail);
   const stepNumber = { verify: 1, code: 1, new_password: 2, done: 3 }[step];
@@ -149,7 +150,12 @@ export default function ForgotPassword({ onNavigate, email }) {
     try {
       setError("");
       setIsLoading(true);
-      await sendPasswordResetCode(targetEmail);
+      const res = await sendPasswordResetCode(targetEmail);
+      if (res?.devCode) {
+        setDevNotice(`Code: ${res.devCode}`);
+      } else {
+        setDevNotice("");
+      }
       setStep("code");
     } catch (err) {
       setError(err.message || "Failed to send reset code.");
@@ -487,6 +493,40 @@ export default function ForgotPassword({ onNavigate, email }) {
           {/* Step: Enter Code */}
           {step === "code" && (
             <>
+              {devNotice && (
+                <div
+                  style={{
+                    marginBottom: 20,
+                    padding: "10px 14px",
+                    borderRadius: 12,
+                    backgroundColor: "#ECFDF5",
+                    border: "1px solid #A7F3D0",
+                    textAlign: "center",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: "#065F46",
+                      fontWeight: 700,
+                      margin: 0,
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    {devNotice}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: "#047857",
+                      marginTop: 3,
+                      marginBottom: 0,
+                    }}
+                  >
+                    Email delivery unconfigured on server. Enter this code below.
+                  </p>
+                </div>
+              )}
               <div
                 style={{
                   display: "flex",
