@@ -186,7 +186,7 @@ export default function InventorySection() {
             <div>
               <h3 className="mb-2 font-bold text-gray-900">Smart Reorder Points</h3>
               <p className="text-sm leading-relaxed text-gray-600">
-                Set minimum stock levels for each product. MarketPulse tracks usage
+                Set minimum stock levels for each product. Stockpile tracks usage
                 patterns and suggests optimal reorder quantities.
               </p>
             </div>

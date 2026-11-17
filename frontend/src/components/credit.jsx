@@ -91,7 +91,7 @@ function DebtorCard({ debtor, businessName, email, onNavigate, onRemindSuccess, 
 
     const message = t("credit_remind_msg", "Hello {name}, this is a friendly reminder from {store} regarding your outstanding balance of {amount}. Thank you!", {
       name: debtor.customerName,
-      store: businessName || "MarketPulse",
+      store: businessName || "Stockpile",
       amount: `₦${debtor.totalOwed.toLocaleString()}`
     });
     const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;

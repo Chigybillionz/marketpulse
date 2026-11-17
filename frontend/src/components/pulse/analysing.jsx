@@ -147,7 +147,7 @@ export default function Analysing({ onNavigate, businessName }) {
   }, [onNavigate, location.state]);
 
   return (
-    <main className="listening-page" aria-label="MarketPulse AI speech analysis screen">
+    <main className="listening-page" aria-label="Stockpile AI speech analysis screen">
       <section
         className="listening-phone analysing-phone"
         style={{ '--analysis-duration': `${ANALYSIS_DURATION_MS}ms` }}
@@ -182,7 +182,7 @@ export default function Analysing({ onNavigate, businessName }) {
               <circle className="analysing-ring-progress" cx="120" cy="120" r="98" />
             </svg>
             <span className="analysing-sparkles" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img src="/mylogo.png" alt="MarketPulse AI logo" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+              <img src="/stockpile-mark.png" alt="Stockpile AI logo" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
             </span>
           </div>
 

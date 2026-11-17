@@ -190,7 +190,7 @@ export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
               How We Use Your Data
             </h3>
             <p className="privacy-lead">
-              MarketPulse AI leverages your information to create a bespoke
+              Stockpile AI leverages your information to create a bespoke
               trading environment. Our proprietary AI models analyze
               high-frequency data to provide you with a competitive edge in the
               Nigerian markets.
@@ -260,9 +260,9 @@ export default function PrivacyPolicy({ onNavigate, onClose, onBack }) {
               Have questions about our privacy practices? Our compliance team is
               available 24/7.
             </p>
-            <a className="privacy-mail" href="mailto:privacy@marketpulse.ai">
+            <a className="privacy-mail" href="mailto:privacy@stockpile.ai">
               <Icon name="mail" />
-              privacy@marketpulse.ai
+              privacy@stockpile.ai
             </a>
           </section>
         </div>

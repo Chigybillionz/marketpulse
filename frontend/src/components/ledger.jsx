@@ -106,8 +106,8 @@ export default function Ledger({ onNavigate, email }) {
     <main className="ledger-page">
       <section className="ledger-panel" aria-label="Ledger security summary">
         <div className="ledger-panel-brand">
-          <img src="/mylogo.png" alt="MarketPulse AI logo" />
-          <span>MarketPulse AI</span>
+          <img src="/stockpile-mark.png" alt="Stockpile AI logo" />
+          <span>Stockpile AI</span>
         </div>
 
         <div className="ledger-panel-copy">
@@ -147,8 +147,8 @@ export default function Ledger({ onNavigate, email }) {
               <BackArrowIcon />
             </button>
             <div className="ledger-mobile-brand">
-              <img src="/mylogo.png" alt="MarketPulse AI logo" />
-              <span>MarketPulse AI</span>
+              <img src="/stockpile-mark.png" alt="Stockpile AI logo" />
+              <span>Stockpile AI</span>
             </div>
             <span className="ledger-nav-spacer" aria-hidden="true" />
           </header>

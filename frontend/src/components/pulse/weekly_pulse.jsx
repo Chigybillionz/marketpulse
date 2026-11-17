@@ -252,7 +252,7 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
     if (ttsUsed && audioUrlRef.current) {
       const link = document.createElement("a");
       link.href = audioUrlRef.current;
-      link.download = `MarketPulse-${periodMeta.label}-Summary-${stats?.periodKey || stats?.weekKey || new Date().toISOString().slice(0, 10)}.wav`;
+      link.download = `Stockpile-${periodMeta.label}-Summary-${stats?.periodKey || stats?.weekKey || new Date().toISOString().slice(0, 10)}.wav`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -260,13 +260,13 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
     }
 
     // Fallback: save the spoken script as a text file
-    const blob = new Blob([`MarketPulse Weekly Summary\n\n${script}`], {
+    const blob = new Blob([`Stockpile Weekly Summary\n\n${script}`], {
       type: "text/plain;charset=utf-8",
     });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `MarketPulse-${periodMeta.label}-Summary-${stats?.periodKey || stats?.weekKey || new Date().toISOString().slice(0, 10)}.txt`;
+    link.download = `Stockpile-${periodMeta.label}-Summary-${stats?.periodKey || stats?.weekKey || new Date().toISOString().slice(0, 10)}.txt`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -293,8 +293,8 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
       : status === "error"
         ? (errorMsg || t("pulse_error_gen", "Could not load your summary."))
         : ttsUsed
-          ? `MarketPulse AI • ${t("pulse_listen", "Tap play to listen")}`
-          : `MarketPulse AI • Voice preview`;
+          ? `Stockpile AI • ${t("pulse_listen", "Tap play to listen")}`
+          : `Stockpile AI • Voice preview`;
 
   return (
     <AppShell
@@ -639,7 +639,7 @@ export default function WeeklyPulse({ onNavigate, businessName, initialPeriod = 
                   ? stats.net >= 0
                     ? `You took in ₦${Math.round(stats.moneyIn).toLocaleString()} and spent ₦${Math.round(stats.moneyOut).toLocaleString()} ${periodMeta.suffix}, keeping ₦${Math.round(stats.net).toLocaleString()}. Consider setting aside a share of that surplus before restocking.`
                     : `Spending outpaced income ${periodMeta.suffix} by ₦${Math.abs(Math.round(stats.net)).toLocaleString()}. Review your biggest expenses before placing your next order.`
-                  : "Record your sales and expenses every day so MarketPulse can give you smart, personalized advice here."}
+                  : "Record your sales and expenses every day so Stockpile can give you smart, personalized advice here."}
               </p>
             </div>
           </section>

@@ -61,7 +61,7 @@ const sendResetCodeEmail = async (toEmail, code) => {
       text: `Your reset code is ${code}. It expires in 10 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
-          <h2 style="color: #052e16;">MarketPulse AI</h2>
+          <h2 style="color: #052e16;">Stockpile AI</h2>
           <p>Hi there,</p>
           <p>You requested a Trade PIN reset. Here is your 4-digit reset code:</p>
           <div style="margin: 20px 0; padding: 15px; background-color: #f8fafc; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #1e293b;">
@@ -92,7 +92,7 @@ const sendPasswordResetCodeEmail = async (toEmail, code) => {
       text: `You requested a password reset. Your code is ${code}. It expires in 10 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
-          <h2 style="color: #052e16;">MarketPulse AI</h2>
+          <h2 style="color: #052e16;">Stockpile AI</h2>
           <p>Hi there,</p>
           <p>You requested a password reset. Here is your 4-digit reset code:</p>
           <div style="margin: 20px 0; padding: 15px; background-color: #f8fafc; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #1e293b;">

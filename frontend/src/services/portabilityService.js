@@ -61,7 +61,7 @@ export const downloadExportFile = async (exportId, fileName, email = null) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = fileName || 'MarketPulse_Export';
+    link.download = fileName || 'Stockpile_Export';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

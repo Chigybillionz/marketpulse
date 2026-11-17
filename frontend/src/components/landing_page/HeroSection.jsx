@@ -254,7 +254,7 @@ export default function HeroSection({ onNavigate, onVoiceStateChange }) {
   return (
     <section
       ref={sectionRef}
-      aria-label="MarketPulse AI introduction"
+      aria-label="Stockpile AI introduction"
       className="relative w-full overflow-hidden bg-white"
     >
       {/* ── Ambient atmosphere (parallax: slowest layer) ── */}
@@ -375,7 +375,7 @@ export default function HeroSection({ onNavigate, onVoiceStateChange }) {
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#064E3B] text-white">
                     <Activity size={14} />
                   </div>
-                  <span className="text-sm font-bold text-gray-900">MarketPulse</span>
+                  <span className="text-sm font-bold text-gray-900">Stockpile</span>
                   <span className="ml-1 hidden rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 sm:inline">
                     Live
                   </span>
@@ -717,7 +717,7 @@ export default function HeroSection({ onNavigate, onVoiceStateChange }) {
             <div className="pointer-events-none absolute left-0 right-0 top-0 z-10 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent p-4">
               <div className="flex items-center gap-2 text-white">
                 <Play size={20} fill="currentColor" />
-                <span className="text-sm font-bold md:text-base">MarketPulse AI Demo</span>
+                <span className="text-sm font-bold md:text-base">Stockpile AI Demo</span>
               </div>
               <button
                 onClick={() => setShowDemoVideo(false)}

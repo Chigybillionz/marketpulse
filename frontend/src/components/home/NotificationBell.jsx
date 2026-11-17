@@ -285,6 +285,31 @@ export default function NotificationBell() {
               </div>
             </div>
 
+            {/* Daily Invoice Direct Access */}
+            <div style={{ padding: '8px 16px', background: '#ecfdf5', borderBottom: '1px solid #d1fae5', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#064e3b' }}>
+                📋 Today's Closing Invoice
+              </span>
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  window.dispatchEvent(new CustomEvent('openDailyClosingInvoice'));
+                }}
+                style={{
+                  background: '#064e3b',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '4px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                View Slip
+              </button>
+            </div>
+
             <div className="notification-panel-body">
               {loading ? (
                 <div className="notification-empty">

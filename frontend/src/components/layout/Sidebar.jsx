@@ -29,10 +29,10 @@ export default function Sidebar({ active, onNavigate, businessName }) {
       <div className="mp-side-brand">
         <img
           className="mp-side-brand__logo"
-          src="/mylogo.png"
-          alt="MarketPulse logo"
+          src="/stockpile-mark.png"
+          alt="Stockpile logo"
         />
-        MarketPulse
+        Stockpile
       </div>
 
       <nav className="mp-side-nav">

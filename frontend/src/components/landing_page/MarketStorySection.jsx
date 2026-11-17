@@ -29,10 +29,10 @@ export default function MarketStorySection() {
             />
             <div className="pl-4 md:pl-0">
               <p className="text-base font-medium leading-relaxed text-gray-600 md:text-lg">
-                {t('landing_story_p1') || "MarketPulse started with a simple observation: market traders are incredible at what they do, but their bookkeeping often holds them back. Spreadsheets are tedious. Paper receipts get lost. And by the end of the week, it's hard to remember where every naira went."}
+                {t('landing_story_p1') || "Stockpile started with a simple observation: market traders are incredible at what they do, but their bookkeeping often holds them back. Spreadsheets are tedious. Paper receipts get lost. And by the end of the week, it's hard to remember where every naira went."}
               </p>
               <p className="mt-4 text-base font-medium leading-relaxed text-gray-600 md:text-lg">
-                {t('landing_story_p2') || "We built MarketPulse to change that. Speak naturally, like you're telling a friend about your day. Our AI understands context, categorizes transactions, and gives you real-time insights about your business health — all without touching a spreadsheet."}
+                {t('landing_story_p2') || "We built Stockpile to change that. Speak naturally, like you're telling a friend about your day. Our AI understands context, categorizes transactions, and gives you real-time insights about your business health — all without touching a spreadsheet."}
               </p>
             </div>
 

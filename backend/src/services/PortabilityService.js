@@ -92,7 +92,7 @@ async function collectUserData(userId, email) {
 function buildJsonExport(data) {
   const payload = {
     metadata: {
-      application: 'MarketPulse AI',
+      application: 'Stockpile AI',
       export_version: '2.0',
       export_timestamp: new Date().toISOString(),
       account_email: data.user.email,
@@ -167,7 +167,7 @@ function buildCsvExport(data) {
 
   // Header & Metadata
   lines.push('# =====================================================================');
-  lines.push('# MARKETPULSE AI — USER DATA EXPORT ARCHIVE');
+  lines.push('# STOCKPILE AI — USER DATA EXPORT ARCHIVE');
   lines.push(`# Export Generated: ${new Date().toISOString()}`);
   lines.push(`# Account Email: ${data.user.email}`);
   lines.push(`# Store / Business: ${data.user.businessName}`);
@@ -315,7 +315,7 @@ async function requestExport(userId, email, format = 'CSV', pin = null) {
   let fileName = '';
   if (normalizedFormat === 'JSON') {
     exportContent = buildJsonExport(data);
-    fileName = `MarketPulse_${data.user.businessName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${month}_${year}.json`;
+    fileName = `Stockpile_${data.user.businessName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${month}_${year}.json`;
   } else {
     exportContent = buildCsvExport(data);
     fileName = `Trade_History_${month}_${day}_${year}.csv`;

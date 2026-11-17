@@ -84,7 +84,7 @@ export default function DebtorProfile({ onNavigate, businessName, email }) {
       phone = phone.substring(1);
     }
 
-    const message = `Hello ${debtor.customerName}, this is a friendly reminder from ${businessName || "MarketPulse"} regarding your outstanding balance of ₦${debtor.totalOwed.toLocaleString()}. Thank you!`;
+    const message = `Hello ${debtor.customerName}, this is a friendly reminder from ${businessName || "Stockpile"} regarding your outstanding balance of ₦${debtor.totalOwed.toLocaleString()}. Thank you!`;
     const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
     setReminding(true);

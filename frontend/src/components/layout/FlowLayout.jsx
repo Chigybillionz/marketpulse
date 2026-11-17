@@ -33,10 +33,10 @@ export default function FlowLayout({
         <div className="mp-flow-brand">
           <img
             className="mp-flow-brand__logo"
-            src="/mylogo.png"
-            alt={t("flow_brand_title") || "MarketPulse AI logo"}
+            src="/stockpile-mark.png"
+            alt={t("flow_brand_title") || "Stockpile AI logo"}
           />
-          {t("flow_brand_title") || "MarketPulse AI"}
+          {t("flow_brand_title") || "Stockpile AI"}
         </div>
         <h1 className="mp-flow-headline">{displayHeadline}</h1>
         <p className="mp-flow-sub">{displaySub}</p>

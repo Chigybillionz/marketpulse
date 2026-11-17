@@ -165,7 +165,7 @@ async function generateScript(stats) {
     model: process.env.GEMINI_MODEL || "gemini-3.6-flash",
   });
 
-  const prompt = `You are the voice of "MarketPulse", a friendly financial co-pilot for Nigerian market traders.
+  const prompt = `You are the voice of "Stockpile", a friendly financial co-pilot for Nigerian market traders.
 Write a short spoken ${config.label.toLowerCase()} business summary script for the trader.
 
 Business: ${businessName}
@@ -208,7 +208,7 @@ function buildFallbackScript(stats) {
       : `You spent ${spokenNaira(Math.abs(net))} more than you took in ${config.noun}, so it is worth reviewing your biggest expenses.`;
   const topLine = topMoving
     ? `Your top moving item was ${topMoving.description}, bringing about ${spokenNaira(topMoving.total)} in activity.`
-    : `Keep recording every sale so MarketPulse can spot your best performers.`;
+    : `Keep recording every sale so Stockpile can spot your best performers.`;
   return `Hello ${businessName}, here is your ${config.label.toLowerCase()} pulse. ${config.scope} you took in ${spokenNaira(moneyIn)} and spent ${spokenNaira(moneyOut)}. ${direction} ${topLine} Small, steady records lead to big, steady profits. ${config.signoff}`;
 }
 

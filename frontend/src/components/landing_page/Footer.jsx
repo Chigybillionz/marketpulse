@@ -119,7 +119,7 @@ export default function Footer({ onNavigate }) {
         {/* Bottom bar */}
         <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm font-semibold text-gray-400">
-            {t('landing_footer_rights') || '© 2024 MarketPulse AI. All rights reserved.'}
+            {t('landing_footer_rights') || '© 2026 Stockpile AI. All rights reserved.'}
           </p>
           <div className="flex items-center gap-4">
             <a

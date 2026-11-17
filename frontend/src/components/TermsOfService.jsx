@@ -4,7 +4,7 @@ const SECTIONS = [
     icon: "info",
     title: "1. Introduction",
     body: [
-      'Welcome to MarketPulse AI. These Terms of Service ("Terms") govern your access to and use of our financial analysis platform, including our artificial intelligence tools, data feeds, and algorithmic services.',
+      'Welcome to Stockpile AI. These Terms of Service ("Terms") govern your access to and use of our financial analysis platform, including our artificial intelligence tools, data feeds, and algorithmic services.',
       "By accessing or using our services, you confirm that you are at least 18 years old and have the legal capacity to enter into this agreement in the Federal Republic of Nigeria.",
     ],
   },
@@ -26,10 +26,10 @@ const SECTIONS = [
     icon: "rights",
     title: "3. Usage Rights",
     body: [
-      "MarketPulse AI grants you a limited, non-exclusive, non-transferable license to access our proprietary insights for personal or internal business use. You may not:",
+      "Stockpile AI grants you a limited, non-exclusive, non-transferable license to access our proprietary insights for personal or internal business use. You may not:",
     ],
     quote:
-      "Scrape, harvest, or utilize automated systems to extract data from MarketPulse AI for the purpose of reselling or redistribution to third parties.",
+      "Scrape, harvest, or utilize automated systems to extract data from Stockpile AI for the purpose of reselling or redistribution to third parties.",
   },
   {
     id: "privacy",
@@ -45,7 +45,7 @@ const SECTIONS = [
     title: "5. Limitation of Liability",
     lead: "IMPORTANT: Financial markets involve significant risk.",
     body: [
-      "MarketPulse AI provides information for educational and analytical purposes only. We are NOT a registered financial advisor. Under no circumstances shall MarketPulse AI be liable for any trading losses or financial damages resulting from your use of the platform.",
+      "Stockpile AI provides information for educational and analytical purposes only. We are NOT a registered financial advisor. Under no circumstances shall Stockpile AI be liable for any trading losses or financial damages resulting from your use of the platform.",
     ],
   },
   {
@@ -143,7 +143,7 @@ export default function TermsOfService({ onNavigate, onClose, onBack }) {
             </div>
             <h2>Terms of Service</h2>
             <p>
-              Please read these terms carefully before using MarketPulse AI.
+              Please read these terms carefully before using Stockpile AI.
               Your use of the platform constitutes agreement to these binding
               legal terms.
             </p>

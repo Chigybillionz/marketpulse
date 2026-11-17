@@ -32,7 +32,7 @@ export default function FeaturesPage({ onNavigate }) {
           Effortless Financial Control.
         </h1>
         <p className="text-base md:text-lg text-gray-600 font-medium leading-relaxed mb-10 max-w-2xl mx-auto">
-          MarketPulse AI transforms bookkeeping from a chore into a simple conversation. Speak your transactions, and let our intelligent engine handle the rest with real-time insights and bank-grade security.
+          Stockpile AI transforms bookkeeping from a chore into a simple conversation. Speak your transactions, and let our intelligent engine handle the rest with real-time insights and bank-grade security.
         </p>
         <button onClick={handleGetStarted} className="bg-[#064E3B] text-white px-8 py-3.5 rounded-xl font-bold inline-flex items-center justify-center gap-3 hover:bg-[#043d2e] transition-colors shadow-lg shadow-green-900/20">
           <Mic size={18} /> Try Voice Bookkeeping
@@ -126,7 +126,7 @@ export default function FeaturesPage({ onNavigate }) {
       <section className="w-full bg-[#EBF3FF] py-20 md:py-24 text-center px-4 sm:px-6">
          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">Ready to simplify your finances?</h2>
          <p className="text-gray-600 font-medium mb-10 max-w-lg mx-auto">
-            Join thousands of micro-entrepreneurs who have reclaimed their time with MarketPulse AI.
+            Join thousands of micro-entrepreneurs who have reclaimed their time with Stockpile AI.
          </p>
          <button onClick={handleGetStarted} className="bg-[#064E3B] text-white px-8 py-3.5 rounded-xl font-bold hover:bg-[#043d2e] transition-colors shadow-lg">
             Start Your Free Trial
@@ -137,7 +137,7 @@ export default function FeaturesPage({ onNavigate }) {
       <footer className="border-t border-gray-200 bg-white pt-10 pb-10">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-               <span className="text-lg md:text-xl font-extrabold text-[#064E3B]">MarketPulse AI</span>
+               <span className="text-lg md:text-xl font-extrabold text-[#064E3B]">Stockpile AI</span>
             </div>
             
             <div className="flex items-center gap-8 text-sm font-bold text-gray-500">
@@ -147,7 +147,7 @@ export default function FeaturesPage({ onNavigate }) {
             </div>
 
             <div className="text-sm font-semibold text-gray-400">
-               © 2024 MarketPulse AI. All rights reserved.
+               © 2026 Stockpile AI. All rights reserved.
             </div>
          </div>
       </footer>
