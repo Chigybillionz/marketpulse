@@ -142,23 +142,7 @@ export default function Homepage({
             onOpenInvoice={() => setShowInvoiceModal(true)}
           />
 
-          <PrimaryWalletCard
-            balance={balance}
-            moneyIn={moneyIn}
-            moneyOut={moneyOut}
-            onNavigate={onNavigate}
-            onVoiceRecord={() => onNavigate("listeng")}
-          />
-
-          <QuickActionsGrid
-            onOpenShelf={() => setShowShelfDrawer(true)}
-            onOpenValuation={() => setShowValuationDrawer(true)}
-            onOpenAudioPulse={() => setShowPulseDrawer(true)}
-            onOpenDayClose={() => setShowInvoiceModal(true)}
-            onNavigate={onNavigate}
-            onVoiceLog={() => onNavigate("listeng")}
-            needsRestockCount={needsRestockCount}
-          />
+          <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
 
           <div className="mp-home-grid">
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
