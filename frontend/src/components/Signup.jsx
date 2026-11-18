@@ -5,6 +5,7 @@ import { useLanguage } from "../i18n/LanguageContext";
 import FlowLayout from "./layout/FlowLayout";
 import TermsOfService from "./TermsOfService";
 import PrivacyPolicy from "./PrivacyPolicy";
+import AuthImageSlider from "./AuthImageSlider";
 
 export default function Signup({
   onNavigate,
@@ -168,67 +169,24 @@ export default function Signup({
           </div>
         </header>
 
-        <div style={{ width: "100%", height: 330, position: "relative", overflow: "hidden", flexShrink: 0, backgroundColor: "#EAECEF" }}>
-          {/* Vibrant Image Layer */}
-          <img
-            src="/signup-welcome-bg.jpg"
-            alt=""
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center 20%",
-              opacity: 0.68,
-              filter: "contrast(1.12) saturate(1.3) brightness(1.02)",
-              pointerEvents: "none",
-            }}
-          />
-
-          {/* Soft natural gradient: transparent at top/center to showcase vibrant colors, smooth fade to white at bottom */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(180deg, rgba(238,241,245,0.1) 0%, rgba(255,255,255,0.2) 40%, rgba(255,255,255,0.65) 80%, #ffffff 100%)",
-              pointerEvents: "none",
-            }}
-          />
-
-          {/* Top Layer: Icon, Create Account text, and Description */}
-          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, zIndex: 5 }}>
-            <div
-              style={{
-                width: 76,
-                height: 76,
-                borderRadius: "50%",
-                backgroundColor: "#1B3D2F",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 6px 24px rgba(0,0,0,0.30)",
-                flexShrink: 0,
-              }}
-            >
-              <svg width="34" height="28" viewBox="0 0 34 28" fill="none">
-                <rect x="1" y="5" width="32" height="22" rx="3.5" stroke="white" strokeWidth="2" />
-                <path d="M1 11h32" stroke="white" strokeWidth="2" />
-                <rect x="21" y="15.5" width="9" height="6" rx="2" fill="white" />
-                <path d="M5 5V3.5C5 2.12 6.12 1 7.5 1h19C27.88 1 29 2.12 29 3.5V5" stroke="white" strokeWidth="1.8" />
-              </svg>
-            </div>
-            <div style={{ textAlign: "center", padding: "0 32px", width: "100%" }}>
-              <h1 style={{ fontSize: 27, fontWeight: 800, color: "#111827", letterSpacing: "-0.5px", marginBottom: 8, lineHeight: 1.2, textAlign: "center" }}>
-                {t("signup_create_account")}
-              </h1>
-              <p style={{ fontSize: 14.5, color: "#374151", lineHeight: 1.6, maxWidth: 240, margin: "0 auto", textAlign: "center" }}>
-                {t("signup_subtitle")}
-              </p>
-            </div>
-          </div>
-        </div>
+        <AuthImageSlider
+          icon={
+            <svg width="34" height="28" viewBox="0 0 34 28" fill="none">
+              <rect x="1" y="5" width="32" height="22" rx="3.5" stroke="white" strokeWidth="2" />
+              <path d="M1 11h32" stroke="white" strokeWidth="2" />
+              <rect x="21" y="15.5" width="9" height="6" rx="2" fill="white" />
+              <path d="M5 5V3.5C5 2.12 6.12 1 7.5 1h19C27.88 1 29 2.12 29 3.5V5" stroke="white" strokeWidth="1.8" />
+            </svg>
+          }
+          title={t("signup_create_account")}
+          subtitle={t("signup_subtitle")}
+          images={[
+            "/signup-welcome-bg.jpg",
+            "/auth-retailer-orange.jpg",
+            "/auth-shopper-braids.jpg",
+          ]}
+          intervalMs={2000}
+        />
 
         <div style={{ flex: 1, backgroundColor: "white", padding: "28px 24px 24px" }}>
           <div style={{ marginBottom: 22 }}>
