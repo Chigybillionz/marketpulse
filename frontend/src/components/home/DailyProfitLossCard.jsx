@@ -96,7 +96,13 @@ function parseVoiceRestock(transcript) {
   return { detectedAmount, itemName, detectedQty, detectedUnit, matchedProduct };
 }
 
-export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavigate, onOpenInvoice }) {
+export default function DailyProfitLossCard({
+  moneyIn = 0,
+  moneyOut = 0,
+  onNavigate,
+  onOpenInvoice,
+  mode = 'all',
+}) {
   const { t } = useLanguage();
 
   // Card 1 (Daily Profit/Loss): Dedicated Lock (only locks) and Open (only opens)
@@ -297,6 +303,7 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
       )}
 
       {/* ── CARD 1: SIMPLE DAILY PROFIT / LOSS (PLAIN FORMAT FOR TRADERS) ── */}
+      {mode !== 'valuation' && (
       <div
         style={{
           background: isProfit
@@ -612,8 +619,10 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
           </>
         )}
       </div>
+      )}
 
       {/* ── CARD 2: TOTAL GOODS IN SHOP / BUSINESS VALUATION ── */}
+      {mode !== 'profit' && (
       <div
         style={{
           background: '#ffffff',
@@ -1013,6 +1022,7 @@ export default function DailyProfitLossCard({ moneyIn = 0, moneyOut = 0, onNavig
           )}
         </div>
       </div>
+      )}
 
       {/* ── MODAL 1: ADD RESTOCK GOODS AMOUNT ── */}
       {showRestockModal && (

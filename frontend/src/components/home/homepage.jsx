@@ -11,6 +11,10 @@ import DailyProfitLossCard from "./DailyProfitLossCard";
 import GoodsStockIndicator from "./GoodsStockIndicator";
 import DailyInvoiceNotificationBanner from "./DailyInvoiceNotificationBanner";
 import DailyClosingInvoiceModal from "./DailyClosingInvoiceModal";
+import QuickActionsGrid from "./QuickActionsGrid";
+import PrimaryWalletCard from "./PrimaryWalletCard";
+import HomeServiceDrawer from "./HomeServiceDrawer";
+import { getProducts } from "../../services/productService";
 
 export default function Homepage({
   onNavigate,
@@ -22,6 +26,31 @@ export default function Homepage({
 }) {
   const isDesktop = useIsDesktop();
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [showShelfDrawer, setShowShelfDrawer] = useState(false);
+  const [showValuationDrawer, setShowValuationDrawer] = useState(false);
+  const [showPulseDrawer, setShowPulseDrawer] = useState(false);
+  const [needsRestockCount, setNeedsRestockCount] = useState(0);
+
+  // Check low stock count for Quick Action badge
+  useEffect(() => {
+    const checkStockAlerts = async () => {
+      try {
+        const prods = await getProducts();
+        if (Array.isArray(prods)) {
+          const count = prods.filter(
+            (p) => (p.quantityInStock || 0) <= (p.lowStockThreshold || 10)
+          ).length;
+          setNeedsRestockCount(count);
+        }
+      } catch (err) {
+        console.error("Failed to check stock alerts:", err);
+      }
+    };
+
+    checkStockAlerts();
+    window.addEventListener("inventoryUpdated", checkStockAlerts);
+    return () => window.removeEventListener("inventoryUpdated", checkStockAlerts);
+  }, []);
 
   // Listen for global request to open invoice (e.g. from NotificationBell)
   useEffect(() => {
@@ -48,6 +77,62 @@ export default function Homepage({
         transactionsList={transactionsList}
       />
 
+      {/* ── Slide-up Drawer: Stock & Shelf Check ── */}
+      <HomeServiceDrawer
+        isOpen={showShelfDrawer}
+        onClose={() => setShowShelfDrawer(false)}
+        title="Physical Goods & Shelf Check"
+        subtitle="Live inventory counts and restock check"
+      >
+        <GoodsStockIndicator
+          onNavigate={(target) => {
+            setShowShelfDrawer(false);
+            onNavigate(target);
+          }}
+        />
+      </HomeServiceDrawer>
+
+      {/* ── Slide-up Drawer: Total Goods Valuation ── */}
+      <HomeServiceDrawer
+        isOpen={showValuationDrawer}
+        onClose={() => setShowValuationDrawer(false)}
+        title="Total Goods in My Shop"
+        subtitle="Shop stock valuation and restock records"
+      >
+        <div style={{ padding: "12px 16px" }}>
+          <DailyProfitLossCard
+            mode="valuation"
+            moneyIn={moneyIn}
+            moneyOut={moneyOut}
+            onNavigate={(target) => {
+              setShowValuationDrawer(false);
+              onNavigate(target);
+            }}
+            onOpenInvoice={() => {
+              setShowValuationDrawer(false);
+              setShowInvoiceModal(true);
+            }}
+          />
+        </div>
+      </HomeServiceDrawer>
+
+      {/* ── Slide-up Drawer: Audio Pulse Briefing ── */}
+      <HomeServiceDrawer
+        isOpen={showPulseDrawer}
+        onClose={() => setShowPulseDrawer(false)}
+        title="Stockpile Audio Pulse"
+        subtitle="Daily Voice Advice & Market Summary"
+      >
+        <div style={{ padding: "16px 20px" }}>
+          <MarketPulse
+            onNavigate={(target, state) => {
+              setShowPulseDrawer(false);
+              onNavigate(target, state);
+            }}
+          />
+        </div>
+      </HomeServiceDrawer>
+
       {isDesktop ? (
         /* ── Desktop: wide dashboard grid inside the app shell ── */
         <div className="mp-home">
@@ -57,7 +142,23 @@ export default function Homepage({
             onOpenInvoice={() => setShowInvoiceModal(true)}
           />
 
-          <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
+          <PrimaryWalletCard
+            balance={balance}
+            moneyIn={moneyIn}
+            moneyOut={moneyOut}
+            onNavigate={onNavigate}
+            onVoiceRecord={() => onNavigate("listeng")}
+          />
+
+          <QuickActionsGrid
+            onOpenShelf={() => setShowShelfDrawer(true)}
+            onOpenValuation={() => setShowValuationDrawer(true)}
+            onOpenAudioPulse={() => setShowPulseDrawer(true)}
+            onOpenDayClose={() => setShowInvoiceModal(true)}
+            onNavigate={onNavigate}
+            onVoiceLog={() => onNavigate("listeng")}
+            needsRestockCount={needsRestockCount}
+          />
 
           <div className="mp-home-grid">
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -82,37 +183,37 @@ export default function Homepage({
           <FloatingMic onNavigate={onNavigate} variant="desktop" />
         </div>
       ) : (
-        /* ── Mobile: Native fluid layout with fixed header + bottom nav ── */
+        /* ── Mobile: Native fluid layout with OPay-style clean hierarchy ── */
         <main className="home-page">
           <Header businessName={businessName} onNavigate={onNavigate} />
 
           <div className="home-scroll">
-            <DailyInvoiceNotificationBanner
-              moneyIn={moneyIn}
-              moneyOut={moneyOut}
-              onOpenInvoice={() => setShowInvoiceModal(true)}
-            />
-
-            <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
-
-            <DailyProfitLossCard
+            {/* OPay-Style Compact Primary Balance Card */}
+            <PrimaryWalletCard
+              balance={balance}
               moneyIn={moneyIn}
               moneyOut={moneyOut}
               onNavigate={onNavigate}
-              onOpenInvoice={() => setShowInvoiceModal(true)}
             />
 
-            <GoodsStockIndicator onNavigate={onNavigate} />
+            {/* OPay-Style Quick Actions Icon Matrix */}
+            <QuickActionsGrid
+              onOpenShelf={() => setShowShelfDrawer(true)}
+              onOpenValuation={() => setShowValuationDrawer(true)}
+              onOpenAudioPulse={() => setShowPulseDrawer(true)}
+              onOpenDayClose={() => setShowInvoiceModal(true)}
+              onNavigate={onNavigate}
+              needsRestockCount={needsRestockCount}
+            />
 
-            <MarketPulse onNavigate={onNavigate} />
-
+            {/* Real-Time Recent Transactions Stream */}
             <TransactionList
               transactionsList={transactionsList}
               onNavigate={onNavigate}
             />
 
             {/* Spacer for floating mic clearance */}
-            <div style={{ height: 120 }} />
+            <div style={{ height: 110 }} />
           </div>
 
           <FloatingMic onNavigate={onNavigate} />
