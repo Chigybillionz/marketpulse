@@ -1,7 +1,14 @@
 import { TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-export default function BalanceCard({ balance = 0, moneyIn = 0, moneyOut = 0 }) {
+export default function BalanceCard({
+  balance = 0,
+  moneyIn = 0,
+  moneyOut = 0,
+  netProfit = null,
+  salesRevenue = null,
+  operatingExpenses = null,
+}) {
   const { t } = useLanguage();
   const fmt = (n) => {
     const val = Number(n) || 0;
@@ -11,6 +18,10 @@ export default function BalanceCard({ balance = 0, moneyIn = 0, moneyOut = 0 }) 
     if (abs >= 1_000)     return `${sign}₦${Math.round(abs / 1_000)}k`;
     return `${sign}₦${abs}`;
   };
+
+  const displayRevenue = salesRevenue !== null && salesRevenue !== undefined ? salesRevenue : moneyIn;
+  const displayExpenses = operatingExpenses !== null && operatingExpenses !== undefined ? operatingExpenses : moneyOut;
+  const hasProfitData = netProfit !== null && netProfit !== undefined;
 
   return (
     <section style={{ padding: '8px 20px 12px 20px' }}>
@@ -28,7 +39,7 @@ export default function BalanceCard({ balance = 0, moneyIn = 0, moneyOut = 0 }) 
       {/* ── Three metric cards ── */}
       <div style={{ display: 'flex', gap: 10 }}>
 
-        {/* MONEY IN */}
+        {/* MONEY IN / REVENUE */}
         <div
           style={{
             flex: 1,
@@ -47,18 +58,18 @@ export default function BalanceCard({ balance = 0, moneyIn = 0, moneyOut = 0 }) 
           }}
         >
           <span style={{ fontSize: 10, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            {t('home_money_in')}
+            {t('home_money_in', 'SALES REVENUE')}
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
-            {fmt(moneyIn)}
+            {fmt(displayRevenue)}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 'auto' }}>
             <TrendingUp size={13} strokeWidth={2.5} color="#1a7a3f" />
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#1a7a3f' }}>+12%</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#1a7a3f' }}>Sales Inflow</span>
           </div>
         </div>
 
-        {/* MONEY OUT */}
+        {/* MONEY OUT / EXPENSES */}
         <div
           style={{
             flex: 1,
@@ -76,18 +87,18 @@ export default function BalanceCard({ balance = 0, moneyIn = 0, moneyOut = 0 }) 
           }}
         >
           <span style={{ fontSize: 10, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            {t('home_money_out')}
+            {t('home_money_out', 'SHOP EXPENSES')}
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#d32f2f', letterSpacing: '-0.5px', lineHeight: 1 }}>
-            {fmt(moneyOut)}
+            {fmt(displayExpenses)}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 'auto' }}>
             <TrendingDown size={13} strokeWidth={2.5} color="#d32f2f" />
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#d32f2f' }}>-5%</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#d32f2f' }}>Operating Outflow</span>
           </div>
         </div>
 
-        {/* GLOBAL BALANCE */}
+        {/* GLOBAL BALANCE / AVAILABLE CASH */}
         <div
           style={{
             flex: 1,
@@ -105,14 +116,16 @@ export default function BalanceCard({ balance = 0, moneyIn = 0, moneyOut = 0 }) 
           }}
         >
           <span style={{ fontSize: 10, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            {t('home_balance')}
+            {t('home_balance', 'AVAILABLE CASH')}
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
             {fmt(balance)}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 'auto' }}>
-            <BarChart2 size={13} strokeWidth={2.5} color="#888" />
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#888' }}>Stable</span>
+            <BarChart2 size={13} strokeWidth={2.5} color={hasProfitData ? (netProfit >= 0 ? '#1a7a3f' : '#d32f2f') : '#888'} />
+            <span style={{ fontSize: 11, fontWeight: 700, color: hasProfitData ? (netProfit >= 0 ? '#1a7a3f' : '#d32f2f') : '#888' }}>
+              {hasProfitData ? `Net: ${netProfit >= 0 ? '+' : ''}${fmt(netProfit)}` : 'In Hand'}
+            </span>
           </div>
         </div>
 

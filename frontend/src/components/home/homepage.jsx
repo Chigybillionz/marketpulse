@@ -22,6 +22,11 @@ export default function Homepage({
   balance,
   moneyIn,
   moneyOut,
+  netProfit = null,
+  salesRevenue = null,
+  totalCogs = null,
+  operatingExpenses = null,
+  netCashFlow = null,
   transactionsList = [],
 }) {
   const isDesktop = useIsDesktop();
@@ -74,6 +79,11 @@ export default function Homepage({
         businessName={businessName}
         moneyIn={moneyIn}
         moneyOut={moneyOut}
+        netProfit={netProfit}
+        salesRevenue={salesRevenue}
+        totalCogs={totalCogs}
+        operatingExpenses={operatingExpenses}
+        netCashFlow={netCashFlow}
         transactionsList={transactionsList}
       />
 
@@ -142,13 +152,26 @@ export default function Homepage({
             onOpenInvoice={() => setShowInvoiceModal(true)}
           />
 
-          <BalanceCard balance={balance} moneyIn={moneyIn} moneyOut={moneyOut} />
+          <BalanceCard
+            balance={balance}
+            moneyIn={moneyIn}
+            moneyOut={moneyOut}
+            netProfit={netProfit}
+            salesRevenue={salesRevenue}
+            operatingExpenses={operatingExpenses}
+          />
 
           <div className="mp-home-grid">
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
               <DailyProfitLossCard
                 moneyIn={moneyIn}
                 moneyOut={moneyOut}
+                netProfit={netProfit}
+                salesRevenue={salesRevenue}
+                totalCogs={totalCogs}
+                operatingExpenses={operatingExpenses}
+                netCashFlow={netCashFlow}
+                transactionsList={transactionsList}
                 onNavigate={onNavigate}
                 onOpenInvoice={() => setShowInvoiceModal(true)}
               />
@@ -177,6 +200,10 @@ export default function Homepage({
               balance={balance}
               moneyIn={moneyIn}
               moneyOut={moneyOut}
+              netProfit={netProfit}
+              salesRevenue={salesRevenue}
+              netCashFlow={netCashFlow}
+              transactionsList={transactionsList}
               onNavigate={onNavigate}
             />
 

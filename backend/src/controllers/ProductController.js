@@ -17,7 +17,7 @@ const getProducts = async (req, res) => {
 // @access  Private
 const createProduct = async (req, res) => {
   try {
-    const { name, category, price, quantityInStock } = req.body;
+    const { name, category, price, costPrice, quantityInStock } = req.body;
 
     if (!name || !category || !price) {
       return res.status(400).json({ message: 'Please add all required fields' });
@@ -28,6 +28,7 @@ const createProduct = async (req, res) => {
       name,
       category,
       price,
+      costPrice: costPrice || 0,
       quantityInStock: quantityInStock || 0,
     });
 

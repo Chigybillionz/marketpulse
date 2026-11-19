@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { calculateFinancials } = require("../utils/financialEngine");
 
 const genAI = new GoogleGenerativeAI(
   process.env.GEMINI_API_KEY || ""
@@ -127,6 +128,8 @@ function computeWeeklyStats(transactions, businessName = "your business", period
     byDescription[desc] = (byDescription[desc] || 0) + amount;
   }
 
+  const financials = calculateFinancials(scope);
+
   const topMoving = Object.entries(byDescription).sort((a, b) => b[1] - a[1])[0];
   const topCategories = Object.entries(byCategory)
     .map(([name, v]) => ({ name, ...v, total: v.in + v.out }))
@@ -140,10 +143,21 @@ function computeWeeklyStats(transactions, businessName = "your business", period
     weekKey: getWeekKey(now), // legacy alias, kept for backward compatibility
     isSample: recent.length === 0,
     transactionCount: scope.length,
-    moneyIn,
-    moneyOut,
-    net: moneyIn - moneyOut,
-    balance: moneyIn - moneyOut,
+    // Audited Financials
+    revenue: financials.salesRevenue,
+    cogs: financials.totalCogs,
+    grossProfit: financials.grossProfit,
+    operatingExpenses: financials.operatingExpenses,
+    netProfit: financials.netProfit,
+    cashInflow: financials.totalCashInflow,
+    cashOutflow: financials.totalCashOutflow,
+    netCashFlow: financials.netCashFlow,
+    inventoryPurchases: financials.inventoryPurchases,
+    // Backward-compatible properties
+    moneyIn: financials.totalCashInflow || moneyIn,
+    moneyOut: financials.totalCashOutflow || moneyOut,
+    net: financials.netProfit,
+    balance: financials.netCashFlow,
     incomeCount,
     expenseCount,
     topMoving: topMoving ? { description: topMoving[0], total: topMoving[1] } : null,

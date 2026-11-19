@@ -14,6 +14,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { getTotalGoodsValuation } from '../../services/productService';
+import { calculateFinancials, filterTodayTransactions } from '../../services/financialEngine';
 
 export default function DailyClosingInvoiceModal({
   isOpen,
@@ -21,6 +22,11 @@ export default function DailyClosingInvoiceModal({
   businessName = 'My Store',
   moneyIn = 0,
   moneyOut = 0,
+  netProfit = null,
+  salesRevenue = null,
+  totalCogs = null,
+  operatingExpenses = null,
+  netCashFlow = null,
   transactionsList = [],
 }) {
   if (!isOpen) return null;
@@ -35,8 +41,14 @@ export default function DailyClosingInvoiceModal({
 
   const invoiceNo = `INV-${today.getFullYear()}${(today.getMonth() + 1).toString().padStart(2, '0')}${today.getDate().toString().padStart(2, '0')}-01`;
 
-  const net = moneyIn - moneyOut;
-  const isProfit = net >= 0;
+  // Audited Financial Calculations
+  const todayFinancials = calculateFinancials(filterTodayTransactions(transactionsList || []));
+  const effectiveRevenue = salesRevenue !== null && salesRevenue !== undefined ? salesRevenue : (todayFinancials.salesRevenue || moneyIn);
+  const effectiveCogs = totalCogs !== null && totalCogs !== undefined ? totalCogs : todayFinancials.totalCogs;
+  const effectiveOpex = operatingExpenses !== null && operatingExpenses !== undefined ? operatingExpenses : todayFinancials.operatingExpenses;
+  const effectiveProfit = netProfit !== null && netProfit !== undefined ? netProfit : todayFinancials.netProfit;
+  const effectiveCashFlow = netCashFlow !== null && netCashFlow !== undefined ? netCashFlow : (todayFinancials.netCashFlow || (moneyIn - moneyOut));
+  const isProfit = effectiveProfit >= 0;
   const totalGoods = getTotalGoodsValuation();
 
   const fmtCurrency = (n) => `₦${Math.abs(Math.round(n || 0)).toLocaleString('en-NG')}`;
@@ -47,22 +59,25 @@ export default function DailyClosingInvoiceModal({
 
   // WhatsApp share message
   const handleShareWhatsApp = () => {
-    const message = `📋 *STOCKPILE DAILY CLOSING INVOICE*
+    const message = `📋 *STOCKPILE AUDITED DAILY CLOSING INVOICE*
 🏪 *Store:* ${businessName || 'My Store'}
 📅 *Date:* ${dateFormatted}
 🧾 *Invoice:* ${invoiceNo}
 ----------------------------------
-🟢 *SUMMARY OF AMOUNT THAT CAME IN:*
-• Total Money In: ₦${Math.round(moneyIn).toLocaleString('en-NG')}
-(${incomeTxs.length} sales / inflows recorded)
-
-🔴 *SUMMARY OF AMOUNT THAT WENT OUT:*
-• Total Money Out: ₦${Math.round(moneyOut).toLocaleString('en-NG')}
-(${expenseTxs.length} restock & expense entries)
+🟢 *TRADING PERFORMANCE:*
+• Sales Revenue: ₦${Math.round(effectiveRevenue).toLocaleString('en-NG')}
+• Cost of Goods Sold (COGS): ₦${Math.round(effectiveCogs).toLocaleString('en-NG')}
+• Gross Trading Profit: ₦${Math.round(effectiveRevenue - effectiveCogs).toLocaleString('en-NG')}
+• Shop Operating Expenses: ₦${Math.round(effectiveOpex).toLocaleString('en-NG')}
 ----------------------------------
-⚖️ *DAY'S CONCLUSION:*
-${isProfit ? '🎉 *VERDICT: TODAY IS PROFIT!*' : '⚠️ *VERDICT: OUTFLOW / RESTOCK DAY*'}
-• Net Result: ${isProfit ? '+' : '-'}₦${Math.abs(Math.round(net)).toLocaleString('en-NG')}
+⚖️ *AUDITED NET PROFIT:*
+${isProfit ? '🎉 *VERDICT: TODAY IS PROFIT!*' : '⚠️ *VERDICT: COSTS EXCEEDED SALES*'}
+• Net Profit: ${isProfit ? '+' : '-'}₦${Math.abs(Math.round(effectiveProfit)).toLocaleString('en-NG')}
+----------------------------------
+💰 *CASH FLOW & ASSETS:*
+• Cash Inflow: ₦${Math.round(todayFinancials.totalCashInflow || moneyIn).toLocaleString('en-NG')}
+• Cash Outflow: ₦${Math.round(todayFinancials.totalCashOutflow || moneyOut).toLocaleString('en-NG')}
+• Net Cash Flow: ${effectiveCashFlow >= 0 ? '+' : '-'}₦${Math.abs(Math.round(effectiveCashFlow)).toLocaleString('en-NG')}
 • Shop Goods In Store: ₦${totalGoods.toLocaleString('en-NG')}
 ----------------------------------
 Tracked securely on Stockpile`;
@@ -344,7 +359,7 @@ Tracked securely on Stockpile`;
                   color: isProfit ? '#4ade80' : '#fecaca',
                 }}
               >
-                {isProfit ? '+' : '-'}{fmtCurrency(net)}
+                {isProfit ? '+' : '-'}{fmtCurrency(effectiveProfit)}
               </span>
               <span
                 style={{
@@ -356,15 +371,47 @@ Tracked securely on Stockpile`;
                   textTransform: 'uppercase',
                 }}
               >
-                {isProfit ? 'NET PROFIT 🎉' : 'NET OUTFLOW ⚠️'}
+                {isProfit ? 'AUDITED NET PROFIT 🎉' : 'NET OPERATING LOSS ⚠️'}
               </span>
             </div>
 
             <p style={{ margin: 0, fontSize: 12, lineHeight: 1.4, color: 'rgba(255, 255, 255, 0.9)' }}>
               {isProfit
-                ? `Well done! Your sales exceeded spending by ${fmtCurrency(net)} today. You have enough surplus to support tomorrow's market float.`
-                : `You spent ${fmtCurrency(net)} more than came in today. Most of this went to restocking your shelves, which will convert back into cash.`}
+                ? `Well done! Real trading net profit is ${fmtCurrency(effectiveProfit)} today after accounting for goods sold (${fmtCurrency(effectiveCogs)}) and expenses (${fmtCurrency(effectiveOpex)}).`
+                : `Cost of goods sold (${fmtCurrency(effectiveCogs)}) and shop operating expenses (${fmtCurrency(effectiveOpex)}) exceeded sales revenue today.`}
             </p>
+          </div>
+
+          {/* Cash Flow vs Net Profit Breakdown Card */}
+          <div
+            style={{
+              backgroundColor: '#f8fafc',
+              padding: '12px 14px',
+              borderRadius: 12,
+              border: '1px solid #e2e8f0',
+              marginBottom: 14,
+            }}
+          >
+            <div style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: 8 }}>
+              Cash Flow vs Profit Comparison
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+              <span style={{ color: '#64748b' }}>Actual Net Profit:</span>
+              <span style={{ fontWeight: 800, color: isProfit ? '#15803d' : '#b91c1c' }}>
+                {isProfit ? '+' : '-'}{fmtCurrency(effectiveProfit)}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+              <span style={{ color: '#64748b' }}>Net Cash in Drawer (Flow):</span>
+              <span style={{ fontWeight: 800, color: effectiveCashFlow >= 0 ? '#15803d' : '#b91c1c' }}>
+                {effectiveCashFlow >= 0 ? '+' : '-'}{fmtCurrency(effectiveCashFlow)}
+              </span>
+            </div>
+            {todayFinancials.inventoryPurchases > 0 && (
+              <div style={{ fontSize: 11, color: '#0369a1', marginTop: 4 }}>
+                📦 ₦{todayFinancials.inventoryPurchases.toLocaleString()} cash was invested into shop restock
+              </div>
+            )}
           </div>
 
           {/* Shop Goods Value Footnote */}

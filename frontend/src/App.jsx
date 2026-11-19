@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getTransactions } from "./services/transactionService";
 import { getUserProfile } from "./services/authService";
+import { calculateFinancials, filterTodayTransactions } from "./services/financialEngine";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import LandingPage from "./components/landing_page/LandingPage";
 import FeaturesPage from "./components/landing_page/FeaturesPage";
@@ -88,6 +89,13 @@ function App() {
   const [moneyIn, setMoneyIn] = useState(0);
   const [moneyOut, setMoneyOut] = useState(0);
   const [transactionsList, setTransactionsList] = useState([]);
+
+  // Audited Financial Engine States
+  const [netProfit, setNetProfit] = useState(0);
+  const [salesRevenue, setSalesRevenue] = useState(0);
+  const [totalCogs, setTotalCogs] = useState(0);
+  const [operatingExpenses, setOperatingExpenses] = useState(0);
+  const [netCashFlow, setNetCashFlow] = useState(0);
 
   // Listen for location changes dispatched across components or storage
   useEffect(() => {
@@ -198,6 +206,15 @@ function App() {
         setBalance(calcBalance);
         setMoneyIn(calcMoneyIn);
         setMoneyOut(calcMoneyOut);
+
+        // Calculate audited financial engine metrics for today
+        const todayTxs = filterTodayTransactions(data);
+        const audited = calculateFinancials(todayTxs, { previousCashBalance: 0 });
+        setNetProfit(audited.netProfit);
+        setSalesRevenue(audited.salesRevenue);
+        setTotalCogs(audited.totalCogs);
+        setOperatingExpenses(audited.operatingExpenses);
+        setNetCashFlow(audited.netCashFlow);
       } catch (error) {
         console.error("Failed to load transactions:", error);
       }
@@ -370,6 +387,11 @@ function App() {
               balance={balance}
               moneyIn={moneyIn}
               moneyOut={moneyOut}
+              netProfit={netProfit}
+              salesRevenue={salesRevenue}
+              totalCogs={totalCogs}
+              operatingExpenses={operatingExpenses}
+              netCashFlow={netCashFlow}
               transactionsList={transactionsList}
             />
           </RequireAuth>

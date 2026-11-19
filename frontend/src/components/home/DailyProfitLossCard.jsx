@@ -30,6 +30,7 @@ import {
   INITIAL_PRODUCTS,
 } from '../../services/productService';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { calculateFinancials, filterTodayTransactions } from '../../services/financialEngine';
 
 /**
  * Intelligent helper to extract both monetary amount and item details from spoken transcript
@@ -99,6 +100,12 @@ function parseVoiceRestock(transcript) {
 export default function DailyProfitLossCard({
   moneyIn = 0,
   moneyOut = 0,
+  netProfit = null,
+  salesRevenue = null,
+  totalCogs = null,
+  operatingExpenses = null,
+  netCashFlow = null,
+  transactionsList = [],
   onNavigate,
   onOpenInvoice,
   mode = 'all',
@@ -173,9 +180,17 @@ export default function DailyProfitLossCard({
     };
   }, []);
 
-  // Simple Plain Math: Gain or Loss
-  const netDaily = moneyIn - moneyOut;
-  const isProfit = netDaily >= 0;
+  // Audited Financial Calculations: True Profit vs Cash Flow
+  const todayFinancials = calculateFinancials(filterTodayTransactions(transactionsList || []));
+  const effectiveProfit = netProfit !== null && netProfit !== undefined ? netProfit : todayFinancials.netProfit;
+  const effectiveRevenue = salesRevenue !== null && salesRevenue !== undefined ? salesRevenue : (todayFinancials.salesRevenue || moneyIn);
+  const effectiveCogs = totalCogs !== null && totalCogs !== undefined ? totalCogs : todayFinancials.totalCogs;
+  const effectiveOpex = operatingExpenses !== null && operatingExpenses !== undefined ? operatingExpenses : todayFinancials.operatingExpenses;
+  const effectiveCostAndExpenses = effectiveCogs + effectiveOpex;
+  const effectiveNetCashFlow = netCashFlow !== null && netCashFlow !== undefined ? netCashFlow : (todayFinancials.netCashFlow || (moneyIn - moneyOut));
+  const effectiveInflow = todayFinancials.totalCashInflow || moneyIn;
+  const effectiveOutflow = todayFinancials.totalCashOutflow || moneyOut;
+  const isProfit = effectiveProfit >= 0;
 
   const fmtCurrency = (n) => `₦${Math.abs(Math.round(n || 0)).toLocaleString('en-NG')}`;
 
@@ -522,15 +537,15 @@ export default function DailyProfitLossCard({
                     letterSpacing: '-1px',
                     margin: 0,
                     lineHeight: 1.1,
-                    color: (moneyIn === 0 && moneyOut === 0) ? '#a7f3d0' : isProfit ? '#4ade80' : '#fca5a5',
+                    color: (effectiveRevenue === 0 && effectiveCostAndExpenses === 0) ? '#a7f3d0' : isProfit ? '#4ade80' : '#fca5a5',
                   }}
                 >
-                  {(moneyIn === 0 && moneyOut === 0) ? '₦0' : `${isProfit ? '+' : '-'}${fmtCurrency(netDaily)}`}
+                  {(effectiveRevenue === 0 && effectiveCostAndExpenses === 0) ? '₦0' : `${isProfit ? '+' : '-'}${fmtCurrency(effectiveProfit)}`}
                 </h2>
                 <span
                   style={{
-                    background: (moneyIn === 0 && moneyOut === 0) ? '#064e3b' : isProfit ? '#14532d' : '#7f1d1d',
-                    color: (moneyIn === 0 && moneyOut === 0) ? '#a7f3d0' : isProfit ? '#86efac' : '#fecaca',
+                    background: (effectiveRevenue === 0 && effectiveCostAndExpenses === 0) ? '#064e3b' : isProfit ? '#14532d' : '#7f1d1d',
+                    color: (effectiveRevenue === 0 && effectiveCostAndExpenses === 0) ? '#a7f3d0' : isProfit ? '#86efac' : '#fecaca',
                     padding: '3px 8px',
                     borderRadius: 8,
                     fontSize: 11,
@@ -539,7 +554,7 @@ export default function DailyProfitLossCard({
                     letterSpacing: 1,
                   }}
                 >
-                  {(moneyIn === 0 && moneyOut === 0)
+                  {(effectiveRevenue === 0 && effectiveCostAndExpenses === 0)
                     ? 'READY FOR TODAY 🏁'
                     : isProfit
                     ? t('home_profit_verdict', 'PROFIT (GAIN) TODAY 🎉')
@@ -556,11 +571,11 @@ export default function DailyProfitLossCard({
                   lineHeight: 1.4,
                 }}
               >
-                {(moneyIn === 0 && moneyOut === 0)
+                {(effectiveRevenue === 0 && effectiveCostAndExpenses === 0)
                   ? 'No sales or expenses logged yet today. Tap the mic or Speak Restock to start tracking your daily profit!'
                   : isProfit
-                  ? `You took in ${fmtCurrency(moneyIn)} and spent ${fmtCurrency(moneyOut)}. You keep ${fmtCurrency(netDaily)} in pocket!`
-                  : `Spending of ${fmtCurrency(moneyOut)} passed your sales of ${fmtCurrency(moneyIn)} today by ${fmtCurrency(Math.abs(netDaily))}.`}
+                  ? `Sales revenue was ${fmtCurrency(effectiveRevenue)}. Cost of goods sold was ${fmtCurrency(effectiveCogs)} and shop expenses were ${fmtCurrency(effectiveOpex)}. Real net profit is ${fmtCurrency(effectiveProfit)}.`
+                  : `Cost of goods (${fmtCurrency(effectiveCogs)}) and expenses (${fmtCurrency(effectiveOpex)}) exceeded sales revenue (${fmtCurrency(effectiveRevenue)}) today.`}
               </p>
             </div>
 
@@ -575,46 +590,73 @@ export default function DailyProfitLossCard({
                 alignItems: 'center',
                 gap: 6,
                 textAlign: 'center',
+                marginBottom: 8,
               }}
             >
-              {/* Step 1: Money In */}
+              {/* Step 1: Sales Revenue */}
               <div style={{ textAlign: 'left' }}>
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-                  1. Money In
+                  1. Sales Revenue
                 </span>
                 <div style={{ fontSize: 14, fontWeight: 800, color: '#4ade80' }}>
-                  +{fmtCurrency(moneyIn)}
+                  +{fmtCurrency(effectiveRevenue)}
                 </div>
-                <span style={{ fontSize: 10, color: '#cbd5e1' }}>Sales & Cash</span>
+                <span style={{ fontSize: 10, color: '#cbd5e1' }}>Goods Sold</span>
               </div>
 
               <span style={{ fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>−</span>
 
-              {/* Step 2: Money Out */}
+              {/* Step 2: Cost of Goods & Expenses */}
               <div style={{ textAlign: 'left' }}>
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-                  2. Money Out
+                  2. Cost & Expenses
                 </span>
                 <div style={{ fontSize: 14, fontWeight: 800, color: '#f87171' }}>
-                  -{fmtCurrency(moneyOut)}
+                  -{fmtCurrency(effectiveCostAndExpenses)}
                 </div>
-                <span style={{ fontSize: 10, color: '#cbd5e1' }}>Expenses & Restock</span>
+                <span style={{ fontSize: 10, color: '#cbd5e1' }}>COGS + Bills</span>
               </div>
 
               <span style={{ fontSize: 16, fontWeight: 900, color: '#94a3b8' }}>=</span>
 
-              {/* Step 3: Gain or Loss */}
+              {/* Step 3: Real Net Profit */}
               <div style={{ textAlign: 'left' }}>
                 <span style={{ fontSize: 9, fontWeight: 700, color: isProfit ? '#86efac' : '#fca5a5', textTransform: 'uppercase' }}>
-                  3. Result
+                  3. Net Profit
                 </span>
                 <div style={{ fontSize: 15, fontWeight: 900, color: isProfit ? '#34d399' : '#f87171' }}>
-                  {isProfit ? `+${fmtCurrency(netDaily)}` : `-${fmtCurrency(netDaily)}`}
+                  {isProfit ? `+${fmtCurrency(effectiveProfit)}` : `-${fmtCurrency(effectiveProfit)}`}
                 </div>
                 <span style={{ fontSize: 10, fontWeight: 700, color: isProfit ? '#86efac' : '#fca5a5' }}>
                   {isProfit ? 'Gain' : 'Loss'}
                 </span>
               </div>
+            </div>
+
+            {/* Cash Flow vs Profit Notice Strip */}
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                borderRadius: 10,
+                padding: '8px 12px',
+                fontSize: 11,
+                color: 'rgba(255, 255, 255, 0.85)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 600 }}>Cash In Drawer / Flow:</span>
+                <span style={{ fontWeight: 800, color: effectiveNetCashFlow >= 0 ? '#86efac' : '#fca5a5' }}>
+                  {effectiveNetCashFlow >= 0 ? '+' : '-'}{fmtCurrency(effectiveNetCashFlow)}
+                </span>
+              </div>
+              {todayFinancials.inventoryPurchases > 0 && (
+                <div style={{ fontSize: 10.5, color: '#a7f3d0' }}>
+                  📦 {fmtCurrency(todayFinancials.inventoryPurchases)} invested in shop restock (sitting safely in stock, not lost!)
+                </div>
+              )}
             </div>
           </>
         )}

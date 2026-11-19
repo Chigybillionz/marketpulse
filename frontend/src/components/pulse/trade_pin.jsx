@@ -131,7 +131,7 @@ export default function PulseTradePin({
   const saveTransaction = async () => {
     try {
       if (isCredit) {
-        // Save as debtor credit
+        // Save as debtor credit record
         const emailToUse = email || localStorage.getItem("email");
         const cd = transactionData.creditDetails || {};
         await addCreditTransaction(
@@ -143,33 +143,48 @@ export default function PulseTradePin({
           cd.dueDate || null
         );
 
-        if (setBalance) {
-          setBalance((prev) => prev - amountNum);
+        // Also record as a CREDIT_SALE transaction so it is recognized as sales revenue
+        // without falsely counting as immediate cash outflow or cash balance reduction
+        let apiTx = null;
+        try {
+          apiTx = await createTransaction({
+            type: 'Income',
+            amount: amountNum,
+            category: transactionData.category || 'Credit Sale',
+            description: `${cd.customerName ? `${cd.customerName} - ` : ''}${transactionData.description || 'Credit Sale'}`,
+            financialClass: 'CREDIT_SALE',
+          });
+        } catch (txErr) {
+          console.warn("Could not persist credit sale transaction to ledger:", txErr);
         }
-        if (setMoneyOut) {
-          setMoneyOut((prev) => prev + amountNum);
-        }
+
+        // Credit sales ARE revenue (+sales), but NO cash left the drawer (not Money Out!)
         if (setTransactionsList) {
           const newTx = {
-            id: Date.now(),
-            type: "debit",
-            icon: "bolt",
-            title: `${cd.customerName || "Customer"} - Credit Given`,
+            id: apiTx?._id || Date.now(),
+            type: "credit_sale",
+            financialClass: "CREDIT_SALE",
+            icon: "receipt",
+            title: `${cd.customerName || "Customer"} - Credit Sale`,
             meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
-            amount: `-\u20A6${amountNum.toLocaleString()}`,
-            isPositive: false,
-            iconBg: "bg-red-100",
-            iconColor: "text-red-600",
+            amount: `+\u20A6${amountNum.toLocaleString()}`,
+            isPositive: true,
+            iconBg: "bg-amber-100",
+            iconColor: "text-amber-800",
+            rawDate: new Date(),
           };
           setTransactionsList((prev) => [newTx, ...prev]);
         }
       } else {
-        // Normal income/expense
+        // Normal income or expense
         const apiTx = await createTransaction({
           type: isIncome ? 'Income' : 'Expense',
           amount: amountNum,
           category: transactionData.category || 'Other',
-          description: transactionData.description || 'Voice Input'
+          description: transactionData.description || 'Voice Input',
+          financialClass: transactionData.financialClass || null,
+          costPrice: transactionData.costPrice || 0,
+          quantity: transactionData.quantity || 1,
         });
 
         if (setBalance) {
@@ -184,6 +199,7 @@ export default function PulseTradePin({
           const newTx = {
             id: apiTx._id || Date.now(),
             type: isIncome ? "credit" : "debit",
+            financialClass: apiTx.financialClass || (isIncome ? "SALES_REVENUE" : "OPERATING_EXPENSE"),
             icon: isIncome ? "bag" : "bolt",
             title: apiTx.description || transactionData.description || "Voice Input",
             meta: `Today, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
@@ -191,6 +207,7 @@ export default function PulseTradePin({
             isPositive: isIncome,
             iconBg: isIncome ? "bg-green-100" : "bg-red-100",
             iconColor: isIncome ? "text-green-800" : "text-red-600",
+            rawDate: new Date(),
           };
           setTransactionsList((prev) => [newTx, ...prev]);
         }

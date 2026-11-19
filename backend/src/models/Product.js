@@ -19,6 +19,10 @@ const productSchema = mongoose.Schema(
       type: Number,
       required: [true, 'Please add a price'],
     },
+    costPrice: {
+      type: Number,
+      default: 0,
+    },
     quantityInStock: {
       type: Number,
       required: [true, 'Please add a quantity'],

@@ -11,11 +11,16 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { calculateFinancials, filterTodayTransactions } from '../../services/financialEngine';
 
 export default function PrimaryWalletCard({
   balance = 0,
   moneyIn = 0,
   moneyOut = 0,
+  netProfit = null,
+  salesRevenue = null,
+  netCashFlow = null,
+  transactionsList = [],
   onNavigate,
   onVoiceRecord,
 }) {
@@ -38,8 +43,13 @@ export default function PrimaryWalletCard({
     return `₦${val.toLocaleString()}`;
   };
 
-  const netDaily = moneyIn - moneyOut;
-  const isProfit = netDaily >= 0;
+  // Audited Financial Calculations
+  const todayFinancials = calculateFinancials(filterTodayTransactions(transactionsList || []));
+  const effectiveProfit = netProfit !== null && netProfit !== undefined ? netProfit : todayFinancials.netProfit;
+  const effectiveCashFlow = netCashFlow !== null && netCashFlow !== undefined ? netCashFlow : (todayFinancials.netCashFlow || (moneyIn - moneyOut));
+  const effectiveInflow = todayFinancials.totalCashInflow || moneyIn;
+  const effectiveOutflow = todayFinancials.totalCashOutflow || moneyOut;
+  const isProfit = effectiveProfit >= 0;
 
   return (
     <section style={{ padding: '12px 20px 10px 20px' }}>
@@ -169,7 +179,7 @@ export default function PrimaryWalletCard({
             border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
-          {/* Money In */}
+          {/* Money In / Inflow */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: 9.5, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
               Inflow
@@ -183,11 +193,11 @@ export default function PrimaryWalletCard({
                 whiteSpace: 'nowrap',
               }}
             >
-              {isHidden ? '₦•••' : `+${fmtCurrency(moneyIn)}`}
+              {isHidden ? '₦•••' : `+${fmtCurrency(effectiveInflow)}`}
             </span>
           </div>
 
-          {/* Money Out */}
+          {/* Money Out / Outflow */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: 9.5, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
               Outflow
@@ -201,14 +211,14 @@ export default function PrimaryWalletCard({
                 whiteSpace: 'nowrap',
               }}
             >
-              {isHidden ? '₦•••' : `-${fmtCurrency(moneyOut)}`}
+              {isHidden ? '₦•••' : `-${fmtCurrency(effectiveOutflow)}`}
             </span>
           </div>
 
-          {/* Result / Pocket Gain */}
+          {/* Result / True Net Profit */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: 9.5, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-              Gain / Loss
+            <span style={{ fontSize: 9.5, fontWeight: 700, color: isProfit ? '#86efac' : '#fca5a5', textTransform: 'uppercase' }}>
+              Net Profit
             </span>
             <span
               style={{
@@ -219,7 +229,7 @@ export default function PrimaryWalletCard({
                 whiteSpace: 'nowrap',
               }}
             >
-              {isHidden ? '₦•••' : (isProfit ? `+${fmtCurrency(netDaily)}` : `-${fmtCurrency(Math.abs(netDaily))}`)}
+              {isHidden ? '₦•••' : (isProfit ? `+${fmtCurrency(effectiveProfit)}` : `-${fmtCurrency(Math.abs(effectiveProfit))}`)}
             </span>
           </div>
         </div>
