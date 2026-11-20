@@ -29,6 +29,7 @@ app.use('/api/notifications', require('./routes/NotificationRoutes'));
 app.use('/api/inventory-alerts', require('./routes/NotificationRoutes'));
 app.use('/api/portability', require('./routes/PortabilityRoutes'));
 app.use('/api/ai', require('./routes/AIRoutes'));
+app.use('/api/savings', require('./routes/SavingsRoutes'));
 
 // Database Connection
 const PORT = process.env.PORT || 5000;

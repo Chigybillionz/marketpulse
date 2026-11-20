@@ -51,6 +51,15 @@ export default function DailyClosingInvoiceModal({
   const isProfit = effectiveProfit >= 0;
   const totalGoods = getTotalGoodsValuation();
 
+  // Daily Savings Advice (Suggested to take home vs keep in business)
+  const suggestedSave = isProfit && effectiveProfit > 0
+    ? Math.min(
+        Math.max(500, Math.round((effectiveProfit * 0.2) / 500) * 500),
+        Math.max(1000, Math.round(((todayFinancials.availableCash || 0) * 0.35) / 500) * 500)
+      )
+    : 0;
+  const keepInBusiness = Math.max(0, effectiveProfit - suggestedSave);
+
   const fmtCurrency = (n) => `₦${Math.abs(Math.round(n || 0)).toLocaleString('en-NG')}`;
 
   // Filter transactions into today's income vs expenses
@@ -79,6 +88,10 @@ ${isProfit ? '🎉 *VERDICT: TODAY IS PROFIT!*' : '⚠️ *VERDICT: COSTS EXCEED
 • Cash Outflow: ₦${Math.round(todayFinancials.totalCashOutflow || moneyOut).toLocaleString('en-NG')}
 • Net Cash Flow: ${effectiveCashFlow >= 0 ? '+' : '-'}₦${Math.abs(Math.round(effectiveCashFlow)).toLocaleString('en-NG')}
 • Shop Goods In Store: ₦${totalGoods.toLocaleString('en-NG')}
+${isProfit && effectiveProfit > 0 ? `----------------------------------
+💡 *DAILY SAVINGS ADVICE:*
+• Suggested to Take Home / Save: ₦${Math.round(suggestedSave).toLocaleString('en-NG')}
+• Keep in Shop for Restock: ₦${Math.round(keepInBusiness).toLocaleString('en-NG')}` : ''}
 ----------------------------------
 Tracked securely on Stockpile`;
 
@@ -413,6 +426,31 @@ Tracked securely on Stockpile`;
               </div>
             )}
           </div>
+
+          {/* Daily Savings Advice Card */}
+          {isProfit && effectiveProfit > 0 && (
+            <div
+              style={{
+                backgroundColor: '#ecfdf5',
+                border: '1px solid #a7f3d0',
+                borderRadius: 14,
+                padding: '12px 14px',
+                marginBottom: 14,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: '#065f46', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  💡 Daily Savings Advice
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#15803d' }}>
+                  Take Home: {fmtCurrency(suggestedSave)}
+                </span>
+              </div>
+              <div style={{ fontSize: 11.5, color: '#047857', lineHeight: 1.4 }}>
+                Based on today's profit, safely take home <strong>{fmtCurrency(suggestedSave)}</strong> for personal savings and keep <strong>{fmtCurrency(keepInBusiness)}</strong> in your business for restock and bills.
+              </div>
+            </div>
+          )}
 
           {/* Shop Goods Value Footnote */}
           <div

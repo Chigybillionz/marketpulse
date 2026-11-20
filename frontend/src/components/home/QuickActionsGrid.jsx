@@ -6,6 +6,7 @@ import {
   Volume2,
   FileText,
   History,
+  PiggyBank,
   PlusCircle,
   Mic,
 } from 'lucide-react';
@@ -66,13 +67,13 @@ export default function QuickActionsGrid({
       onClick: onOpenDayClose,
     },
     {
-      id: 'history',
-      label: 'History',
-      icon: <History size={22} strokeWidth={2.2} />,
-      bg: '#f1f5f9',
-      color: '#334155',
-      badge: null,
-      onClick: () => onNavigate && onNavigate('history'),
+      id: 'savings',
+      label: 'Save Advice',
+      icon: <PiggyBank size={22} strokeWidth={2.2} />,
+      bg: '#ecfdf5',
+      color: '#047857',
+      badge: 'Daily',
+      onClick: () => onNavigate && onNavigate('savings_plan'),
     },
   ];
 

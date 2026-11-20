@@ -1,12 +1,13 @@
-import { Home, Mic2, History, CreditCard, User, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, Mic2, History, CreditCard, PiggyBank, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../../i18n/LanguageContext";
 
 const NAV_ITEMS = [
-  { key: "home", labelKey: "nav_home", target: "home", Icon: Home },
-  { key: "pulse", labelKey: "nav_pulse", target: "listeng", Icon: Mic2 },
-  { key: "history", labelKey: "nav_history", target: "history", Icon: History },
-  { key: "credit", labelKey: "nav_credit", target: "credit", Icon: CreditCard },
-  { key: "profile", labelKey: "nav_profile", target: "profile", Icon: User },
+  { key: "home", labelKey: "nav_home", defaultLabel: "Home", target: "home", Icon: Home },
+  { key: "pulse", labelKey: "nav_pulse", defaultLabel: "Voice Pulse", target: "listeng", Icon: Mic2 },
+  { key: "history", labelKey: "nav_history", defaultLabel: "History", target: "history", Icon: History },
+  { key: "credit", labelKey: "nav_credit", defaultLabel: "Debtors", target: "credit", Icon: CreditCard },
+  { key: "savings", labelKey: "nav_savings", defaultLabel: "Savings Advisor", target: "savings_plan", Icon: PiggyBank },
+  { key: "profile", labelKey: "nav_profile", defaultLabel: "Profile", target: "profile", Icon: User },
 ];
 
 /**
@@ -50,8 +51,8 @@ export default function Sidebar({ active, onNavigate, businessName, collapsed, o
 
       {/* ── Navigation Links ── */}
       <nav className="mp-side-nav">
-        {NAV_ITEMS.map(({ key, labelKey, target, Icon }) => {
-          const label = t(labelKey);
+        {NAV_ITEMS.map(({ key, labelKey, defaultLabel, target, Icon }) => {
+          const label = t(labelKey, defaultLabel);
           return (
             <button
               key={key}

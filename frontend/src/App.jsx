@@ -17,6 +17,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import Analysing from "./components/pulse/analysing";
 import History from "./components/history";
 import Credit from "./components/credit";
+import SavingsPlan from "./components/savings/SavingsPlan";
 import WeeklyPulse from "./components/pulse/weekly_pulse";
 import Profile from "./components/profile";
 import StoreProfile from "./components/StoreProfile";
@@ -56,6 +57,7 @@ const PATHS = {
   forgot_password: "/forgot-password",
   history: "/history",
   credit: "/credit",
+  savings_plan: "/savings-plan",
   weekly_pulse: "/weekly-pulse",
   profile: "/profile",
   storeProfile: "/store-profile",
@@ -505,6 +507,18 @@ function App() {
         element={
           <RequireAuth>
             <DebtorProfile onNavigate={handleNavigate} businessName={businessName} email={email} />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={PATHS.savings_plan}
+        element={
+          <RequireAuth>
+            <SavingsPlan
+              onNavigate={handleNavigate}
+              businessName={businessName}
+              transactionsList={transactionsList}
+            />
           </RequireAuth>
         }
       />

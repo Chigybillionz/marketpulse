@@ -19,6 +19,8 @@ import {
   PackageCheck,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
+  PiggyBank,
   Clock
 } from 'lucide-react';
 import {
@@ -658,6 +660,34 @@ export default function DailyProfitLossCard({
                 </div>
               )}
             </div>
+
+            {/* Daily Savings Advice Strip */}
+            {isProfit && effectiveProfit > 0 && (
+              <div
+                onClick={() => onNavigate && onNavigate('savings_plan')}
+                style={{
+                  marginTop: 8,
+                  background: 'rgba(255, 255, 255, 0.14)',
+                  borderRadius: 10,
+                  padding: '9px 12px',
+                  fontSize: 11,
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}>
+                  <PiggyBank size={14} color="#86efac" />
+                  <span>Savings Advice: Suggested to take home <strong>{fmtCurrency(Math.min(Math.max(500, Math.round((effectiveProfit * 0.2) / 500) * 500), Math.max(1000, Math.round(((todayFinancials.availableCash || 0) * 0.35) / 500) * 500)))}</strong></span>
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10.5, color: '#86efac', fontWeight: 800 }}>
+                  View Advice <ChevronRight size={13} />
+                </span>
+              </div>
+            )}
           </>
         )}
       </div>
