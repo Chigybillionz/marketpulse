@@ -42,6 +42,7 @@ import "./App.css";
 // Single source of truth: page id (used everywhere as onNavigate("id")) -> URL path.
 const PATHS = {
   landing: "/",
+  landing_page: "/landing",
   features: "/features",
   "how-it-works": "/how-it-works",
   pricing: "/pricing",
@@ -296,6 +297,27 @@ function App() {
     return children;
   };
 
+  // Redirect authenticated users away from public auth routes (/login, /signup) to /home
+  const PublicOnlyRoute = ({ children }) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      return <Navigate to="/home" replace />;
+    }
+    return children;
+  };
+
+  // Root route handler: if already logged in, redirect directly to /home unless ?landing=true is explicitly requested
+  const RootLandingRoute = () => {
+    const token = localStorage.getItem("token");
+    const searchParams = new URLSearchParams(location.search);
+    const forceLanding = searchParams.get("landing") === "true";
+
+    if (token && !forceLanding) {
+      return <Navigate to="/home" replace />;
+    }
+    return <LandingPage onNavigate={handleNavigate} />;
+  };
+
   // "Back" uses context-aware navigation:
   // 1. If explicit previous route context is passed via location.state?.from, return there.
   // 2. If browser/in-app history exists (SPA history index > 0), navigate(-1).
@@ -328,6 +350,10 @@ function App() {
     <Routes>
       <Route
         path={PATHS.landing}
+        element={<RootLandingRoute />}
+      />
+      <Route
+        path={PATHS.landing_page}
         element={<LandingPage onNavigate={handleNavigate} />}
       />
       <Route
@@ -345,30 +371,34 @@ function App() {
       <Route
         path={PATHS.login}
         element={
-          <Login
-            onNavigate={handleNavigate}
-            email={email}
-            setEmail={setEmail}
-            setIsNewUser={setIsNewUser}
-            setBusinessName={setBusinessName}
-            setProfilePicture={setProfilePicture}
-            setLocationStr={setLocationStr}
-            setBusinessType={setBusinessType}
-          />
+          <PublicOnlyRoute>
+            <Login
+              onNavigate={handleNavigate}
+              email={email}
+              setEmail={setEmail}
+              setIsNewUser={setIsNewUser}
+              setBusinessName={setBusinessName}
+              setProfilePicture={setProfilePicture}
+              setLocationStr={setLocationStr}
+              setBusinessType={setBusinessType}
+            />
+          </PublicOnlyRoute>
         }
       />
       <Route
         path={PATHS.signup}
         element={
-          <Signup
-            onNavigate={handleNavigate}
-            businessName={businessName}
-            setBusinessName={setBusinessName}
-            email={email}
-            setEmail={setEmail}
-            setIsNewUser={setIsNewUser}
-            setProfilePicture={setProfilePicture}
-          />
+          <PublicOnlyRoute>
+            <Signup
+              onNavigate={handleNavigate}
+              businessName={businessName}
+              setBusinessName={setBusinessName}
+              email={email}
+              setEmail={setEmail}
+              setIsNewUser={setIsNewUser}
+              setProfilePicture={setProfilePicture}
+            />
+          </PublicOnlyRoute>
         }
       />
       <Route
